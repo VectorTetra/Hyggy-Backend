@@ -1,0 +1,6 @@
+@HyggyBackend_HostAddress = http://localhost:5263
+
+GET {{HyggyBackend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
