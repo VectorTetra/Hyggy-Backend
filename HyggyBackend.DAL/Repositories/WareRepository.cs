@@ -166,6 +166,32 @@ namespace HyggyBackend.DAL.Repositories
                 wareCollections.Add(await GetByIsDeliveryAvailable(queryDAL.IsDeliveryAvailable.Value));
             }
 
+            if (queryDAL.StatusId != null)
+            {
+                wareCollections.Add(await GetByStatusId(queryDAL.StatusId.Value));
+            }
+
+            if (queryDAL.StatusName != null)
+            {
+                wareCollections.Add(await GetByStatusNameSubstring(queryDAL.StatusName));
+            }
+
+            if (queryDAL.StatusDescription != null)
+            {
+                wareCollections.Add(await GetByStatusDescriptionSubstring(queryDAL.StatusDescription));
+            }
+
+            if (queryDAL.ImagePath != null)
+            {
+                wareCollections.Add(await GetByImagePathSubstring(queryDAL.ImagePath));
+            }
+
+            if (!wareCollections.Any())
+            {
+                return new List<Ware>();
+            }
+
+            return wareCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
         }
         public async Task Create(Ware bedConfiguration)
         {

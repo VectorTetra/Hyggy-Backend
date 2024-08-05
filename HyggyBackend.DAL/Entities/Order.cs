@@ -1,19 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HyggyBackend.DAL.Entities
+﻿namespace HyggyBackend.DAL.Entities
 {
     public class Order
     {
         public long Id { get; set; }
         public string DeliveryAddress { get; set; }
+
+        // Дата замовлення дозволить відсортувати замовлення за датою,
+        // а також дізнатися ціну певного товару за певний період у таблиці DateWarePrice 
+        public DateTime OrderDate { get; set; }
         public string Phone { get; set; }
         public string Comment { get; set; }
-        public string Status { get; set; }
+        public OrderStatus Status { get; set; }
         public virtual ICollection<OrderItem> OrderItems { get; set; }
+        public virtual Customer Customer { get; set; }
+
+        public virtual Shop Shop { get; set; }
 
         public override bool Equals(object obj)
         {
