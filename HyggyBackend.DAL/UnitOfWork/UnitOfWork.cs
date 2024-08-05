@@ -5,13 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using HyggyBackend.DAL.EF;
 using HyggyBackend.DAL.Interfaces;
+using HyggyBackend.DAL.Repositories;
 
 namespace HyggyBackend.DAL.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
     {
         private readonly HyggyContext _context;
-        //private IClientRepository _clients;
+        private IWareRepository _wares;
         //private IEmailRepository _emails;
         //private IPhoneRepository _phones;
         //private IPersonRepository _persons;
@@ -41,20 +42,21 @@ namespace HyggyBackend.DAL.UnitOfWork
         //private INewsRepository _news;
 
 
-        //public UnitOfWork(TouragencyContext context)
-        //{
-        //    _context = context;
-        //}
+        public UnitOfWork(HyggyContext context)
+        {
+            _context = context;
+        }
 
-        //public INewsRepository News
-        //{
-        //    get
-        //    {
-        //        if (_news == null)
-        //            _news = new NewsRepository(_context);
-        //        return _news;
-        //    }
-        //}
+
+        public IWareRepository Wares
+        {
+            get
+            {
+                if (_wares == null)
+                    _wares = new WareRepository(_context);
+                return _wares;
+            }
+        }
 
         //public IContinentRepository Continents
         //{

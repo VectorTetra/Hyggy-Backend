@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using HyggyBackend.DAL.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 
@@ -11,7 +12,7 @@ namespace HyggyBackend.DAL.EF
         {
         }
 
-
+        public DbSet<Ware> Wares { get; set; }
 
     }
     // Класс необходим исключительно для миграций

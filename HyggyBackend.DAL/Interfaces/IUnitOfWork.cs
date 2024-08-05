@@ -12,7 +12,7 @@ namespace HyggyBackend.DAL.Interfaces
     public interface IUnitOfWork
     {
        
-        //IBookingRepository Bookings { get; }
+        IWareRepository Wares { get; }
         //IHotelRepository Hotels { get; }
         //IRoomRepository Rooms { get; }
         //IRoomTypeRepository RoomTypes { get; }

@@ -9,6 +9,10 @@ namespace HyggyBackend.DAL.Entities
     public class WareCategory2
     {
         public long Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public virtual WareCategory1 WareCategory1 { get; set; }
+        public virtual ICollection<WareCategory3> WaresCategory3 { get; set; }
 
         public override bool Equals(object obj)
         {
