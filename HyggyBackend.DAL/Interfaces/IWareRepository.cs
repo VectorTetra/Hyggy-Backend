@@ -24,8 +24,8 @@ namespace HyggyBackend.DAL.Interfaces
         Task<IEnumerable<Ware>> GetByStatusDescriptionSubstring(string statusDescriptionSubstring);
         Task<IEnumerable<Ware>> GetByImagePathSubstring(string imagePathSubstring);
         Task<IEnumerable<Ware>> GetByQuery(WareQueryDAL queryDAL);
-        Task Create(Ware bedConfiguration);
-        void Update(Ware bedConfiguration);
+        Task Create(Ware ware);
+        void Update(Ware ware);
         Task Delete(long id);
 
         //Task<IEnumerable<Ware>> Get200Last();

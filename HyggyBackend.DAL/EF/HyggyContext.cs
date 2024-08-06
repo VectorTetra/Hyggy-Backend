@@ -12,7 +12,19 @@ namespace HyggyBackend.DAL.EF
         {
         }
 
+        public DbSet<Customer> Customers{ get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<OrderStatus> OrderStatuses { get; set; }
+        public DbSet<Shop> Shops { get; set; }
+        public DbSet<Storage> Storages { get; set; }
         public DbSet<Ware> Wares { get; set; }
+        public DbSet<WareCategory1> WareCategories1 { get; set; }
+        public DbSet<WareCategory2> WareCategories2 { get; set; }
+        public DbSet<WareCategory3> WareCategories3 { get; set; }
+        public DbSet<WareImage> WareImages { get; set; }
+        public DbSet<WarePriceHistory> WarePriceHistories { get; set; }
+        public DbSet<WareStatus> WareStatuses { get; set; }
 
     }
     // Класс необходим исключительно для миграций

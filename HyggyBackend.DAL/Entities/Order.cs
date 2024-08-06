@@ -10,12 +10,10 @@
         public DateTime OrderDate { get; set; }
         public string Phone { get; set; }
         public string Comment { get; set; }
-        public OrderStatus Status { get; set; }
+        public virtual OrderStatus Status { get; set; }
         public virtual ICollection<OrderItem> OrderItems { get; set; }
         public virtual Customer Customer { get; set; }
-
         public virtual Shop Shop { get; set; }
-
         public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType())
