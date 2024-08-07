@@ -193,13 +193,13 @@ namespace HyggyBackend.DAL.Repositories
 
             return wareCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
         }
-        public async Task Create(Ware bedConfiguration)
+        public async Task Create(Ware ware)
         {
-            await _context.Wares.AddAsync(bedConfiguration);
+            await _context.Wares.AddAsync(ware);
         }
-        public void Update(Ware bedConfiguration)
+        public void Update(Ware ware)
         {
-            _context.Wares.Update(bedConfiguration);
+            _context.Entry(ware).State = EntityState.Modified;
         }
         public async Task Delete(long id)
         {

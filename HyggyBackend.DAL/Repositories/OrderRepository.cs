@@ -208,7 +208,7 @@ namespace HyggyBackend.DAL.Repositories
         }
         public void Update(Order order)
         {
-            _context.Orders.Update(order);
+            _context.Entry(order).State = EntityState.Modified;
         }
         public async Task Delete(long id)
         {

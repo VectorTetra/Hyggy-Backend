@@ -6,7 +6,6 @@ namespace HyggyBackend.DAL.Entities
 	{
         public long Id { get; set; }
         public string PhotoUrl { get; set; }
-       
         public string? WorkHours { get; set; }
         public long StorageId { get; set; }
 		[ForeignKey("StorageId")]
