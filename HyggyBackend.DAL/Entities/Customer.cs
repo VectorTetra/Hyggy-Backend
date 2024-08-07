@@ -10,6 +10,10 @@ namespace HyggyBackend.DAL.Entities
     {
         public long Id { get; set; }
 
+        public string Name { get; set; }
+
+        public string Surname { get; set; }
+
         public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType())

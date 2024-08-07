@@ -19,9 +19,40 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.Orders.FindAsync(id);
         }
-        public async Task<IEnumerable<Order>> GetByDeliveryAddressSubstring(string deliveryAddressSubstring)
+
+        public async Task<IEnumerable<Order>> GetByAddressId(long addressId)
         {
-            return await _context.Orders.Where(x => x.DeliveryAddress.Contains(deliveryAddressSubstring)).ToListAsync();
+            return await _context.Orders.Where(x => x.DeliveryAddress.Id == addressId).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Order>> GetByStreet(string streetSubstring)
+        {
+            return await _context.Orders.Where(x => x.DeliveryAddress.Street.Contains(streetSubstring)).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Order>> GetByHouseNumber(string houseNumber)
+        {
+            return await _context.Orders.Where(x => x.DeliveryAddress.HouseNumber == houseNumber).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Order>> GetByCity(string city)
+        {
+            return await _context.Orders.Where(x => x.DeliveryAddress.City == city).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Order>> GetByPostalCode(string postalCode)
+        {
+            return await _context.Orders.Where(x => x.DeliveryAddress.PostalCode == postalCode).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Order>> GetByState(string state)
+        {
+            return await _context.Orders.Where(x => x.DeliveryAddress.State == state).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Order>> GetByLatitudeAndLongitude(double latitude, double longitude)
+        {
+            return await _context.Orders.Where(x => x.DeliveryAddress.Latitude == latitude && x.DeliveryAddress.Longitude == longitude).ToListAsync();
         }
         public async Task<IEnumerable<Order>> GetAll()
         {
@@ -75,9 +106,40 @@ namespace HyggyBackend.DAL.Repositories
         {
             var orderCollections = new List<IEnumerable<Order>>();
 
-            if (query.DeliveryAddress != null)
+
+            if (query.AddressId != null)
             {
-                orderCollections.Add(await GetByDeliveryAddressSubstring(query.DeliveryAddress));
+                orderCollections.Add(await GetByAddressId(query.AddressId.Value));
+            }
+
+            if (query.Street != null)
+            {
+                orderCollections.Add(await GetByStreet(query.Street));
+            }
+
+            if (query.HouseNumber != null)
+            {
+                orderCollections.Add(await GetByHouseNumber(query.HouseNumber));
+            }
+
+            if (query.City != null)
+            {
+                orderCollections.Add(await GetByCity(query.City));
+            }
+
+            if (query.PostalCode != null)
+            {
+                orderCollections.Add(await GetByPostalCode(query.PostalCode));
+            }
+
+            if (query.State != null)
+            {
+                orderCollections.Add(await GetByState(query.State));
+            }
+
+            if (query.Latitude != null && query.Longitude != null)
+            {
+                orderCollections.Add(await GetByLatitudeAndLongitude(query.Latitude.Value, query.Longitude.Value));
             }
 
             if (query.MaxOrderDate != null && query.MinOrderDate != null)
