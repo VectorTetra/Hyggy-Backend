@@ -8,7 +8,16 @@ namespace HyggyBackend.DAL.Queries
 {
     public class OrderQueryDAL
     {
-        public string? DeliveryAddress { get; set; }
+        public long? DeliveryAddressId { get; set; }
+        public string? Street { get; set; } // Вулиця
+        public string? HomeNumber { get; set; } // Номер будинку
+        public string? City { get; set; }
+        public string? State { get; set; }
+        public string? PostalCode { get; set; }
+
+        // Географічні координати
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
         public DateTime? MinOrderDate { get; set; }
         public DateTime? MaxOrderDate { get; set; }
         public string? Phone { get; set; }

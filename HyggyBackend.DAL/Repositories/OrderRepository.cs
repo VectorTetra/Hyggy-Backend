@@ -19,9 +19,40 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.Orders.FindAsync(id);
         }
-        public async Task<IEnumerable<Order>> GetByDeliveryAddressSubstring(string deliveryAddressSubstring)
+
+        public async Task<IEnumerable<Order>> GetByDeliveryAddressId(long deliveryAddressId)
         {
-            return await _context.Orders.Where(x => x.DeliveryAddress.Contains(deliveryAddressSubstring)).ToListAsync();
+            return await _context.Orders.Where(x => x.DeliveryAddress.Id == deliveryAddressId).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Order>> GetByStreetSubstring(string streetSubstring)
+        {
+            return await _context.Orders.Where(x => x.DeliveryAddress.Street.Contains(streetSubstring)).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Order>> GetByHomeNumberSubstring(string homeNumberSubstring)
+        {
+            return await _context.Orders.Where(x => x.DeliveryAddress.HomeNumber.Contains(homeNumberSubstring)).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Order>> GetByCitySubstring(string citySubstring)
+        {
+            return await _context.Orders.Where(x => x.DeliveryAddress.City.Contains(citySubstring)).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Order>> GetByStateSubstring(string stateSubstring)
+        {
+            return await _context.Orders.Where(x => x.DeliveryAddress.State.Contains(stateSubstring)).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Order>> GetByPostalCodeSubstring(string postalCodeSubstring)
+        {
+            return await _context.Orders.Where(x => x.DeliveryAddress.PostalCode.Contains(postalCodeSubstring)).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Order>> GetByLatitudeAndLongitude(double latitude, double longitude)
+        {
+            return await _context.Orders.Where(x => x.DeliveryAddress.Latitude == latitude && x.DeliveryAddress.Longitude == longitude).ToListAsync();
         }
         public async Task<IEnumerable<Order>> GetAll()
         {
@@ -75,9 +106,39 @@ namespace HyggyBackend.DAL.Repositories
         {
             var orderCollections = new List<IEnumerable<Order>>();
 
-            if (query.DeliveryAddress != null)
+            if (query.DeliveryAddressId != null)
             {
-                orderCollections.Add(await GetByDeliveryAddressSubstring(query.DeliveryAddress));
+                orderCollections.Add(await GetByDeliveryAddressId(query.DeliveryAddressId.Value));
+            }
+
+            if (query.Street != null)
+            {
+                orderCollections.Add(await GetByStreetSubstring(query.Street));
+            }
+
+            if (query.HomeNumber != null)
+            {
+                orderCollections.Add(await GetByHomeNumberSubstring(query.HomeNumber));
+            }
+
+            if (query.City != null)
+            {
+                orderCollections.Add(await GetByCitySubstring(query.City));
+            }
+
+            if (query.State != null)
+            {
+                orderCollections.Add(await GetByStateSubstring(query.State));
+            }
+
+            if (query.PostalCode != null)
+            {
+                orderCollections.Add(await GetByPostalCodeSubstring(query.PostalCode));
+            }
+
+            if (query.Latitude != null && query.Longitude != null)
+            {
+                orderCollections.Add(await GetByLatitudeAndLongitude(query.Latitude.Value, query.Longitude.Value));
             }
 
             if (query.MaxOrderDate != null && query.MinOrderDate != null)

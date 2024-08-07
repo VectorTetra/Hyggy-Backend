@@ -3,7 +3,8 @@
     public class Order
     {
         public long Id { get; set; }
-        public string DeliveryAddress { get; set; }
+        //public string DeliveryAddress { get; set; }
+        public Address DeliveryAddress { get; set; }
 
         // Дата замовлення дозволить відсортувати замовлення за датою,
         // а також дізнатися ціну певного товару за певний період у таблиці DateWarePrice 
