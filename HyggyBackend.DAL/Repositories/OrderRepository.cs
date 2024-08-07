@@ -20,34 +20,34 @@ namespace HyggyBackend.DAL.Repositories
             return await _context.Orders.FindAsync(id);
         }
 
-        public async Task<IEnumerable<Order>> GetByDeliveryAddressId(long deliveryAddressId)
+        public async Task<IEnumerable<Order>> GetByAddressId(long addressId)
         {
-            return await _context.Orders.Where(x => x.DeliveryAddress.Id == deliveryAddressId).ToListAsync();
+            return await _context.Orders.Where(x => x.DeliveryAddress.Id == addressId).ToListAsync();
         }
 
-        public async Task<IEnumerable<Order>> GetByStreetSubstring(string streetSubstring)
+        public async Task<IEnumerable<Order>> GetByStreet(string streetSubstring)
         {
             return await _context.Orders.Where(x => x.DeliveryAddress.Street.Contains(streetSubstring)).ToListAsync();
         }
 
-        public async Task<IEnumerable<Order>> GetByHomeNumberSubstring(string homeNumberSubstring)
+        public async Task<IEnumerable<Order>> GetByHouseNumber(string houseNumber)
         {
-            return await _context.Orders.Where(x => x.DeliveryAddress.HomeNumber.Contains(homeNumberSubstring)).ToListAsync();
+            return await _context.Orders.Where(x => x.DeliveryAddress.HouseNumber == houseNumber).ToListAsync();
         }
 
-        public async Task<IEnumerable<Order>> GetByCitySubstring(string citySubstring)
+        public async Task<IEnumerable<Order>> GetByCity(string city)
         {
-            return await _context.Orders.Where(x => x.DeliveryAddress.City.Contains(citySubstring)).ToListAsync();
+            return await _context.Orders.Where(x => x.DeliveryAddress.City == city).ToListAsync();
         }
 
-        public async Task<IEnumerable<Order>> GetByStateSubstring(string stateSubstring)
+        public async Task<IEnumerable<Order>> GetByPostalCode(string postalCode)
         {
-            return await _context.Orders.Where(x => x.DeliveryAddress.State.Contains(stateSubstring)).ToListAsync();
+            return await _context.Orders.Where(x => x.DeliveryAddress.PostalCode == postalCode).ToListAsync();
         }
 
-        public async Task<IEnumerable<Order>> GetByPostalCodeSubstring(string postalCodeSubstring)
+        public async Task<IEnumerable<Order>> GetByState(string state)
         {
-            return await _context.Orders.Where(x => x.DeliveryAddress.PostalCode.Contains(postalCodeSubstring)).ToListAsync();
+            return await _context.Orders.Where(x => x.DeliveryAddress.State == state).ToListAsync();
         }
 
         public async Task<IEnumerable<Order>> GetByLatitudeAndLongitude(double latitude, double longitude)
@@ -106,34 +106,35 @@ namespace HyggyBackend.DAL.Repositories
         {
             var orderCollections = new List<IEnumerable<Order>>();
 
-            if (query.DeliveryAddressId != null)
+
+            if (query.AddressId != null)
             {
-                orderCollections.Add(await GetByDeliveryAddressId(query.DeliveryAddressId.Value));
+                orderCollections.Add(await GetByAddressId(query.AddressId.Value));
             }
 
             if (query.Street != null)
             {
-                orderCollections.Add(await GetByStreetSubstring(query.Street));
+                orderCollections.Add(await GetByStreet(query.Street));
             }
 
-            if (query.HomeNumber != null)
+            if (query.HouseNumber != null)
             {
-                orderCollections.Add(await GetByHomeNumberSubstring(query.HomeNumber));
+                orderCollections.Add(await GetByHouseNumber(query.HouseNumber));
             }
 
             if (query.City != null)
             {
-                orderCollections.Add(await GetByCitySubstring(query.City));
-            }
-
-            if (query.State != null)
-            {
-                orderCollections.Add(await GetByStateSubstring(query.State));
+                orderCollections.Add(await GetByCity(query.City));
             }
 
             if (query.PostalCode != null)
             {
-                orderCollections.Add(await GetByPostalCodeSubstring(query.PostalCode));
+                orderCollections.Add(await GetByPostalCode(query.PostalCode));
+            }
+
+            if (query.State != null)
+            {
+                orderCollections.Add(await GetByState(query.State));
             }
 
             if (query.Latitude != null && query.Longitude != null)

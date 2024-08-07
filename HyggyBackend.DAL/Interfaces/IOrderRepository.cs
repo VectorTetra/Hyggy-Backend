@@ -11,12 +11,13 @@ namespace HyggyBackend.DAL.Interfaces
     public interface IOrderRepository
     {
         Task<Order?> GetById(long id);
-        Task<IEnumerable<Order>> GetByDeliveryAddressId(long deliveryAddressId);
-        Task<IEnumerable<Order>> GetByStreetSubstring(string streetSubstring);
-        Task<IEnumerable<Order>> GetByHomeNumberSubstring(string homeNumberSubstring);
-        Task<IEnumerable<Order>> GetByCitySubstring(string citySubstring);
-        Task<IEnumerable<Order>> GetByStateSubstring(string stateSubstring);
-        Task<IEnumerable<Order>> GetByPostalCodeSubstring(string postalCodeSubstring);
+        //Task<IEnumerable<Order>> GetByDeliveryAddressSubstring(string deliveryAddressSubstring);
+        Task<IEnumerable<Order>> GetByAddressId(long addressId);
+        Task<IEnumerable<Order>> GetByStreet(string streetSubstring);
+        Task<IEnumerable<Order>> GetByHouseNumber(string houseNumber);
+        Task<IEnumerable<Order>> GetByCity(string city);
+        Task<IEnumerable<Order>> GetByPostalCode(string postalCode);
+        Task<IEnumerable<Order>> GetByState(string state);
         Task<IEnumerable<Order>> GetByLatitudeAndLongitude(double latitude, double longitude);
         Task<IEnumerable<Order>> GetAll();
         Task<IEnumerable<Order>> GetByOrderDateRange(DateTime minOrderDate, DateTime maxOrderDate);
