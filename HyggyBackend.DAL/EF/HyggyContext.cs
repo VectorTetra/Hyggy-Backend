@@ -16,6 +16,7 @@ namespace HyggyBackend.DAL.EF
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<OrderStatus> OrderStatuses { get; set; }
+        public DbSet<Proffession> Proffessions { get; set; }
         public DbSet<Shop> Shops { get; set; }
         public DbSet<Storage> Storages { get; set; }
         public DbSet<Ware> Wares { get; set; }
