@@ -58,7 +58,7 @@ namespace HyggyBackend.DAL.Repositories
 
 			if(query.State != null)
 				shopCollections.Add(await GetByState(query.State));
-
+			 
 			return shopCollections.Aggregate((prev, next) => prev.Intersect(next));
 		}
 		public async Task Create(Shop shop)

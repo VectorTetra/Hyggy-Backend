@@ -9,6 +9,7 @@ namespace HyggyBackend.BLL.Infrastructure
         public static void AddUnitOfWorkService(this IServiceCollection services)
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         }
     }
 }

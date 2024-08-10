@@ -6,8 +6,8 @@ namespace HyggyBackend.DAL.Entities
 	{
         public long Id { get; set; }
         public string PhotoUrl { get; set; } = String.Empty;
-        public virtual Address Address { get; set; }
         public string WorkHours { get; set; } = String.Empty;
+        public virtual Address Address { get; set; }
         public virtual Storage Storage { get; set; }
 		public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
