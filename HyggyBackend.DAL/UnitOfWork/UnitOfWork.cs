@@ -13,6 +13,7 @@ namespace HyggyBackend.DAL.UnitOfWork
     {
         private readonly HyggyContext _context;
         private IWareRepository _wares;
+        private IShopRepository _shops;
         //private IEmailRepository _emails;
         //private IPhoneRepository _phones;
         //private IPersonRepository _persons;
@@ -57,7 +58,15 @@ namespace HyggyBackend.DAL.UnitOfWork
                 return _wares;
             }
         }
-
+        public IShopRepository Shops
+        {
+            get
+            {
+                if(_shops == null)
+                    _shops = new ShopRepository(_context);
+                return _shops;
+            }
+        }
         //public IContinentRepository Continents
         //{
         //    get
