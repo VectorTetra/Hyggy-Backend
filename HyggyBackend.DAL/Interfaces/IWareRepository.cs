@@ -7,7 +7,7 @@ namespace HyggyBackend.DAL.Interfaces
     {
         Task<Ware?> GetById(long id);
         Task<Ware?> GetByArticle(long article);
-        Task<IEnumerable<Ware>> GetAll();
+        Task<IEnumerable<Ware>> GetPagedWares(int pageNumber, int pageSize);
         Task<IEnumerable<Ware>> GetByCategory1Id(long category1Id);
         Task<IEnumerable<Ware>> GetByCategory2Id(long category2Id);
         Task<IEnumerable<Ware>> GetByCategory3Id(long category3Id);

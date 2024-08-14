@@ -17,8 +17,8 @@ namespace HyggyBackend.DAL.Entities
         public float Discount { get; set; }
         public bool IsDeliveryAvailable { get; set; }
         public virtual WareStatus Status { get; set; }
-        public virtual ICollection<WareImage> Images { get; set; }
-        public virtual ICollection<OrderItem> OrderItems { get; set; }
+        public virtual ICollection<WareImage> Images { get; set; } = new List<WareImage>();
+        public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
         public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType())

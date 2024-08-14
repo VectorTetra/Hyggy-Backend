@@ -7,7 +7,7 @@ namespace HyggyBackend.BLL.Interfaces
     {
         Task<WareDTO?> GetById(long id);
         Task<WareDTO?> GetByArticle(long article);
-        Task<IEnumerable<WareDTO>> GetAll();
+        Task<IEnumerable<WareDTO>> GetPagedWares(int pageNumber, int pageSize);
         Task<IEnumerable<WareDTO>> GetByCategory1Id(long category1Id);
         Task<IEnumerable<WareDTO>> GetByCategory2Id(long category2Id);
         Task<IEnumerable<WareDTO>> GetByCategory3Id(long category3Id);
@@ -24,8 +24,8 @@ namespace HyggyBackend.BLL.Interfaces
         Task<IEnumerable<WareDTO>> GetByStatusDescriptionSubstring(string statusDescriptionSubstring);
         Task<IEnumerable<WareDTO>> GetByImagePathSubstring(string imagePathSubstring);
         Task<IEnumerable<WareDTO>> GetByQuery(WareQueryBLL queryDAL);
-        Task Create(WareDTO ware);
-        Task Update(WareDTO ware);
-        Task Delete(long id);
+        Task<WareDTO> Create(WareDTO ware);
+        Task<WareDTO> Update(WareDTO ware);
+        Task<WareDTO> Delete(long id);
     }
 }

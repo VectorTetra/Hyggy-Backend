@@ -54,9 +54,12 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.Orders.Where(x => x.DeliveryAddress.Latitude == latitude && x.DeliveryAddress.Longitude == longitude).ToListAsync();
         }
-        public async Task<IEnumerable<Order>> GetAll()
+        public async Task<IEnumerable<Order>> GetPagedOrders(int pageNumber, int pageSize)
         {
-            return await _context.Orders.ToListAsync();
+            return await _context.Orders
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
         }
         public async Task<IEnumerable<Order>> GetByOrderDateRange(DateTime minOrderDate, DateTime maxOrderDate)
         {

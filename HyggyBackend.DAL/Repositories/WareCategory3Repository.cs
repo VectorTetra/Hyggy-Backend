@@ -18,6 +18,13 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.WareCategories3.FindAsync(id);
         }
+
+        public async Task<IEnumerable<WareCategory3>> GetPagedCategories(int pageNumber, int pageSize)
+        {
+            return _context.WareCategories3
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize);
+        }
         public async Task<IEnumerable<WareCategory3>> GetByNameSubstring(string nameSubstring)
         {
             return _context.WareCategories3.Where(x => x.Name.Contains(nameSubstring));

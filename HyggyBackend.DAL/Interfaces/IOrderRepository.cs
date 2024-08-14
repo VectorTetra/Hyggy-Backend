@@ -18,7 +18,7 @@ namespace HyggyBackend.DAL.Interfaces
         Task<IEnumerable<Order>> GetByPostalCode(string postalCode);
         Task<IEnumerable<Order>> GetByState(string state);
         Task<IEnumerable<Order>> GetByLatitudeAndLongitude(double latitude, double longitude);
-        Task<IEnumerable<Order>> GetAll();
+        Task<IEnumerable<Order>> GetPagedOrders(int pageNumber, int pageSize);
         Task<IEnumerable<Order>> GetByOrderDateRange(DateTime minOrderDate, DateTime maxOrderDate);
         Task<IEnumerable<Order>> GetByPhoneSubstring(string phoneSubstring);
         Task<IEnumerable<Order>> GetByCommentSubstring(string commentSubstring);
