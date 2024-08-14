@@ -200,9 +200,19 @@ namespace HyggyBackend.DAL.Repositories
                 orderCollections.Add(await GetByShopId(query.ShopId.Value));
             }
 
+            if (!orderCollections.Any())
+            {
+                return new List<Order>();
+            }
+
+            if(query.PageNumber != null && query.PageSize != null)
+            {
+                return orderCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList())
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value);
+            }
+
             return orderCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
-
-
 
         }
         public async Task Create(Order order)

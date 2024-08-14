@@ -36,15 +36,15 @@ namespace HyggyBackend.DAL.Repositories
         }
         public async Task<IEnumerable<Ware>> GetByCategory1Id(long category1Id)
         {
-            return await _context.Wares.Where(x => x.Category3.WareCategory2.WareCategory1.Id == category1Id).ToListAsync();
+            return await _context.Wares.Where(x => x.WareCategory3.WareCategory2.WareCategory1.Id == category1Id).ToListAsync();
         }
         public async Task<IEnumerable<Ware>> GetByCategory2Id(long category2Id)
         {
-            return await _context.Wares.Where(x => x.Category3.WareCategory2.Id == category2Id).ToListAsync();
+            return await _context.Wares.Where(x => x.WareCategory3.WareCategory2.Id == category2Id).ToListAsync();
         }
         public async Task<IEnumerable<Ware>> GetByCategory3Id(long category3Id)
         {
-            return await _context.Wares.Where(x => x.Category3.Id == category3Id).ToListAsync();
+            return await _context.Wares.Where(x => x.WareCategory3.Id == category3Id).ToListAsync();
         }
         public async Task<IEnumerable<Ware>> GetByNameSubstring(string nameSubstring)
         {
@@ -56,15 +56,15 @@ namespace HyggyBackend.DAL.Repositories
         }
         public async Task<IEnumerable<Ware>> GetByCategory1NameSubstring(string category1NameSubstring)
         {
-            return await _context.Wares.Where(x => x.Category3.WareCategory2.WareCategory1.Name.Contains(category1NameSubstring)).ToListAsync();
+            return await _context.Wares.Where(x => x.WareCategory3.WareCategory2.WareCategory1.Name.Contains(category1NameSubstring)).ToListAsync();
         }
         public async Task<IEnumerable<Ware>> GetByCategory2NameSubstring(string category2NameSubstring)
         {
-            return await _context.Wares.Where(x => x.Category3.WareCategory2.Name.Contains(category2NameSubstring)).ToListAsync();
+            return await _context.Wares.Where(x => x.WareCategory3.WareCategory2.Name.Contains(category2NameSubstring)).ToListAsync();
         }
         public async Task<IEnumerable<Ware>> GetByCategory3NameSubstring(string category3NameSubstring)
         {
-            return await _context.Wares.Where(x => x.Category3.Name.Contains(category3NameSubstring)).ToListAsync();
+            return await _context.Wares.Where(x => x.WareCategory3.Name.Contains(category3NameSubstring)).ToListAsync();
         }
         public async Task<IEnumerable<Ware>> GetByPriceRange(float minPrice, float maxPrice)
         {

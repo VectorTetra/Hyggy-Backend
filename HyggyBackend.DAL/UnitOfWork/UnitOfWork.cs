@@ -13,6 +13,7 @@ namespace HyggyBackend.DAL.UnitOfWork
     {
         private readonly HyggyContext _context;
         private IWareRepository _wares;
+        private IOrderRepository _orders;
         //private IEmailRepository _emails;
         //private IPhoneRepository _phones;
         //private IPersonRepository _persons;
@@ -55,6 +56,16 @@ namespace HyggyBackend.DAL.UnitOfWork
                 if (_wares == null)
                     _wares = new WareRepository(_context);
                 return _wares;
+            }
+        }
+
+        public IOrderRepository Orders
+        {
+            get
+            {
+                if (_orders == null)
+                    _orders = new OrderRepository(_context);
+                return _orders;
             }
         }
 

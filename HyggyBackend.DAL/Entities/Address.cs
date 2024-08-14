@@ -34,6 +34,7 @@ namespace HyggyBackend.DAL.Entities
         // Замовлення
 
         public virtual ICollection<Order> Orders { get; set; }  
+        public virtual Storage? Storage { get; set; }  
     }
 
 }

@@ -13,7 +13,6 @@ namespace HyggyBackend.BLL.Interfaces
         Task<IEnumerable<OrderDTO>> GetByPostalCode(string postalCode);
         Task<IEnumerable<OrderDTO>> GetByState(string state);
         Task<IEnumerable<OrderDTO>> GetByLatitudeAndLongitude(double latitude, double longitude);
-        Task<IEnumerable<OrderDTO>> GetAll();
         Task<IEnumerable<OrderDTO>> GetByOrderDateRange(DateTime minOrderDate, DateTime maxOrderDate);
         Task<IEnumerable<OrderDTO>> GetByPhoneSubstring(string phoneSubstring);
         Task<IEnumerable<OrderDTO>> GetByCommentSubstring(string commentSubstring);
@@ -26,8 +25,8 @@ namespace HyggyBackend.BLL.Interfaces
         Task<IEnumerable<OrderDTO>> GetByCustomerId(long customerId);
         Task<IEnumerable<OrderDTO>> GetByShopId(long shopId);
         Task<IEnumerable<OrderDTO>> GetByQuery(OrderQueryBLL query);
-        Task Create(OrderDTO order);
-        Task Update(OrderDTO order);
-        Task Delete(long id);
+        Task<OrderDTO> Create(OrderDTO order);
+        Task<OrderDTO> Update(OrderDTO order);
+        Task<OrderDTO> Delete(long id);
     }
 }

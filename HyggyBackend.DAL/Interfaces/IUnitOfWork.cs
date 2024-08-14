@@ -13,6 +13,7 @@ namespace HyggyBackend.DAL.Interfaces
     {
        
         IWareRepository Wares { get; }
+        IOrderRepository Orders { get; }
         //IHotelRepository Hotels { get; }
         //IRoomRepository Rooms { get; }
         //IRoomTypeRepository RoomTypes { get; }
