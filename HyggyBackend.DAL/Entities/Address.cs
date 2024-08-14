@@ -38,4 +38,5 @@ namespace HyggyBackend.DAL.Entities
         //Адреса магазину
         public virtual Shop Shop { get; set; }
     }
+
 }

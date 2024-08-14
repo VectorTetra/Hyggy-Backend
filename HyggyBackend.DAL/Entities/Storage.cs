@@ -4,7 +4,10 @@
 	{
 		public long Id { get; set; }
 
-		public override bool Equals(object obj)
+		public virtual Shop? Shop { get; set; }
+
+		public virtual Address? Address { get; set; }
+        public override bool Equals(object obj)
 		{
 			if (obj == null || GetType() != obj.GetType())
 			{

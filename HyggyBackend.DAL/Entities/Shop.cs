@@ -10,6 +10,8 @@ namespace HyggyBackend.DAL.Entities
         public virtual Address Address { get; set; }
         public virtual Storage Storage { get; set; }
 		public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+        public Storage Storage { get; set; }
+		public ICollection<Order> Orders { get; set; } = new List<Order>();
 
 
         public override bool Equals(object obj)
