@@ -11,6 +11,8 @@ namespace HyggyBackend.DAL.Interfaces
     public interface IWareCategory2Repository
     {
         Task<WareCategory2?> GetById(long id);
+
+        Task<IEnumerable<WareCategory2>> GetPagedCategories(int pageNumber, int pageSize);
         Task<IEnumerable<WareCategory2>> GetByNameSubstring(string nameSubstring);
         Task<IEnumerable<WareCategory2>> GetByJSONStructureFilePathSubstring(string JSONStructureFilePathSubstring);
         Task<IEnumerable<WareCategory2>> GetByWareCategory1Id(long id);

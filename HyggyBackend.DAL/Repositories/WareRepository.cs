@@ -27,9 +27,12 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.Wares.FirstOrDefaultAsync(x => x.Article == article);
         }
-        public async Task<IEnumerable<Ware>> GetAll()
+        public async Task<IEnumerable<Ware>> GetPagedWares(int pageNumber, int pageSize)
         {
-            return await _context.Wares.ToListAsync();
+            return await _context.Wares
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
         }
         public async Task<IEnumerable<Ware>> GetByCategory1Id(long category1Id)
         {
@@ -191,6 +194,12 @@ namespace HyggyBackend.DAL.Repositories
                 return new List<Ware>();
             }
 
+            if (queryDAL.PageNumber != null && queryDAL.PageSize!= null)
+            {
+                return wareCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList())
+                    .Skip((queryDAL.PageNumber.Value - 1) * queryDAL.PageSize.Value)
+                    .Take(queryDAL.PageSize.Value);
+            }
             return wareCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
         }
         public async Task Create(Ware ware)

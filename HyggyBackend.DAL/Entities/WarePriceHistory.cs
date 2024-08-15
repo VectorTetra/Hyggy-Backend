@@ -8,6 +8,7 @@ namespace HyggyBackend.DAL.Entities
     {
         public long Id { get; set; }
         public long WareId { get; set; }
+        public Ware Ware { get; set; }
         public decimal Price { get; set; }
         public DateTime EffectiveDate { get; set; } // Дата початку дії ціни
 

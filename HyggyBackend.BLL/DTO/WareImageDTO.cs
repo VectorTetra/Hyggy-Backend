@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HyggyBackend.DAL.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,5 +10,7 @@ namespace HyggyBackend.BLL.DTO
     public class WareImageDTO
     {
         public long Id { get; set; }
+        public string Path { get; set; }
+        public Ware Ware { get; set; }
     }
 }

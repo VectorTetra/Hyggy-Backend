@@ -19,6 +19,5 @@ namespace HyggyBackend.BLL.DTO
         public bool IsDeliveryAvailable { get; set; }
         public WareStatusDTO Status { get; set; }
         public ICollection<WareImageDTO> Images { get; set; }
-        public ICollection<OrderItemDTO> OrderItems { get; set; }
     }
 }
