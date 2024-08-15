@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using HyggyBackend.BLL.Interfaces;
+using HyggyBackend.BLL.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +17,7 @@ string? connection = builder.Configuration.GetConnectionString("DefaultConnectio
 builder.Services.AddControllers();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddHyggyContext(connection);
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(opt =>
 {
