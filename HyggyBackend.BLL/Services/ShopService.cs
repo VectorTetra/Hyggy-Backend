@@ -23,7 +23,12 @@ namespace HyggyBackend.BLL.Services
 		{
 			throw new NotImplementedException();
 		}
+		public async Task<IEnumerable<ShopDTO>> GetPaginatedShops(int? page)
+		{
+			var paginatedShops = await Database.Shops.GetPaginatedShops(page);
 
+			return _mapper.Map<IEnumerable<Shop>, IEnumerable<ShopDTO>>(paginatedShops);
+		}
 		public async Task<ShopDTO?> GetByAddressId(long addressId)
 		{
 			var shop = await Database.Shops.GetByAddressId(addressId);

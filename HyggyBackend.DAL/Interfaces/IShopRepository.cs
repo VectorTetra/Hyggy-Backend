@@ -11,6 +11,7 @@ namespace HyggyBackend.DAL.Interfaces
 		Task<Shop?> GetByLatitudeAndLongitude(double latitude, double longitude);
 
 		Task<IEnumerable<Shop>> GetAll();
+		Task<IEnumerable<Shop>> GetPaginatedShops(int? pageNumber);
 		Task<IEnumerable<Shop>> GetByCity(string city); 
 		Task<IEnumerable<Shop>> GetByPostalCode(string postalCode);
 		Task<IEnumerable<Shop>> GetByState(string state);

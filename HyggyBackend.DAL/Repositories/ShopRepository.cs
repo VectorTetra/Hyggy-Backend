@@ -34,6 +34,15 @@ namespace HyggyBackend.DAL.Repositories
 		{
 			return await _context.Shops.ToListAsync();
 		}
+		public async Task<IEnumerable<Shop>> GetPaginatedShops(int? pageNumber)
+		{
+			const int pageSize = 10;
+			var shops = await _context.Shops.ToListAsync();
+			var paginatedShops = shops.Skip((pageNumber ?? 0) * pageSize)
+				.Take(pageSize).ToList();
+
+			return paginatedShops;
+		}
 		public async Task<IEnumerable<Shop>> GetByCity(string city)
 		{
 			return await _context.Shops.Where(s => s.Address.City == city).ToListAsync();

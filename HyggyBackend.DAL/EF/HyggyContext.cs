@@ -1,4 +1,5 @@
 ﻿using HyggyBackend.DAL.Entities;
+using HyggyBackend.DAL.Entities.Employes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
@@ -26,6 +27,8 @@ namespace HyggyBackend.DAL.EF
         public DbSet<WareImage> WareImages { get; set; }
         public DbSet<WarePriceHistory> WarePriceHistories { get; set; }
         public DbSet<WareStatus> WareStatuses { get; set; }
+        public DbSet<ShopEmployee> ShopEmployees { get; set; }
+        public DbSet<StorageEmployee> StorageEmployees { get; set; }
 
     }
     // Класс необходим исключительно для миграций

@@ -12,6 +12,7 @@ namespace HyggyBackend.BLL.Interfaces
 		Task<ShopDTO?> GetByLatitudeAndLongitude(double latitude, double longitude);
 
 		Task<IEnumerable<ShopDTO>> GetAll();
+		Task<IEnumerable<ShopDTO>> GetPaginatedShops(int? page);
 		Task<IEnumerable<ShopDTO>> GetByCity(string city);
 		Task<IEnumerable<ShopDTO>> GetByPostalCode(string postalCode);
 		Task<IEnumerable<ShopDTO>> GetByState(string state);
