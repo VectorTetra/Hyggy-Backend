@@ -18,6 +18,7 @@ namespace HyggyBackend.DAL.UnitOfWork
         private IShopRepository _shops;
 		private ShopEmployeeRepository _shopEmployees;
 		private StorageEmployeeRepository _storageEmployees;
+        private IProffessionRepository _proffessions;
         //private IEmailRepository _emails;
         //private IPhoneRepository _phones;
         //private IPersonRepository _persons;
@@ -90,60 +91,70 @@ namespace HyggyBackend.DAL.UnitOfWork
 			}
 		}
 
-		//public IContinentRepository Continents
-		//{
-		//    get
-		//    {
-		//        if (_continents == null)
-		//            _continents = new ContinentRepository(_context);
-		//        return _continents;
-		//    }
-		//}
-		//public ITouragencyEmployeeRepository TouragencyEmployees
-		//{
-		//    get
-		//    {
-		//        if (_employee == null)
-		//            _employee = new TouragencyEmployeeRepository(_context);
-		//        return _employee;
-		//    }
-		//}
-		//public ITouragencyAccountRoleRepository TouragencyAccountRoles
-		//{
-		//    get
-		//    {
-		//        if (_role == null)
-		//            _role = new TouragencyAccountRoleRepository(_context);
-		//        return _role;
-		//    }
-		//}
-		//public ITouragencyAccountRepository TouragencyAccounts
-		//{
-		//    get
-		//    {
-		//        if (_account == null)
-		//            _account = new TouragencyAccountRepository(_context);
-		//        return _account;
-		//    }
-		//}
-		//public ITourImageRepository TourImages
-		//{
-		//    get
-		//    {
-		//        if (_tourImages == null)
-		//            _tourImages = new TourImageRepository(_context);
-		//        return _tourImages;
-		//    }
-		//}
-		//public IHotelImageRepository HotelImages
-		//{
-		//    get
-		//    {
-		//        if (_hotelImages == null)
-		//            _hotelImages = new HotelImageRepository(_context);
-		//        return _hotelImages;
-		//    }
-		//}
+        public IProffessionRepository Proffessions
+        {
+            get
+            {
+                if (_proffessions == null)
+                    _proffessions = new ProffessionRepository(_context);
+                return _proffessions;
+            }
+        }
+
+        //public IContinentRepository Continents
+        //{
+        //    get
+        //    {
+        //        if (_continents == null)
+        //            _continents = new ContinentRepository(_context);
+        //        return _continents;
+        //    }
+        //}
+        //public ITouragencyEmployeeRepository TouragencyEmployees
+        //{
+        //    get
+        //    {
+        //        if (_employee == null)
+        //            _employee = new TouragencyEmployeeRepository(_context);
+        //        return _employee;
+        //    }
+        //}
+        //public ITouragencyAccountRoleRepository TouragencyAccountRoles
+        //{
+        //    get
+        //    {
+        //        if (_role == null)
+        //            _role = new TouragencyAccountRoleRepository(_context);
+        //        return _role;
+        //    }
+        //}
+        //public ITouragencyAccountRepository TouragencyAccounts
+        //{
+        //    get
+        //    {
+        //        if (_account == null)
+        //            _account = new TouragencyAccountRepository(_context);
+        //        return _account;
+        //    }
+        //}
+        //public ITourImageRepository TourImages
+        //{
+        //    get
+        //    {
+        //        if (_tourImages == null)
+        //            _tourImages = new TourImageRepository(_context);
+        //        return _tourImages;
+        //    }
+        //}
+        //public IHotelImageRepository HotelImages
+        //{
+        //    get
+        //    {
+        //        if (_hotelImages == null)
+        //            _hotelImages = new HotelImageRepository(_context);
+        //        return _hotelImages;
+        //    }
+        //}
 
 		//public IHotelServiceRepository HotelServices
 		//{

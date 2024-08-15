@@ -1,4 +1,5 @@
 ﻿using HyggyBackend.DAL.Entities;
+using HyggyBackend.DAL.Queries;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,14 @@ namespace HyggyBackend.DAL.Interfaces
 {
     public interface IProffessionRepository
     {
-        IEnumerable<Proffession> GetAllProffessions();
-        Proffession GetProffessionById(long id);
-        void AddProffession(Proffession proffession);
-        void UpdateProffession(Proffession proffession);
-        void DeleteProffession(long id);
+        Task<Proffession?> GetById(long id);
+
+        Task<IEnumerable<Proffession>> GetAll();
+        Task<IEnumerable<Proffession>> GetByName(string name);
+        Task<IEnumerable<Proffession>> GetByQuery(ProffessionQueryDAL proffessionDAL);
+
+        Task Create(Proffession proffession);
+        void Update(Proffession proffession);
+        Task Delete(long id);
     }
 }

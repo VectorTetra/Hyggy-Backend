@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using HyggyBackend.DAL.Queries;
+
 
 namespace HyggyBackend.DAL.Repositories
 {
@@ -18,35 +21,54 @@ namespace HyggyBackend.DAL.Repositories
             _context = context;
         }
 
-        public IEnumerable<Proffession> GetAllProffessions()
+        public async Task<Proffession?> GetById(long id)
         {
-            return _context.Proffessions.ToList();
+            return await _context.Proffessions.FindAsync(id);
         }
 
-        public Proffession GetProffessionById(long id)
+        public async Task<IEnumerable<Proffession>> GetAll()
         {
-            return _context.Proffessions.Find(id);
+            return await _context.Proffessions.ToListAsync();
         }
 
-        public void AddProffession(Proffession proffession)
+        public async Task<IEnumerable<Proffession>> GetByName(string name)
         {
-            _context.Proffessions.Add(proffession);
-            _context.SaveChanges();
+            return await _context.Proffessions.Where(x => x.Name.Contains(name)).ToListAsync();
         }
 
-        public void UpdateProffession(Proffession proffession)
+        public async Task<IEnumerable<Proffession>> GetByQuery(ProffessionQueryDAL queryDAL)
         {
-            _context.Proffessions.Update(proffession);
-            _context.SaveChanges();
+            var proffessionCollections = new List<IEnumerable<Proffession>>();
+
+            if (queryDAL.Name != null)
+            {
+                proffessionCollections.Add(await GetByName(queryDAL.Name));
+            }
+
+            if (!proffessionCollections.Any())
+            {
+                return new List<Proffession>();
+            }
+
+            return proffessionCollections.Aggregate((prev, next) => prev.Intersect(next).ToList());
         }
 
-        public void DeleteProffession(long id)
+        public async Task Create(Proffession proffession)
         {
-            var proffession = _context.Proffessions.Find(id);
+            await _context.Proffessions.AddAsync(proffession);
+        }
+
+        public void Update(Proffession proffession)
+        {
+            _context.Entry(proffession).State = EntityState.Modified;
+        }
+
+        public async Task Delete(long id)
+        {
+            var proffession = await GetById(id);
             if (proffession != null)
             {
                 _context.Proffessions.Remove(proffession);
-                _context.SaveChanges();
             }
         }
     }
