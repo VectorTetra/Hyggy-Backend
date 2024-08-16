@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using HyggyBackend.BLL.DTO;
+using HyggyBackend.BLL.DTO.EmployeesDTO;
 using HyggyBackend.DAL.Entities;
+using HyggyBackend.DAL.Entities.Employes;
 
 namespace HyggyBackend.BLL.Helper
 {
@@ -18,7 +20,11 @@ namespace HyggyBackend.BLL.Helper
 				.ForMember(dest => dest.Address, opts => opts.MapFrom(src => src.Address))
 				.ForMember(dest => dest.Orders, opts => opts.MapFrom(src => src.Orders)); ;
 
-           
+            CreateMap<ShopEmployeeDTO, ShopEmployee>();
+            CreateMap<ShopEmployee, ShopEmployeeDTO>();
+
+			CreateMap<StorageEmployee, StorageEmployeeDTO>();
+			CreateMap<StorageEmployeeDTO, StorageEmployee>();
 		}
     }
 }

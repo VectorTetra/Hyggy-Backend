@@ -33,25 +33,26 @@ namespace HyggyBackend.DAL.EF
         public DbSet<ShopEmployee> ShopEmployees { get; set; }
         public DbSet<StorageEmployee> StorageEmployees { get; set; }
 
-    public class SampleContextFactory : IDesignTimeDbContextFactory<HyggyContext>
-    {
-        public HyggyContext CreateDbContext(string[] args)
+        public class SampleContextFactory : IDesignTimeDbContextFactory<HyggyContext>
         {
-            var optionsBuilder = new DbContextOptionsBuilder<HyggyContext>();
+            public HyggyContext CreateDbContext(string[] args)
+            {
+                var optionsBuilder = new DbContextOptionsBuilder<HyggyContext>();
 
-            // отримуємо конфігурацію з файлу appsettings.json
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json");
+                // отримуємо конфігурацію з файлу appsettings.json
+                var builder = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json");
 
-            IConfigurationRoot config = builder.Build();
+                IConfigurationRoot config = builder.Build();
 
-            // отримуємо рядок підключення з файлу appsettings.json
-            string connectionString = config.GetConnectionString("DefaultConnection");
-            optionsBuilder.UseSqlServer(connectionString)
-                .UseLazyLoadingProxies();
+                // отримуємо рядок підключення з файлу appsettings.json
+                string connectionString = config.GetConnectionString("DefaultConnection");
+                optionsBuilder.UseSqlServer(connectionString)
+                    .UseLazyLoadingProxies();
 
-            return new HyggyContext(optionsBuilder.Options);
+                return new HyggyContext(optionsBuilder.Options);
+            }
         }
     }
 }
