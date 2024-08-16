@@ -18,6 +18,7 @@ builder.Services.AddControllers();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddHyggyContext(connection);
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IWareService, WareService>();
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(opt =>
 {

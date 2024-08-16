@@ -47,13 +47,26 @@ namespace HyggyBackend.Controllers
             .ForMember(dest => dest.ShopId, opt => opt.MapFrom(src => src.ShopId));
         });
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<OrderDTO>>> GetTourNames([FromQuery] OrderQueryPL orderQueryPL)
+        public async Task<ActionResult<IEnumerable<OrderDTO>>> GetOrders([FromQuery] OrderQueryPL orderQueryPL)
         {
             try
             {
                 IEnumerable<OrderDTO> collection = null;
                 switch (orderQueryPL.SearchParameter)
                 {
+
+                    case "GetById":
+                        {
+                            if (orderQueryPL.Id == null)
+                            {
+                                throw new ValidationException("Не вказано Order.Id для пошуку!", nameof(OrderQueryPL.Id));
+                            }
+                            else
+                            {
+                                collection = new List<OrderDTO> { await _serv.GetById((long)orderQueryPL.Id) };
+                            }
+                        }
+                        break;
 
                     case "GetByAddressId":
                         {
@@ -289,7 +302,7 @@ namespace HyggyBackend.Controllers
                         }
                         break;
 
-                    case "GetBySearch":
+                    case "GetByQuery":
                         {
                             var mapper = new Mapper(config);
                             var orderQueryBLL = mapper.Map<OrderQueryBLL>(orderQueryPL);
@@ -364,16 +377,12 @@ namespace HyggyBackend.Controllers
         }
 
         [HttpDelete]
-        public async Task<ActionResult<OrderDTO>> DeleteOrder([FromBody] OrderDTO order)
+        public async Task<ActionResult<OrderDTO>> DeleteOrder(long id)
         {
             try
             {
-                if (order == null)
-                {
-                    throw new ValidationException("Не вказано Order для видалення!", nameof(OrderDTO));
-                }
-                var deletedOrder = await _serv.Delete(order.Id);
-                return deletedOrder;
+                var deletedOrder = await _serv.Delete(id);
+                return Ok(deletedOrder);
             }
             catch (ValidationException ex)
             {
@@ -393,6 +402,7 @@ namespace HyggyBackend.Controllers
     {
         public string? SearchParameter { get; set; } // Вибраний критерій пошуку
 
+        public long? Id;
         public long? AddressId;
 
         // Адреса доставки, розділена на компоненти

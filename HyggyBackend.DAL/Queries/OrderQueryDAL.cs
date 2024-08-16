@@ -10,6 +10,7 @@ namespace HyggyBackend.DAL.Queries
     {
         //public string? DeliveryAddress { get; set; }
 
+        public long? Id;
         public long? AddressId;
 
         // Адреса доставки, розділена на компоненти

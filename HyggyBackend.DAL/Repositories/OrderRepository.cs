@@ -109,6 +109,10 @@ namespace HyggyBackend.DAL.Repositories
         {
             var orderCollections = new List<IEnumerable<Order>>();
 
+            if (query.Id != null)
+            {
+                orderCollections.Add(new List<Order> { await GetById(query.Id.Value) });
+            }
 
             if (query.AddressId != null)
             {

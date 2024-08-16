@@ -10,6 +10,8 @@ namespace HyggyBackend.DAL.Queries
     {
         public int? PageNumber { get; set; }
         public int? PageSize { get; set; }
+        public long? Id { get; set; }
+        public long? Article { get; set; }
         public long? Category1Id { get; set; }
         public long? Category2Id { get; set; }
         public long? Category3Id { get; set; }

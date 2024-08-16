@@ -114,6 +114,16 @@ namespace HyggyBackend.DAL.Repositories
         {
             var wareCollections = new List<IEnumerable<Ware>>();
 
+            if (queryDAL.Id != null)
+            {
+                wareCollections.Add(new List<Ware> { await GetById(queryDAL.Id.Value) });
+            }
+
+            if (queryDAL.Article != null)
+            {
+                wareCollections.Add(new List<Ware> { await GetByArticle(queryDAL.Article.Value) });
+            }
+
             if (queryDAL.Category1Id != null)
             {
                 wareCollections.Add(await GetByCategory1Id(queryDAL.Category1Id.Value));
