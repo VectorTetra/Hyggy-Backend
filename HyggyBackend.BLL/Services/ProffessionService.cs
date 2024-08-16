@@ -24,6 +24,7 @@ namespace HyggyBackend.BLL.Services
         cfg.CreateMap<Proffession, ProffessionDTO>()
         .ForMember("Id", opt => opt.MapFrom(c => c.Id))
         .ForMember("Name", opt => opt.MapFrom(c => c.Name))
+        .ForPath(d => d.EmployeeIds, opt => opt.MapFrom(c => c.Employes != null ? c.Employes.Select(b => b.Id) : new List<long>()))
         );
 
         MapperConfiguration ProffessionQueryBLL_ProffessionQueryDALMapConfig = new MapperConfiguration(cfg => cfg.CreateMap<ProffessionQueryBLL, ProffessionQueryDAL>());
@@ -54,6 +55,20 @@ namespace HyggyBackend.BLL.Services
         {
             var mapper = new Mapper(Proffession_ProffessionDTOMapConfig);
             var proffessions = await Database.Proffessions.GetByName(name);
+            return mapper.Map<IEnumerable<Proffession>, IEnumerable<ProffessionDTO>>(proffessions);
+        }
+
+        public async Task<IEnumerable<ProffessionDTO>> GetByEmployeeName(string employeeName)
+        {
+            var mapper = new Mapper(Proffession_ProffessionDTOMapConfig);
+            var proffessions = await Database.Proffessions.GetByEmployeeName(employeeName);
+            return mapper.Map<IEnumerable<Proffession>, IEnumerable<ProffessionDTO>>(proffessions);
+        }
+
+        public async Task<IEnumerable<ProffessionDTO>> GetByEmployeeSurname(string employeeSurname)
+        {
+            var mapper = new Mapper(Proffession_ProffessionDTOMapConfig);
+            var proffessions = await Database.Proffessions.GetByEmployeeSurname(employeeSurname);
             return mapper.Map<IEnumerable<Proffession>, IEnumerable<ProffessionDTO>>(proffessions);
         }
 

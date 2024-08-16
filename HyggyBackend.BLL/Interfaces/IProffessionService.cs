@@ -14,6 +14,8 @@ namespace HyggyBackend.BLL.Interfaces
 
         Task<IEnumerable<ProffessionDTO>> GetAll();
         Task<IEnumerable<ProffessionDTO>> GetByName(string name);
+        Task<IEnumerable<ProffessionDTO>> GetByEmployeeName(string employeeName);
+        Task<IEnumerable<ProffessionDTO>> GetByEmployeeSurname(string employeeSurname);
         Task<IEnumerable<ProffessionDTO>> GetByQuery(ProffessionQueryBLL queryDAL);
 
         Task<ProffessionDTO> Create(ProffessionDTO proffessionDTO);

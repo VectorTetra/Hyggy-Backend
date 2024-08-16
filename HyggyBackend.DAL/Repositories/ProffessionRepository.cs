@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using HyggyBackend.DAL.Queries;
+using HyggyBackend.DAL.Entities.Employes;
 
 
 namespace HyggyBackend.DAL.Repositories
@@ -34,6 +35,18 @@ namespace HyggyBackend.DAL.Repositories
         public async Task<IEnumerable<Proffession>> GetByName(string name)
         {
             return await _context.Proffessions.Where(x => x.Name.Contains(name)).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Proffession>> GetByEmployeeName(string employeeName)
+        {
+            return await _context.Proffessions
+                .Where(x => x.Employes.Any(x => x.Name.Contains(employeeName))).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Proffession>> GetByEmployeeSurname(string employeeSurname)
+        {
+            return await _context.Proffessions
+                .Where(x => x.Employes.Any(x => x.Name.Contains(employeeSurname))).ToListAsync();
         }
 
         public async Task<IEnumerable<Proffession>> GetByQuery(ProffessionQueryDAL queryDAL)

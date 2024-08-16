@@ -14,6 +14,8 @@ namespace HyggyBackend.DAL.Interfaces
 
         Task<IEnumerable<Proffession>> GetAll();
         Task<IEnumerable<Proffession>> GetByName(string name);
+        Task<IEnumerable<Proffession>> GetByEmployeeName(string employeeName);
+        Task<IEnumerable<Proffession>> GetByEmployeeSurname(string employeeSurname);
         Task<IEnumerable<Proffession>> GetByQuery(ProffessionQueryDAL proffessionDAL);
 
         Task Create(Proffession proffession);
