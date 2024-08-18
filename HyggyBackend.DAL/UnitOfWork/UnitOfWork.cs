@@ -15,16 +15,17 @@ namespace HyggyBackend.DAL.UnitOfWork
     {
         private readonly HyggyContext _context;
         private IWareRepository _wares;
+        private IShopRepository _shops;
+		    private ShopEmployeeRepository _shopEmployees;
+		    private StorageEmployeeRepository _storageEmployees;
+        private IProffessionRepository _proffessions;
         private IOrderRepository _orders;
-        
 
 
         public UnitOfWork(HyggyContext context)
         {
             _context = context;
         }
-
-
         public IWareRepository Wares
         {
             get
@@ -62,6 +63,18 @@ namespace HyggyBackend.DAL.UnitOfWork
 			}
 		}
 
+
+        public IProffessionRepository Proffessions
+        {
+            get
+            {
+                if (_proffessions == null)
+                    _proffessions = new ProffessionRepository(_context);
+                return _proffessions;
+            }
+        }
+
+
         public IOrderRepository Orders
         {
             get
@@ -71,6 +84,7 @@ namespace HyggyBackend.DAL.UnitOfWork
                 return _orders;
             }
         }
+
 
         public async Task Save()
         {
