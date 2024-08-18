@@ -6,6 +6,9 @@ namespace HyggyBackend.BLL.Interfaces
 	public interface IEmployeeService<T> where T : EmployeeDTO
 	{
 		Task<IEnumerable<T>> GetAllAsync();
+		/// <summary>
+		/// ///////////////////////////////////////////////////
+		/// <returns></returns>
 		Task<IEnumerable<T>> GetPaginatedEmployeesAsync(int? page);
 		Task<IEnumerable<T>> GetEmployeesByProfessionAsync(string professionName);
 		Task<IEnumerable<T>> GetEmployeesByDateOfBirthAsync(DateTime date);
