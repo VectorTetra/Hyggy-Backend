@@ -16,8 +16,8 @@ namespace HyggyBackend.DAL.UnitOfWork
         private readonly HyggyContext _context;
         private IWareRepository _wares;
         private IShopRepository _shops;
-		    private ShopEmployeeRepository _shopEmployees;
-		    private StorageEmployeeRepository _storageEmployees;
+        private ShopEmployeeRepository _shopEmployees;
+        private StorageEmployeeRepository _storageEmployees;
         private IProffessionRepository _proffessions;
         private IOrderRepository _orders;
 
@@ -39,29 +39,29 @@ namespace HyggyBackend.DAL.UnitOfWork
         {
             get
             {
-                if(_shops == null)
+                if (_shops == null)
                     _shops = new ShopRepository(_context);
                 return _shops;
             }
         }
-		public IEmployeeRepository<StorageEmployee> StorageEmployees
-		{
-			get
-			{
-				if (_storageEmployees == null)
-					_storageEmployees = new StorageEmployeeRepository(_context);
-				return _storageEmployees;
-			}
-		}
-		public IEmployeeRepository<ShopEmployee> ShopEmployees
-		{
-			get
-			{
-				if (_shopEmployees == null)
-					_shopEmployees = new ShopEmployeeRepository(_context);
-				return _shopEmployees;
-			}
-		}
+        public IEmployeeRepository<StorageEmployee> StorageEmployees
+        {
+            get
+            {
+                if (_storageEmployees == null)
+                    _storageEmployees = new StorageEmployeeRepository(_context);
+                return _storageEmployees;
+            }
+        }
+        public IEmployeeRepository<ShopEmployee> ShopEmployees
+        {
+            get
+            {
+                if (_shopEmployees == null)
+                    _shopEmployees = new ShopEmployeeRepository(_context);
+                return _shopEmployees;
+            }
+        }
 
 
         public IProffessionRepository Proffessions

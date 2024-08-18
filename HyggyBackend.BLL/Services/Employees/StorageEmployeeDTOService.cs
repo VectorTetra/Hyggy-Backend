@@ -37,7 +37,7 @@ namespace HyggyBackend.BLL.Services.Employees
 			var employees = await Database.StorageEmployees.GetEmployeesByProfessionAsync(professionName);
 			return _mapper.Map<IEnumerable<StorageEmployee>, IEnumerable<StorageEmployeeDTO>>(employees);
 		}
-		public async Task<StorageEmployeeDTO?> GetByIdAsync(string id)
+		public async Task<StorageEmployeeDTO?> GetByIdAsync(long id)
 		{
 			var employee = await Database.StorageEmployees.GetByIdAsync(id);
 			return _mapper.Map<StorageEmployeeDTO>(employee);
@@ -68,7 +68,7 @@ namespace HyggyBackend.BLL.Services.Employees
 
 			Database.StorageEmployees.Update(employee);
 		}
-		public async Task DeleteAsync(string id)
+		public async Task DeleteAsync(long id)
 		{
 			await Database.StorageEmployees.DeleteAsync(id);
 		}

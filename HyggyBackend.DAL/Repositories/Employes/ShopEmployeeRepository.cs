@@ -49,7 +49,7 @@ namespace HyggyBackend.DAL.Repositories.Employes
 			return employees.Where(se => se.Email == email)
 				.FirstOrDefault();
 		}
-		public async Task<ShopEmployee?> GetByIdAsync(string id)
+		public async Task<ShopEmployee?> GetByIdAsync(long id)
 		{
 			var employees = await GetAllAsync();
 			return employees.Where(se => se.Id == id)
@@ -70,7 +70,7 @@ namespace HyggyBackend.DAL.Repositories.Employes
 		{
 			_context.ShopEmployees.Update(employee);
 		}
-		public async Task DeleteAsync(string id)
+		public async Task DeleteAsync(long id)
         {
 			var employee = await GetByIdAsync(id);
 			if(employee != null)

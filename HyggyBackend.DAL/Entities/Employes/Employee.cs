@@ -2,10 +2,9 @@
 
 namespace HyggyBackend.DAL.Entities.Employes
 {
-    public abstract class Employee : IdentityUser
+    public abstract class Employee : User
     {
-        public string Name { get; set; } = string.Empty;
-        public string Surname { get; set; } = string.Empty;
+        public long Id { get; set; }
         public DateTime DateOfBirth { get; set; }
         public virtual Proffession Proffession { get; set; }
     }

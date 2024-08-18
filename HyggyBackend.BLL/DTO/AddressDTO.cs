@@ -27,6 +27,6 @@ namespace HyggyBackend.BLL.DTO
 
 		public virtual ICollection<OrderDTO> Orders { get; set; } = new List<OrderDTO>();	
 
-		public virtual ShopDTO? Shop { get; set; }
+		public virtual StorageDTO? Storage { get; set; }
     }
 }
