@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "HyggyBackend.DAL": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT": "false"
+      }
+    }
+  }
+}

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace HyggyBackend.DAL.Entities
 {
-    public class Customer : IdentityUser
+    public class Customer : User
     {
         /*
          Клас IdentityUser є частиною бібліотеки ASP.NET Identity і надає базові властивості для користувача в системі аутентифікації та авторизації. 
@@ -30,8 +30,9 @@ namespace HyggyBackend.DAL.Entities
         */
 
         public long Id { get; set; }
-        public string Name { get; set; }
-        public string Surname { get; set; }
+        //public string Name { get; set; }
+        //public string Surname { get; set; }
+        public virtual ICollection<Order> Orders { get; set; }
 
         public override bool Equals(object obj)
         {

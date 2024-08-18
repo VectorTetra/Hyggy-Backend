@@ -7,10 +7,14 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using HyggyBackend.BLL.Interfaces;
 using HyggyBackend.BLL.Services;
+using System.Globalization;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
+var cultureInfo = new CultureInfo("en-US");
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 // Add services to the container.
 string? connection = builder.Configuration.GetConnectionString("DefaultConnection");

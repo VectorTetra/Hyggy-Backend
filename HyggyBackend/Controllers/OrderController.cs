@@ -320,7 +320,6 @@ namespace HyggyBackend.Controllers
                     return NoContent();
                 }
                 return collection?.ToList();
-
             }
             catch (ValidationException ex)
             {

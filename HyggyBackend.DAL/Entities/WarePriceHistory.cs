@@ -7,8 +7,7 @@ namespace HyggyBackend.DAL.Entities
     public class WarePriceHistory
     {
         public long Id { get; set; }
-        public long WareId { get; set; }
-        public Ware Ware { get; set; }
+        public virtual Ware Ware { get; set; }
         public float Price { get; set; }
         public DateTime EffectiveDate { get; set; } // Дата початку дії ціни
 

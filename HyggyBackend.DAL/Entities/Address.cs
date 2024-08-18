@@ -16,7 +16,7 @@ namespace HyggyBackend.DAL.Entities
      */
     public class Address
     {
-        public long Id;
+        public long Id { get; set; }
 
         // Адреса доставки, розділена на компоненти
         public string Street { get; set; } // Назва вулиці

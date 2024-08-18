@@ -12,8 +12,6 @@ namespace HyggyBackend.DAL.Entities
         public int Count { get; set; }
         public virtual Order Order { get; set; }
         public virtual Ware Ware { get; set; }
-        // Ідентифікатор запису у таблиці з історією цін
-        public long PriceHistoryId { get; set; }
         public virtual WarePriceHistory PriceHistory { get; set; }
 
         public override bool Equals(object obj)

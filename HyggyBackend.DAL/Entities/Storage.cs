@@ -1,4 +1,6 @@
-﻿namespace HyggyBackend.DAL.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace HyggyBackend.DAL.Entities
 {
 	public class Storage
 	{
@@ -6,7 +8,9 @@
 
 		public virtual Shop? Shop { get; set; }
 
-		public virtual Address? Address { get; set; }
+        public long? AddressId { get; set; }  // Додаємо зовнішній ключ для Address
+        [ForeignKey("AddressId")]
+        public virtual Address? Address { get; set; }
         public override bool Equals(object obj)
 		{
 			if (obj == null || GetType() != obj.GetType())
