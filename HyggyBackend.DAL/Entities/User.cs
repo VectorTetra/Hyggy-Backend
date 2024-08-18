@@ -1,16 +1,15 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity.EntityFramework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HyggyBackend.BLL.DTO
+namespace HyggyBackend.DAL.Entities
 {
-    public class CustomerDTO
+    public class User : Microsoft.AspNetCore.Identity.IdentityUser
     {
-        public long Id { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
-        public string Email { get; set; }
     }
 }

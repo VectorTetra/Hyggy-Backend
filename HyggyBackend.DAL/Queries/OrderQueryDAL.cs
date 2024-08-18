@@ -10,6 +10,7 @@ namespace HyggyBackend.DAL.Queries
     {
         //public string? DeliveryAddress { get; set; }
 
+        public long? Id;
         public long? AddressId;
 
         // Адреса доставки, розділена на компоненти
@@ -19,12 +20,14 @@ namespace HyggyBackend.DAL.Queries
         public string? State { get; set; } // Область або штат
         public string? PostalCode { get; set; } // Поштовий індекс
 
-
+        public int? PageNumber { get; set; }
+        public int? PageSize { get; set; }
 
         // Географічні координати
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
 
+        // Дані про клієнта
 
         public DateTime? MinOrderDate { get; set; }
         public DateTime? MaxOrderDate { get; set; }

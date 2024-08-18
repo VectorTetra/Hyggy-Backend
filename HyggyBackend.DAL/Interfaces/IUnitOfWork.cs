@@ -18,12 +18,7 @@ namespace HyggyBackend.DAL.Interfaces
         IProffessionRepository Proffessions { get; }
         IEmployeeRepository<StorageEmployee> StorageEmployees { get; }
         IEmployeeRepository<ShopEmployee> ShopEmployees { get; }
-		//IHotelRepository Hotels { get; }
-		//IRoomRepository Rooms { get; }
-		//IRoomTypeRepository RoomTypes { get; }
-		//IBedConfigurationRepository BedConfigurations { get; }
-		//IRoomConfigurationRepository RoomConfigurations { get; }
-		//IHotelRoomRepository HotelRooms { get; }
-		Task Save();
+        IOrderRepository Orders { get; }
+        Task Save();
     }
 }

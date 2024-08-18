@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HyggyBackend.DAL.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,5 +10,10 @@ namespace HyggyBackend.BLL.DTO
     public class WarePriceHistoryDTO
     {
         public long Id { get; set; }
+        public WareDTO? Ware { get; set; }
+        public float? Price { get; set; }
+        public DateTime? EffectiveDate { get; set; } // Дата початку дії ціни
+
+        //public ICollection<OrderItem> OrderItems { get; set; }
     }
 }

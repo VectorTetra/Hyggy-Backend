@@ -10,7 +10,7 @@ namespace HyggyBackend.DAL.Entities
     {
         public long Id { get; set; }
         public long Article { get; set; }
-        public virtual WareCategory3 Category3 { get; set; }
+        public virtual WareCategory3 WareCategory3 { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public float Price { get; set; }
@@ -18,6 +18,7 @@ namespace HyggyBackend.DAL.Entities
         public bool IsDeliveryAvailable { get; set; }
         public virtual WareStatus Status { get; set; }
         public virtual ICollection<WareImage> Images { get; set; } = new List<WareImage>();
+        public virtual ICollection<WarePriceHistory> PriceHistories { get; set; } = new List<WarePriceHistory>();
         public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
         public override bool Equals(object obj)
         {

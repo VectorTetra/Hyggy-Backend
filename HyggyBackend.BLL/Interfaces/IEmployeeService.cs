@@ -1,8 +1,9 @@
-﻿using HyggyBackend.DAL.Entities.Employes;
+﻿using HyggyBackend.BLL.DTO.EmployeesDTO;
+using HyggyBackend.DAL.Entities.Employes;
 
-namespace HyggyBackend.DAL.Interfaces
+namespace HyggyBackend.BLL.Interfaces
 {
-	public interface IEmployeeRepository<T> where T : Employee
+	public interface IEmployeeService<T> where T : EmployeeDTO
 	{
 		Task<IEnumerable<T>> GetAllAsync();
 		Task<IEnumerable<T>> GetPaginatedEmployeesAsync(int? page);
