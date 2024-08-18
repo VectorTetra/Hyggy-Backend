@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace HyggyBackend.DAL.Entities
 {
-    public class User : Microsoft.AspNetCore.Identity.IdentityUser
+    public class User : Microsoft.AspNetCore.Identity.IdentityUser<long>
     {
         public string Name { get; set; }
         public string Surname { get; set; }
