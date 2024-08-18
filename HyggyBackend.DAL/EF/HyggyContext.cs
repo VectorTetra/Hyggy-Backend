@@ -9,7 +9,7 @@ using System.IO;
 
 namespace HyggyBackend.DAL.EF
 {
-    public class HyggyContext : IdentityDbContext<IdentityUser>
+    public class HyggyContext : IdentityDbContext<User>
     {
         public HyggyContext(DbContextOptions<HyggyContext> options)
             : base(options)

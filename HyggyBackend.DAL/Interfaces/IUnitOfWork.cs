@@ -14,15 +14,13 @@ namespace HyggyBackend.DAL.Interfaces
     {
        
         IWareRepository Wares { get; }
-        IShopRepository Shops { get; }
-        IEmployeeRepository<StorageEmployee> StorageEmployees { get; }
-        IEmployeeRepository<ShopEmployee> ShopEmployees { get; }
-		//IHotelRepository Hotels { get; }
-		//IRoomRepository Rooms { get; }
-		//IRoomTypeRepository RoomTypes { get; }
-		//IBedConfigurationRepository BedConfigurations { get; }
-		//IRoomConfigurationRepository RoomConfigurations { get; }
-		//IHotelRoomRepository HotelRooms { get; }
-		Task Save();
+        IOrderRepository Orders { get; }
+        //IHotelRepository Hotels { get; }
+        //IRoomRepository Rooms { get; }
+        //IRoomTypeRepository RoomTypes { get; }
+        //IBedConfigurationRepository BedConfigurations { get; }
+        //IRoomConfigurationRepository RoomConfigurations { get; }
+        //IHotelRoomRepository HotelRooms { get; }
+        Task Save();
     }
 }

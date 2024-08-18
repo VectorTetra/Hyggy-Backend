@@ -7,24 +7,26 @@ using System.Threading.Tasks;
 
 namespace HyggyBackend.BLL.DTO
 {
-	public class AddressDTO
-	{
-		public long Id;
+    public class AddressDTO
+    {
+        public long Id;
 
-		public string Street { get; set; } = String.Empty;
-		public string HouseNumber { get; set; } = String.Empty;
-		public string City { get; set; } = String.Empty;
-		public string State { get; set; } = String.Empty;
-		public string PostalCode { get; set; } = String.Empty;
+        // Адреса доставки, розділена на компоненти
+        public string Street { get; set; } // Назва вулиці
+        public string HouseNumber { get; set; } // Номер будинку
+        public string City { get; set; } // Місто
+        public string State { get; set; } // Область або штат
+        public string PostalCode { get; set; } // Поштовий індекс
 
 
 
-		public double? Latitude { get; set; }
-		public double? Longitude { get; set; }
+        // Географічні координати
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
 
 
 		public virtual ICollection<OrderDTO> Orders { get; set; } = new List<OrderDTO>();	
 
 		public virtual ShopDTO? Shop { get; set; }
-	}
+    }
 }

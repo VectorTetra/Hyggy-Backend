@@ -9,7 +9,7 @@ namespace HyggyBackend.BLL.DTO
     public class OrderDTO
     {
         public long Id { get; set; }
-        public string DeliveryAddress { get; set; }
+        public AddressDTO DeliveryAddress { get; set; }
         public DateTime OrderDate { get; set; }
         public string Phone { get; set; }
         public string Comment { get; set; }

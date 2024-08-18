@@ -5,16 +5,24 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using HyggyBackend.BLL.Interfaces;
+using HyggyBackend.BLL.Services;
+using System.Globalization;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
+var cultureInfo = new CultureInfo("en-US");
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 // Add services to the container.
 string? connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddControllers();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddHyggyContext(connection);
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IWareService, WareService>();
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(opt =>
 {
