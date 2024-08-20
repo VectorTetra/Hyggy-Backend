@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace HyggyBackend.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -42,34 +44,6 @@ namespace HyggyBackend.DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetRoles", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUsers",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Surname = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Discriminator = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -128,21 +102,24 @@ namespace HyggyBackend.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Storages",
+                name: "Shops",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    AddressId = table.Column<long>(type: "bigint", nullable: true)
+                    PhotoUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    WorkHours = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AddressId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Storages", x => x.Id);
+                    table.PrimaryKey("PK_Shops", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Storages_Address_AddressId",
+                        name: "FK_Shops_Address_AddressId",
                         column: x => x.AddressId,
                         principalTable: "Address",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -162,6 +139,160 @@ namespace HyggyBackend.DAL.Migrations
                         name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WareCategories2",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    JSONStructureFilePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    WareCategory1Id = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WareCategories2", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_WareCategories2_WareCategories1_WareCategory1Id",
+                        column: x => x.WareCategory1Id,
+                        principalTable: "WareCategories1",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Storages",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AddressId = table.Column<long>(type: "bigint", nullable: true),
+                    ShopId = table.Column<long>(type: "bigint", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Storages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Storages_Address_AddressId",
+                        column: x => x.AddressId,
+                        principalTable: "Address",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Storages_Shops_ShopId",
+                        column: x => x.ShopId,
+                        principalTable: "Shops",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WareCategories3",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    JSONStructureFilePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    WareCategory2Id = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WareCategories3", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_WareCategories3_WareCategories2_WareCategory2Id",
+                        column: x => x.WareCategory2Id,
+                        principalTable: "WareCategories2",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Surname = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Discriminator = table.Column<string>(type: "nvarchar(21)", maxLength: 21, nullable: false),
+                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ProffessionId = table.Column<long>(type: "bigint", nullable: true),
+                    ShopId1 = table.Column<long>(type: "bigint", nullable: true),
+                    ShopId = table.Column<long>(type: "bigint", nullable: true),
+                    StorageId = table.Column<long>(type: "bigint", nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Proffessions_ProffessionId",
+                        column: x => x.ProffessionId,
+                        principalTable: "Proffessions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Shops_ShopId",
+                        column: x => x.ShopId,
+                        principalTable: "Shops",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Shops_ShopId1",
+                        column: x => x.ShopId1,
+                        principalTable: "Shops",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Storages_StorageId",
+                        column: x => x.StorageId,
+                        principalTable: "Storages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Wares",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Article = table.Column<long>(type: "bigint", nullable: false),
+                    WareCategory3Id = table.Column<long>(type: "bigint", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Price = table.Column<float>(type: "real", nullable: false),
+                    Discount = table.Column<float>(type: "real", nullable: false),
+                    IsDeliveryAvailable = table.Column<bool>(type: "bit", nullable: false),
+                    StatusId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Wares", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Wares_WareCategories3_WareCategory3Id",
+                        column: x => x.WareCategory3Id,
+                        principalTable: "WareCategories3",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Wares_WareStatuses_StatusId",
+                        column: x => x.StatusId,
+                        principalTable: "WareStatuses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -252,69 +383,6 @@ namespace HyggyBackend.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "WareCategories2",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    JSONStructureFilePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    WareCategory1Id = table.Column<long>(type: "bigint", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_WareCategories2", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_WareCategories2_WareCategories1_WareCategory1Id",
-                        column: x => x.WareCategory1Id,
-                        principalTable: "WareCategories1",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Shops",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    PhotoUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    WorkHours = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    StorageId = table.Column<long>(type: "bigint", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Shops", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Shops_Storages_StorageId",
-                        column: x => x.StorageId,
-                        principalTable: "Storages",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "WareCategories3",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    JSONStructureFilePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    WareCategory2Id = table.Column<long>(type: "bigint", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_WareCategories3", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_WareCategories3_WareCategories2_WareCategory2Id",
-                        column: x => x.WareCategory2Id,
-                        principalTable: "WareCategories2",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Orders",
                 columns: table => new
                 {
@@ -352,40 +420,7 @@ namespace HyggyBackend.DAL.Migrations
                         name: "FK_Orders_Shops_ShopId",
                         column: x => x.ShopId,
                         principalTable: "Shops",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Wares",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Article = table.Column<long>(type: "bigint", nullable: false),
-                    WareCategory3Id = table.Column<long>(type: "bigint", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<float>(type: "real", nullable: false),
-                    Discount = table.Column<float>(type: "real", nullable: false),
-                    IsDeliveryAvailable = table.Column<bool>(type: "bit", nullable: false),
-                    StatusId = table.Column<long>(type: "bigint", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Wares", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Wares_WareCategories3_WareCategory3Id",
-                        column: x => x.WareCategory3Id,
-                        principalTable: "WareCategories3",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Wares_WareStatuses_StatusId",
-                        column: x => x.StatusId,
-                        principalTable: "WareStatuses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -447,20 +482,26 @@ namespace HyggyBackend.DAL.Migrations
                         name: "FK_OrderItems_Orders_OrderId",
                         column: x => x.OrderId,
                         principalTable: "Orders",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_OrderItems_WarePriceHistories_PriceHistoryId",
                         column: x => x.PriceHistoryId,
                         principalTable: "WarePriceHistories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_OrderItems_Wares_WareId",
                         column: x => x.WareId,
                         principalTable: "Wares",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { "579f2498-9b0a-4224-82e2-c71b895508cf", null, "Admin", "ADMIN" },
+                    { "f6271734-38a7-41ed-b3a6-4ec6e380cd2b", null, "User", "USER" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -494,6 +535,26 @@ namespace HyggyBackend.DAL.Migrations
                 name: "EmailIndex",
                 table: "AspNetUsers",
                 column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_ProffessionId",
+                table: "AspNetUsers",
+                column: "ProffessionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_ShopId",
+                table: "AspNetUsers",
+                column: "ShopId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_ShopId1",
+                table: "AspNetUsers",
+                column: "ShopId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_StorageId",
+                table: "AspNetUsers",
+                column: "StorageId");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
@@ -538,10 +599,9 @@ namespace HyggyBackend.DAL.Migrations
                 column: "StatusId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Shops_StorageId",
+                name: "IX_Shops_AddressId",
                 table: "Shops",
-                column: "StorageId",
-                unique: true);
+                column: "AddressId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Storages_AddressId",
@@ -549,6 +609,13 @@ namespace HyggyBackend.DAL.Migrations
                 column: "AddressId",
                 unique: true,
                 filter: "[AddressId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Storages_ShopId",
+                table: "Storages",
+                column: "ShopId",
+                unique: true,
+                filter: "[ShopId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_WareCategories2_WareCategory1Id",
@@ -603,9 +670,6 @@ namespace HyggyBackend.DAL.Migrations
                 name: "OrderItems");
 
             migrationBuilder.DropTable(
-                name: "Proffessions");
-
-            migrationBuilder.DropTable(
                 name: "WareImages");
 
             migrationBuilder.DropTable(
@@ -624,10 +688,10 @@ namespace HyggyBackend.DAL.Migrations
                 name: "OrderStatuses");
 
             migrationBuilder.DropTable(
-                name: "Shops");
+                name: "Wares");
 
             migrationBuilder.DropTable(
-                name: "Wares");
+                name: "Proffessions");
 
             migrationBuilder.DropTable(
                 name: "Storages");
@@ -639,10 +703,13 @@ namespace HyggyBackend.DAL.Migrations
                 name: "WareStatuses");
 
             migrationBuilder.DropTable(
-                name: "Address");
+                name: "Shops");
 
             migrationBuilder.DropTable(
                 name: "WareCategories2");
+
+            migrationBuilder.DropTable(
+                name: "Address");
 
             migrationBuilder.DropTable(
                 name: "WareCategories1");

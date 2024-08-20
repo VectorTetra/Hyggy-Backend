@@ -2,6 +2,6 @@
 {
 	public class ShopEmployee : Employee
 	{
-        public virtual Shop Shop { get; set; }
+        //public virtual Shop Shop { get; set; }
     }
 }

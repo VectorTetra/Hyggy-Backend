@@ -10,7 +10,7 @@ namespace HyggyBackend.BLL.DTO
 {
     public class ShopDTO
     {
-		public long Id { get; set; }
+		public long? Id { get; set; }
 		public string PhotoUrl { get; set; } = String.Empty;
 		public string WorkHours { get; set; } = String.Empty;
 		public virtual AddressDTO Address { get; set; } = new AddressDTO();

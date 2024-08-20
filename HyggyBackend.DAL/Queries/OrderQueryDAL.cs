@@ -39,7 +39,7 @@ namespace HyggyBackend.DAL.Queries
         public long? OrderItemId { get; set; }
         public long? WareId { get; set; }
         public long? WarePriceHistoryId { get; set; }
-        public long? CustomerId { get; set; }
+        public string CustomerId { get; set; }
         public long? ShopId { get; set; }
     }
 }

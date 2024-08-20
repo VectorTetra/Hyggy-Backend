@@ -5,12 +5,12 @@ namespace HyggyBackend.DAL.Entities
 {
     public class Shop
 	{
-        public long Id { get; set; }
+        public long? Id { get; set; }
         public string PhotoUrl { get; set; } = String.Empty;
         public string WorkHours { get; set; } = String.Empty;
         public virtual Address Address { get; set; }
         public virtual Storage Storage { get; set; }
-		public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();	
+		public virtual ICollection<ShopEmployee> ShopEmployees { get; set; } = new List<ShopEmployee>();	
 		public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
        
 

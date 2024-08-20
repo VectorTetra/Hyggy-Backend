@@ -97,7 +97,7 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.Orders.Where(x => x.OrderItems.Any(m => m.PriceHistory.Id == warePriceHistoryId)).ToListAsync();
         }
-        public async Task<IEnumerable<Order>> GetByCustomerId(long customerId)
+        public async Task<IEnumerable<Order>> GetByCustomerId(string customerId)
         {
             return await _context.Orders.Where(x => x.Customer.Id == customerId).ToListAsync();
         }
@@ -196,7 +196,7 @@ namespace HyggyBackend.DAL.Repositories
 
             if (query.CustomerId != null)
             {
-                orderCollections.Add(await GetByCustomerId(query.CustomerId.Value));
+                orderCollections.Add(await GetByCustomerId(query.CustomerId));
             }
 
             if (query.ShopId != null)

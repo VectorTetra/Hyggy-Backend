@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HyggyBackend.DAL.Entities.Employes
 {
@@ -6,6 +7,7 @@ namespace HyggyBackend.DAL.Entities.Employes
     {
         //public long Id { get; set; }
         public DateTime DateOfBirth { get; set; }
-        public virtual Proffession Proffession { get; set; }
+        
+        //public virtual Proffession Proffession { get; set; }
     }
 }

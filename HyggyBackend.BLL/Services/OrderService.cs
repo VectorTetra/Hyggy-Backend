@@ -294,7 +294,7 @@ namespace HyggyBackend.BLL.Services
             var mapper = new Mapper(config);
             return mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
-        public async Task<IEnumerable<OrderDTO>> GetByCustomerId(long customerId)
+        public async Task<IEnumerable<OrderDTO>> GetByCustomerId(string customerId)
         {
             var orders = await Database.Orders.GetByCustomerId(customerId);
             var mapper = new Mapper(config);

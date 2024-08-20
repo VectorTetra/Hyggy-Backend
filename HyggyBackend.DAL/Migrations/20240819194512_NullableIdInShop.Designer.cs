@@ -4,6 +4,7 @@ using HyggyBackend.DAL.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HyggyBackend.DAL.Migrations
 {
     [DbContext(typeof(HyggyContext))]
-    partial class HyggyContextModelSnapshot : ModelSnapshot
+    [Migration("20240819194512_NullableIdInShop")]
+    partial class NullableIdInShop
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -524,13 +527,13 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "f6f06e4e-948a-4f6f-a585-61446e8cb97a",
+                            Id = "ace0bf7d-d3da-409f-b737-f0f43a0a2492",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "12739dea-8f5c-4c05-a5d9-d6b2c76f61e6",
+                            Id = "9bd162f9-1658-49b8-abc0-25887e4f9d99",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -657,7 +660,7 @@ namespace HyggyBackend.DAL.Migrations
                         .ValueGeneratedOnUpdateSometimes()
                         .HasColumnType("datetime2");
 
-                    b.Property<long?>("ShopId")
+                    b.Property<long>("ShopId")
                         .HasColumnType("bigint");
 
                     b.HasIndex("ShopId");
@@ -883,9 +886,13 @@ namespace HyggyBackend.DAL.Migrations
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Employes.ShopEmployee", b =>
                 {
-                    b.HasOne("HyggyBackend.DAL.Entities.Shop", null)
+                    b.HasOne("HyggyBackend.DAL.Entities.Shop", "Shop")
                         .WithMany("ShopEmployees")
-                        .HasForeignKey("ShopId");
+                        .HasForeignKey("ShopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Shop");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Employes.StorageEmployee", b =>

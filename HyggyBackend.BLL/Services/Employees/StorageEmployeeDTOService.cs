@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HyggyBackend.BLL.DTO;
 using HyggyBackend.BLL.DTO.EmployeesDTO;
 using HyggyBackend.BLL.Interfaces;
 using HyggyBackend.DAL.Entities.Employes;
@@ -37,7 +38,7 @@ namespace HyggyBackend.BLL.Services.Employees
 			var employees = await Database.StorageEmployees.GetEmployeesByProfessionAsync(professionName);
 			return _mapper.Map<IEnumerable<StorageEmployee>, IEnumerable<StorageEmployeeDTO>>(employees);
 		}
-		public async Task<StorageEmployeeDTO?> GetByIdAsync(long id)
+		public async Task<StorageEmployeeDTO?> GetByIdAsync(string id)
 		{
 			var employee = await Database.StorageEmployees.GetByIdAsync(id);
 			return _mapper.Map<StorageEmployeeDTO>(employee);
@@ -57,10 +58,11 @@ namespace HyggyBackend.BLL.Services.Employees
 			var employee = await Database.StorageEmployees.GetByPhoneAsync(phone);
 			return _mapper.Map<StorageEmployeeDTO>(employee);
 		}
-		public async Task CreateAsync(StorageEmployeeDTO storageEmployee)
+		public async Task<string> CreateAsync(RegisterDto storageEmployee)
 		{
 			var employee = _mapper.Map<StorageEmployee>(storageEmployee);
 			await Database.StorageEmployees.CreateAsync(employee);
+			return string.Empty;
 		}
 		public void Update(StorageEmployeeDTO storageEmployee)
 		{
@@ -68,9 +70,14 @@ namespace HyggyBackend.BLL.Services.Employees
 
 			Database.StorageEmployees.Update(employee);
 		}
-		public async Task DeleteAsync(long id)
+		public async Task DeleteAsync(string id)
 		{
 			await Database.StorageEmployees.DeleteAsync(id);
+		}
+
+		public Task<ShopEmployeeDTO> Login(LoginDto login)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

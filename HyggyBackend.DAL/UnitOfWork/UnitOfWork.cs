@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HyggyBackend.DAL.EF;
+using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Entities.Employes;
 using HyggyBackend.DAL.Interfaces;
 using HyggyBackend.DAL.Repositories;
 using HyggyBackend.DAL.Repositories.Employes;
+using Microsoft.AspNetCore.Identity;
 
 namespace HyggyBackend.DAL.UnitOfWork
 {
@@ -20,7 +22,6 @@ namespace HyggyBackend.DAL.UnitOfWork
         private StorageEmployeeRepository _storageEmployees;
         private IProffessionRepository _proffessions;
         private IOrderRepository _orders;
-
 
         public UnitOfWork(HyggyContext context)
         {
@@ -55,9 +56,9 @@ namespace HyggyBackend.DAL.UnitOfWork
         }
         public IEmployeeRepository<ShopEmployee> ShopEmployees
         {
-            get
-            {
-                if (_shopEmployees == null)
+			get
+			{
+				if (_shopEmployees == null)
                     _shopEmployees = new ShopEmployeeRepository(_context);
                 return _shopEmployees;
             }
