@@ -76,6 +76,7 @@ namespace HyggyBackend.BLL.Services.Employees
 
 				var employee = _mapper.Map<ShopEmployee>(emloyeeDto);
 				var createdUser = await _userManager.CreateAsync(employee, shopEmployee.Password);
+			    
 				if (createdUser.Succeeded)
 				{
 					var roleResult = await _userManager.AddToRoleAsync(employee, "User");

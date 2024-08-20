@@ -82,11 +82,17 @@ namespace HyggyBackend.BLL.Services
 
 			return _mapper.Map<IEnumerable<Shop>, IEnumerable<ShopDTO>>(shop);
 		}
-		public async Task Create(ShopDTO shopDTO)
+		public async Task<bool> Create(ShopDTO shopDTO)
 		{
 			var shop = _mapper.Map<Shop>(shopDTO);
+			if(shop == null)
+				return false;
 
 			await Database.Shops.Create(shop);
+			if(! await Database.Save()) 
+				return false;
+
+			return true;
 		}
 		public void Update(ShopDTO shopDTO)
 		{
@@ -97,6 +103,13 @@ namespace HyggyBackend.BLL.Services
 		public async Task Delete(long id)
 		{
 			await Database.Shops.Delete(id);
+		}
+
+		public async Task<bool> IsShopExist(long id)
+		{
+			var shops = await Database.Shops.GetAll();
+			
+			return shops.Any(shop => shop.Id == id);
 		}
 	}
 }

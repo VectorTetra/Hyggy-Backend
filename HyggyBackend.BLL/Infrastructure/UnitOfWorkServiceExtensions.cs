@@ -14,7 +14,9 @@ namespace HyggyBackend.BLL.Infrastructure
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ITokenService, TokenService>();
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+			services.AddScoped<IShopService, ShopService>();
+            services.AddScoped<IAddressService, AddressService>();
+			services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 			
 		}

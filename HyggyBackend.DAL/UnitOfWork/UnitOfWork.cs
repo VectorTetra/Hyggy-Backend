@@ -22,12 +22,21 @@ namespace HyggyBackend.DAL.UnitOfWork
         private StorageEmployeeRepository _storageEmployees;
         private IProffessionRepository _proffessions;
         private IOrderRepository _orders;
-
+        private IAddressRepository _addresses;
         public UnitOfWork(HyggyContext context)
         {
             _context = context;
         }
-        public IWareRepository Wares
+		public IAddressRepository Addresses
+		{
+			get
+			{
+				if (_addresses == null)
+					_addresses = new AddressRepository(_context);
+				return _addresses;
+			}
+		}
+		public IWareRepository Wares
         {
             get
             {
@@ -87,9 +96,10 @@ namespace HyggyBackend.DAL.UnitOfWork
         }
 
 
-        public async Task Save()
+        public async Task<bool> Save()
         {
-            await _context.SaveChangesAsync();
+           var saved = await _context.SaveChangesAsync();
+           return saved > 0 ? true : false;
         }
     }
 }

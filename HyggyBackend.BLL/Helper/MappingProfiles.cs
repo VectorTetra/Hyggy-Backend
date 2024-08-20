@@ -11,20 +11,21 @@ namespace HyggyBackend.BLL.Helper
         public MappingProfiles()
         {
             CreateMap<Shop, ShopDTO>()
-                .ForMember(dest => dest.Storage, opts => opts.MapFrom(src => src.Storage))
-                .ForMember(dest => dest.Address, opts => opts.MapFrom(src => src.Address))
-                .ForMember(dest => dest.Orders, opts => opts.MapFrom(src => src.Orders));
-
-            CreateMap<ShopDTO, Shop>()
-				.ForMember(dest => dest.Storage, opts => opts.MapFrom(src => src.Storage))
-				.ForMember(dest => dest.Address, opts => opts.MapFrom(src => src.Address))
-				.ForMember(dest => dest.Orders, opts => opts.MapFrom(src => src.Orders)); ;
+                .ForMember(dest => dest.StorageId, opts => opts.MapFrom(src => src.StorageId))
+                .ForMember(dest => dest.AddressId, opts => opts.MapFrom(src => src.AddressId))
+                .ForMember(dest => dest.OrderIds, opts => opts.MapFrom(src => src.Orders.Select(o => o.Id)));
+            CreateMap<ShopDTO, Shop>();
+				
 
             CreateMap<ShopEmployeeDTO, ShopEmployee>();
             CreateMap<ShopEmployee, ShopEmployeeDTO>();
 
 			CreateMap<StorageEmployee, StorageEmployeeDTO>();
 			CreateMap<StorageEmployeeDTO, StorageEmployee>();
+
+            CreateMap<Address, AddressDTO>()
+                .ForMember(dest => dest.OrderIds, opts => opts.MapFrom(src => src.Orders.Select(o => o.Id)));
+            CreateMap<AddressDTO, Address>();
 		}
     }
 }

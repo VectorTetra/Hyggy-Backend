@@ -18,7 +18,9 @@ namespace HyggyBackend.BLL.Interfaces
 		Task<IEnumerable<ShopDTO>> GetByState(string state);
 		Task<IEnumerable<ShopDTO>> GetByQuery(ShopQueryBLL query);
 
-		Task Create(ShopDTO shopDTO);
+		Task<bool> IsShopExist(long id);
+
+		Task<bool> Create(ShopDTO shopDTO);
 		void Update(ShopDTO shopDTO);
 		Task Delete(long id);
 	}

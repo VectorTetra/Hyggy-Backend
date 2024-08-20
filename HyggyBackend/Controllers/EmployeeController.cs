@@ -2,6 +2,7 @@
 using HyggyBackend.BLL.DTO.EmployeesDTO;
 using HyggyBackend.BLL.Interfaces;
 using HyggyBackend.BLL.Services.Employees;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HyggyBackend.Controllers

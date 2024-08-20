@@ -32,16 +32,16 @@ namespace HyggyBackend.BLL.Services
                     PostalCode = src.DeliveryAddress.PostalCode,
                     Latitude = src.DeliveryAddress.Latitude,
                     Longitude = src.DeliveryAddress.Longitude,
-                    Storage = src.DeliveryAddress.Storage == null ? null : new StorageDTO
-                    {
-                        Id = src.DeliveryAddress.Storage.Id,
-                        Shop = src.DeliveryAddress.Storage.Shop == null ? null : new ShopDTO
-                        {
-                            Id = src.DeliveryAddress.Storage.Shop.Id,
-                            PhotoUrl = src.DeliveryAddress.Storage.Shop.PhotoUrl,
-                            WorkHours = src.DeliveryAddress.Storage.Shop.WorkHours
-                        }
-                    }
+                    //Storage = src.DeliveryAddress.Storage == null ? null : new StorageDTO
+                    //{
+                    //    Id = src.DeliveryAddress.Storage.Id,
+                    //    Shop = src.DeliveryAddress.Storage.Shop == null ? null : new ShopDTO
+                    //    {
+                    //        Id = src.DeliveryAddress.Storage.Shop.Id,
+                    //        PhotoUrl = src.DeliveryAddress.Storage.Shop.PhotoUrl,
+                    //        WorkHours = src.DeliveryAddress.Storage.Shop.WorkHours
+                    //    }
+                    //}
                 }))
             .ForMember("OrderDate", opt => opt.MapFrom(src => src.OrderDate))
             .ForMember("Phone", opt => opt.MapFrom(src => src.Phone))
@@ -115,16 +115,16 @@ namespace HyggyBackend.BLL.Services
                 PostalCode = src.DeliveryAddress.PostalCode,
                 Latitude = src.DeliveryAddress.Latitude,
                 Longitude = src.DeliveryAddress.Longitude,
-                Storage = src.DeliveryAddress.Storage == null ? null : new Storage
-                {
-                    Id = src.DeliveryAddress.Storage.Id,
-                    Shop = src.DeliveryAddress.Storage.Shop == null ? null : new Shop
-                    {
-                        Id = src.DeliveryAddress.Storage.Shop.Id,
-                        PhotoUrl = src.DeliveryAddress.Storage.Shop.PhotoUrl,
-                        WorkHours = src.DeliveryAddress.Storage.Shop.WorkHours
-                    }
-                }
+                //Storage = src.DeliveryAddress.Storage == null ? null : new Storage
+                //{
+                //    Id = src.DeliveryAddress.Storage.Id,
+                //    Shop = src.DeliveryAddress.Storage.Shop == null ? null : new Shop
+                //    {
+                //        Id = src.DeliveryAddress.Storage.Shop.Id,
+                //        PhotoUrl = src.DeliveryAddress.Storage.Shop.PhotoUrl,
+                //        WorkHours = src.DeliveryAddress.Storage.Shop.WorkHours
+                //    }
+                //}
             }))
         .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => src.OrderDate))
         .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))
