@@ -12,7 +12,7 @@ namespace HyggyBackend.BLL.DTO
         public long Id { get; set; }
         public string Name { get; set; }
         public string JSONStructureFilePath { get; set; }
-        public WareCategory1DTO WareCategory1 { get; set; }
-        public ICollection<WareCategory3DTO> WaresCategory3 { get; set; }
+        public WareCategory1DTO? WareCategory1 { get; set; }
+        public ICollection<WareCategory3DTO>? WaresCategory3 { get; set; } = new List<WareCategory3DTO>();
     }
 }

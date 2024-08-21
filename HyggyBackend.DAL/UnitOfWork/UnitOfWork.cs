@@ -16,6 +16,7 @@ namespace HyggyBackend.DAL.UnitOfWork
         private readonly HyggyContext _context;
         private IWareRepository _wares;
         private IShopRepository _shops;
+        private ICustomerRepository _customers;
         private ShopEmployeeRepository _shopEmployees;
         private StorageEmployeeRepository _storageEmployees;
         private IProffessionRepository _proffessions;
@@ -84,7 +85,15 @@ namespace HyggyBackend.DAL.UnitOfWork
                 return _orders;
             }
         }
-
+        public ICustomerRepository Customers
+        {
+            get
+            {
+                if (_customers == null)
+                    _customers = new CustomerRepository(_context);
+                return _customers;
+            }
+        }
 
         public async Task Save()
         {

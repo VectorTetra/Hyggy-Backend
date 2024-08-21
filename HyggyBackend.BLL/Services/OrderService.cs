@@ -66,7 +66,7 @@ namespace HyggyBackend.BLL.Services
                         Price = oi.Ware.Price,
                         Discount = oi.Ware.Discount,
                         IsDeliveryAvailable = oi.Ware.IsDeliveryAvailable,
-                        Category3 = new WareCategory3DTO
+                        WareCategory3 = new WareCategory3DTO
                         {
                             Id = oi.Ware.WareCategory3.Id,
                             Name = oi.Ware.WareCategory3.Name,
@@ -151,16 +151,16 @@ namespace HyggyBackend.BLL.Services
                     IsDeliveryAvailable = dto.Ware.IsDeliveryAvailable,
                     WareCategory3 = new WareCategory3
                     {
-                        Id = dto.Ware.Category3.Id,
-                        Name = dto.Ware.Category3.Name,
+                        Id = dto.Ware.WareCategory3.Id,
+                        Name = dto.Ware.WareCategory3.Name,
                         WareCategory2 = new WareCategory2
                         {
-                            Id = dto.Ware.Category3.WareCategory2.Id,
-                            Name = dto.Ware.Category3.WareCategory2.Name,
+                            Id = dto.Ware.WareCategory3.WareCategory2.Id,
+                            Name = dto.Ware.WareCategory3.WareCategory2.Name,
                             WareCategory1 = new WareCategory1
                             {
-                                Id = dto.Ware.Category3.WareCategory2.WareCategory1.Id,
-                                Name = dto.Ware.Category3.WareCategory2.WareCategory1.Name
+                                Id = dto.Ware.WareCategory3.WareCategory2.WareCategory1.Id,
+                                Name = dto.Ware.WareCategory3.WareCategory2.WareCategory1.Name
                             }
                         }
                     },

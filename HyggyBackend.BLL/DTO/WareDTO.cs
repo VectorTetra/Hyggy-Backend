@@ -11,15 +11,15 @@ namespace HyggyBackend.BLL.DTO
     {
         public long Id { get; set; }
         public long Article { get; set; }
-        public WareCategory3DTO Category3 { get; set; }
+        public WareCategory3DTO? WareCategory3 { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public float Price { get; set; }
         public float Discount { get; set; }
         public bool IsDeliveryAvailable { get; set; }
-        public WareStatusDTO Status { get; set; }
-        public ICollection<WareImageDTO> Images { get; set; }
-        public ICollection<WarePriceHistory> PriceHistories { get; set; }
+        public WareStatusDTO? Status { get; set; }
+        public ICollection<WareImageDTO>? Images { get; set; } = new List<WareImageDTO>();
+        public ICollection<WarePriceHistoryDTO>? PriceHistories { get; set; } = new List<WarePriceHistoryDTO>();
 
         //public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     }

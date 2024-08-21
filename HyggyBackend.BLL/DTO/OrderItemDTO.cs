@@ -12,7 +12,7 @@ namespace HyggyBackend.BLL.DTO
         public long Id { get; set; }
         public int Count { get; set; }
         //public Order Order { get; set; }
-        public WareDTO Ware { get; set; }
-        public WarePriceHistoryDTO PriceHistory { get; set; }
+        public WareDTO? Ware { get; set; }
+        public WarePriceHistoryDTO? PriceHistory { get; set; }
     }
 }
