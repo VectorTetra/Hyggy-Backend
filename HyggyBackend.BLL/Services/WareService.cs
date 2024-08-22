@@ -105,7 +105,7 @@ namespace HyggyBackend.BLL.Services
             })))
             .ForPath(c => c.PriceHistories, opt => opt.MapFrom(d => d.PriceHistories.Select(ph => new WarePriceHistoryDTO
             {
-                Id = ph.Id,
+                Id = ph.Id, 
                 Price = ph.Price,
                 EffectiveDate = ph.EffectiveDate,
                 Ware = ph.Ware

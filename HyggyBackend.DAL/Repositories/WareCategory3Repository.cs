@@ -21,53 +21,64 @@ namespace HyggyBackend.DAL.Repositories
 
         public async Task<IEnumerable<WareCategory3>> GetPagedCategories(int pageNumber, int pageSize)
         {
-            return _context.WareCategories3
+            return await _context.WareCategories3
                 .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize);
+                .Take(pageSize).ToListAsync();
         }
         public async Task<IEnumerable<WareCategory3>> GetByNameSubstring(string nameSubstring)
         {
-            return _context.WareCategories3.Where(x => x.Name.Contains(nameSubstring));
+            return await _context.WareCategories3.Where(x => x.Name.Contains(nameSubstring)).ToListAsync();
         }
         public async Task<IEnumerable<WareCategory3>> GetByJSONStructureFilePathSubstring(string JSONStructureFilePathSubstring)
         {
-            return _context.WareCategories3.Where(x => x.JSONStructureFilePath.Contains(JSONStructureFilePathSubstring));
+            return await _context.WareCategories3.Where(x => x.JSONStructureFilePath.Contains(JSONStructureFilePathSubstring)).ToListAsync();
         }
         public async Task<IEnumerable<WareCategory3>> GetByWareCategory1Id(long id)
         {
-            return _context.WareCategories3.Where(x => x.WareCategory2.WareCategory1.Id == id);
+            return await _context.WareCategories3.Where(x => x.WareCategory2.WareCategory1.Id == id).ToListAsync();
         }
         public async Task<IEnumerable<WareCategory3>> GetByWareCategory1NameSubstring(string WareCategory1NameSubstring)
         {
-            return _context.WareCategories3.Where(x => x.WareCategory2.WareCategory1.Name.Contains(WareCategory1NameSubstring));
+            return await _context.WareCategories3.Where(x => x.WareCategory2.WareCategory1.Name.Contains(WareCategory1NameSubstring)).ToListAsync();
         }
         public async Task<IEnumerable<WareCategory3>> GetByWareCategory2Id(long id)
         {
-            return _context.WareCategories3.Where(x => x.WareCategory2.Id == id);
+            return await _context.WareCategories3.Where(x => x.WareCategory2.Id == id).ToListAsync();
         }
         public async Task<IEnumerable<WareCategory3>> GetByWareCategory2NameSubstring(string WareCategory3NameSubstring)
         {
-            return _context.WareCategories3.Where(x => x.WareCategory2.Name.Contains(WareCategory3NameSubstring));
+            return await _context.WareCategories3.Where(x => x.WareCategory2.Name.Contains(WareCategory3NameSubstring)).ToListAsync();
         }
         public async Task<IEnumerable<WareCategory3>> GetByWareId(long id)
         {
-            return _context.WareCategories3.Where(x => x.Wares.Any(m => m.Id == id));
+            return await _context.WareCategories3.Where(x => x.Wares.Any(m => m.Id == id)).ToListAsync();
         }
         public async Task<IEnumerable<WareCategory3>> GetByWareArticle(long Article)
         {
-            return _context.WareCategories3.Where(x => x.Wares.Any(m => m.Article == Article));
+            return await _context.WareCategories3.Where(x => x.Wares.Any(m => m.Article == Article)).ToListAsync();
         }
         public async Task<IEnumerable<WareCategory3>> GetByWareNameSubstring(string WareNameSubstring)
         {
-            return _context.WareCategories3.Where(x => x.Wares.Any(m => m.Name.Contains(WareNameSubstring)));
+            return await _context.WareCategories3.Where(x => x.Wares.Any(m => m.Name.Contains(WareNameSubstring))).ToListAsync();
         }
         public async Task<IEnumerable<WareCategory3>> GetByWareDescriptionSubstring(string WareDescriptionSubstring)
         {
-            return _context.WareCategories3.Where(x => x.Wares.Any(m => m.Description.Contains(WareDescriptionSubstring)));
+            return await _context.WareCategories3.Where(x => x.Wares.Any(m => m.Description.Contains(WareDescriptionSubstring))).ToListAsync();
         }
         public async Task<IEnumerable<WareCategory3>> GetByQuery(WareCategory3QueryDAL query)
         {
             var WareCategories3Collection = new List<IEnumerable<WareCategory3>>();
+
+
+            if(query.Id != null)
+            {
+                WareCategories3Collection.Add(new List<WareCategory3> { await GetById(query.Id.Value) });
+            }
+
+            if (query.NameSubstring != null)
+            {
+                WareCategories3Collection.Add(await GetByNameSubstring(query.NameSubstring));
+            }
 
             if (query.JSONStructureFilePathSubstring != null)
             {
@@ -105,7 +116,16 @@ namespace HyggyBackend.DAL.Repositories
             {
                 WareCategories3Collection.Add(await GetByWareDescriptionSubstring(query.WareDescriptionSubstring));
             }
-
+            if (!WareCategories3Collection.Any())
+            {
+                return new List<WareCategory3>();
+            }
+            if (query.PageNumber != null && query.PageSize != null)
+            {
+                return WareCategories3Collection.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList())
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value);
+            }
             return WareCategories3Collection.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
         }
         public async Task Create(WareCategory3 category3)
