@@ -137,7 +137,7 @@ namespace HyggyBackend.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<ActionResult<ProffessionDTO>> DeleteProffession(long id)
         {
             try

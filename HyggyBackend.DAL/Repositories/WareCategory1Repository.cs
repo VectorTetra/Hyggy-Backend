@@ -62,6 +62,16 @@ namespace HyggyBackend.DAL.Repositories
         {
             var WareCategories1Collection = new List<IEnumerable<WareCategory1>>();
 
+            if (query.Id != null)
+            {
+                WareCategories1Collection.Add(await _context.WareCategories1.Where(x => x.Id == query.Id).ToListAsync());
+            }
+
+            if (query.NameSubstring != null)
+            {
+                WareCategories1Collection.Add(await GetByNameSubstring(query.NameSubstring));
+            }
+
             if (query.JSONStructureFilePathSubstring != null)
             {
                 WareCategories1Collection.Add(await GetByJSONStructureFilePathSubstring(query.JSONStructureFilePathSubstring));
@@ -85,6 +95,18 @@ namespace HyggyBackend.DAL.Repositories
             if (query.WareCategory3NameSubstring != null)
             {
                 WareCategories1Collection.Add(await GetByWareCategory3NameSubstring(query.WareCategory3NameSubstring));
+            }
+
+            if (!WareCategories1Collection.Any())
+            {
+                return new List<WareCategory1>();
+            }
+
+            if (query.PageNumber != null && query.PageSize != null)
+            {
+                return WareCategories1Collection.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList())
+                   .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                   .Take(query.PageSize.Value);
             }
 
             return WareCategories1Collection.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());

@@ -2,6 +2,7 @@
 {
     public class WareCategory3QueryDAL
     {
+        public long? Id { get; set; }
         public string? NameSubstring { get; set; }
         public string? JSONStructureFilePathSubstring { get; set; }
         public long? WareCategory1Id { get; set; }
@@ -12,5 +13,7 @@
         public string? WareNameSubstring { get; set; }
         public long? WareArticle { get; set; }
         public string? WareDescriptionSubstring { get; set; }
+        public int? PageSize { get; set; }
+        public int? PageNumber { get; set; }
     }
 }
