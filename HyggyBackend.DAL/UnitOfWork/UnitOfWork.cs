@@ -19,6 +19,7 @@ namespace HyggyBackend.DAL.UnitOfWork
         private IWareCategory1Repository _categories1;
         private IWareCategory2Repository _categories2;
         private IWareCategory3Repository _categories3;
+        private IWareStatusRepository _wareStatuses;
 
 
         public UnitOfWork(HyggyContext context)
@@ -117,6 +118,16 @@ namespace HyggyBackend.DAL.UnitOfWork
                 if (_categories3 == null)
                     _categories3 = new WareCategory3Repository(_context);
                 return _categories3;
+            }
+        }
+
+        public IWareStatusRepository WareStatuses
+        {
+            get
+            {
+                if (_wareStatuses == null)
+                    _wareStatuses = new WareStatusRepository(_context);
+                return _wareStatuses;
             }
         }
 
