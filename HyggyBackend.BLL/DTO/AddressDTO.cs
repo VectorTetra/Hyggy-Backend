@@ -9,7 +9,7 @@ namespace HyggyBackend.BLL.DTO
 {
     public class AddressDTO
     {
-        public long Id;
+        public long Id {  get; set; }
 
         // Адреса доставки, розділена на компоненти
         public string Street { get; set; } // Назва вулиці

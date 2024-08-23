@@ -19,9 +19,11 @@ namespace HyggyBackend.BLL.Services
 			Database = database;
 			_mapper = mapper;
 		}
-		public Task<IEnumerable<ShopDTO>> GetAll()
+		public async Task<IEnumerable<ShopDTO>> GetAll()
 		{
-			throw new NotImplementedException();
+			var shops = await Database.Shops.GetAll();
+
+			return _mapper.Map<IEnumerable<Shop>, IEnumerable<ShopDTO>>(shops);
 		}
 		public async Task<IEnumerable<ShopDTO>> GetPaginatedShops(int? page)
 		{
@@ -94,15 +96,24 @@ namespace HyggyBackend.BLL.Services
 
 			return true;
 		}
-		public void Update(ShopDTO shopDTO)
+		public async Task<bool> Update(ShopDTO shopDTO)
 		{
 			var shop = _mapper.Map<Shop>(shopDTO);
 
 			Database.Shops.Update(shop);
+			if(! await Database.Save() ) 
+				return false;
+
+			return true;
 		}
-		public async Task Delete(long id)
+		public async Task<bool> Delete(long id)
 		{
 			await Database.Shops.Delete(id);
+
+			if (!await Database.Save())
+				return false;
+
+			return true;
 		}
 
 		public async Task<bool> IsShopExist(long id)

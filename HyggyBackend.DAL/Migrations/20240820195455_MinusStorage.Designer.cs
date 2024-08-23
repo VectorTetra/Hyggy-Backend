@@ -4,6 +4,7 @@ using HyggyBackend.DAL.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HyggyBackend.DAL.Migrations
 {
     [DbContext(typeof(HyggyContext))]
-    partial class HyggyContextModelSnapshot : ModelSnapshot
+    [Migration("20240820195455_MinusStorage")]
+    partial class MinusStorage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -198,9 +201,7 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AddressId")
-                        .IsUnique()
-                        .HasFilter("[AddressId] IS NOT NULL");
+                    b.HasIndex("AddressId");
 
                     b.ToTable("Shops");
                 });
@@ -522,13 +523,13 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "83df5277-a7e2-4f13-91cd-8448e7bd1bdd",
+                            Id = "404ca1a1-aa92-479d-b562-79bf01874d1d",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "0f524de0-0c2d-4722-925b-0f6bc58d2f25",
+                            Id = "649cf52f-c2ed-4e14-b010-2e691d1b0d64",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -655,7 +656,7 @@ namespace HyggyBackend.DAL.Migrations
                         .ValueGeneratedOnUpdateSometimes()
                         .HasColumnType("datetime2");
 
-                    b.Property<long>("ShopId")
+                    b.Property<long?>("ShopId")
                         .HasColumnType("bigint");
 
                     b.HasIndex("ShopId");
@@ -742,9 +743,8 @@ namespace HyggyBackend.DAL.Migrations
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Shop", b =>
                 {
                     b.HasOne("HyggyBackend.DAL.Entities.Address", "Address")
-                        .WithOne("Shop")
-                        .HasForeignKey("HyggyBackend.DAL.Entities.Shop", "AddressId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .WithMany()
+                        .HasForeignKey("AddressId");
 
                     b.Navigation("Address");
                 });
@@ -880,13 +880,9 @@ namespace HyggyBackend.DAL.Migrations
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Employes.ShopEmployee", b =>
                 {
-                    b.HasOne("HyggyBackend.DAL.Entities.Shop", "Shop")
+                    b.HasOne("HyggyBackend.DAL.Entities.Shop", null)
                         .WithMany("ShopEmployees")
-                        .HasForeignKey("ShopId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Shop");
+                        .HasForeignKey("ShopId");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Employes.StorageEmployee", b =>
@@ -903,9 +899,6 @@ namespace HyggyBackend.DAL.Migrations
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Address", b =>
                 {
                     b.Navigation("Orders");
-
-                    b.Navigation("Shop")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Order", b =>

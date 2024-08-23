@@ -17,7 +17,6 @@ namespace HyggyBackend.BLL.Services.Employees
 			Database = database;
 			_mapper = mapper;
 		}
-
 		public async Task<IEnumerable<StorageEmployeeDTO>> GetAllAsync()
 		{
 			var employees = await Database.StorageEmployees.GetAllAsync();
@@ -76,6 +75,11 @@ namespace HyggyBackend.BLL.Services.Employees
 		}
 
 		public Task<ShopEmployeeDTO> Login(LoginDto login)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<IEnumerable<StorageEmployeeDTO>> GetEmployeesByWorkPlaceId(long id)
 		{
 			throw new NotImplementedException();
 		}

@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HyggyBackend.Controllers
 {
+	[ApiController]
+	[Route("api/[controller]")]
 	public class AddressController : Controller
 	{
 		private readonly IAddressService _addressService;
@@ -25,7 +27,7 @@ namespace HyggyBackend.Controllers
 		}
 		[HttpGet]
 		[Route("addresses/{id}")]
-		public async Task<IActionResult> GetShopById(long id)
+		public async Task<IActionResult> GetAddressById(long id)
 		{
 			if (!await _addressService.IsAddressExist(id))
 				return NotFound();
@@ -38,14 +40,52 @@ namespace HyggyBackend.Controllers
 			return Ok(address);
 		}
 		[HttpPost]
-		[Route("add-new-shop")]
-		public async Task<IActionResult> CreateShop([FromBody] AddressDTO addressDto)
+		[Route("add-new-address")]
+		public async Task<IActionResult> CreateAddress([FromBody] AddressDTO addressDto)
 		{
 			if (!await _addressService.CreateAsync(addressDto))
-				return BadRequest(ModelState);
+			{
+				ModelState.AddModelError("", "Щось пішло не так при створенні адреси");
+				return StatusCode(500, ModelState);
+			}
 
 			return Ok(addressDto);
 		}
+		[HttpPut]
+		[Route("update-address")]
+		public async Task<IActionResult> UpdateAddress([FromBody] AddressDTO address)
+		{
+			if(address == null)
+				return BadRequest(ModelState);
 
+			if(!await _addressService.IsAddressExist(address.Id))
+				return NotFound();
+
+			if(!ModelState.IsValid) 
+				return BadRequest(ModelState);
+
+			if(!await _addressService.Update(address))
+			{
+				ModelState.AddModelError("", "Щось пішло не так при оновленні адреси");
+				return StatusCode(500, ModelState);
+			}
+			return Ok("Адреса вдало оновлена");
+		}
+		[HttpDelete("{addressId}")]
+		public async Task<IActionResult> DeleteShop(int addressId)
+		{
+			if (!await _addressService.IsAddressExist(addressId))
+				return NotFound();
+
+			if(!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			if(!await _addressService.DeleteAsync(addressId))
+			{
+				ModelState.AddModelError("", "Щось пішло не так при видаленні адреси");
+				return StatusCode(500, ModelState);
+			}
+			return Ok("Адресу видалено");
+		}
 	}
 }

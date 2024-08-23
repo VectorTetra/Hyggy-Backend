@@ -4,6 +4,7 @@ using HyggyBackend.DAL.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HyggyBackend.DAL.Migrations
 {
     [DbContext(typeof(HyggyContext))]
-    partial class HyggyContextModelSnapshot : ModelSnapshot
+    [Migration("20240820202205_AddedShopId")]
+    partial class AddedShopId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -198,9 +201,7 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AddressId")
-                        .IsUnique()
-                        .HasFilter("[AddressId] IS NOT NULL");
+                    b.HasIndex("AddressId");
 
                     b.ToTable("Shops");
                 });
@@ -522,13 +523,13 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "83df5277-a7e2-4f13-91cd-8448e7bd1bdd",
+                            Id = "43fbb869-1829-4439-9691-073103bddb6f",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "0f524de0-0c2d-4722-925b-0f6bc58d2f25",
+                            Id = "e0838325-42ed-4472-a7b0-da169e9880a0",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -742,9 +743,8 @@ namespace HyggyBackend.DAL.Migrations
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Shop", b =>
                 {
                     b.HasOne("HyggyBackend.DAL.Entities.Address", "Address")
-                        .WithOne("Shop")
-                        .HasForeignKey("HyggyBackend.DAL.Entities.Shop", "AddressId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .WithMany()
+                        .HasForeignKey("AddressId");
 
                     b.Navigation("Address");
                 });
@@ -903,9 +903,6 @@ namespace HyggyBackend.DAL.Migrations
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Address", b =>
                 {
                     b.Navigation("Orders");
-
-                    b.Navigation("Shop")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Order", b =>

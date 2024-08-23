@@ -11,7 +11,7 @@ namespace HyggyBackend.BLL.Helper
         public MappingProfiles()
         {
             CreateMap<Shop, ShopDTO>()
-                .ForMember(dest => dest.StorageId, opts => opts.MapFrom(src => src.StorageId))
+                //.ForMember(dest => dest.StorageId, opts => opts.MapFrom(src => src.StorageId))
                 .ForMember(dest => dest.AddressId, opts => opts.MapFrom(src => src.AddressId))
                 .ForMember(dest => dest.OrderIds, opts => opts.MapFrom(src => src.Orders.Select(o => o.Id)));
             CreateMap<ShopDTO, Shop>();

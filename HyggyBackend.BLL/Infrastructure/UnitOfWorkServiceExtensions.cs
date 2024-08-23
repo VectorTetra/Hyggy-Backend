@@ -17,8 +17,6 @@ namespace HyggyBackend.BLL.Infrastructure
 			services.AddScoped<IShopService, ShopService>();
             services.AddScoped<IAddressService, AddressService>();
 			services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-			
 		}
     }
 }

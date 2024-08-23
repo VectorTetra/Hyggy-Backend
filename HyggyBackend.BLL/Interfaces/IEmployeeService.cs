@@ -10,6 +10,7 @@ namespace HyggyBackend.BLL.Interfaces
 		
 		Task<IEnumerable<T>> GetPaginatedEmployeesAsync(int? page);
 		Task<IEnumerable<T>> GetEmployeesByProfessionAsync(string professionName);
+		Task<IEnumerable<T>> GetEmployeesByWorkPlaceId(long id);
 		Task<IEnumerable<T>> GetEmployeesByDateOfBirthAsync(DateTime date);
 
 		Task<T?> GetByIdAsync(string id);

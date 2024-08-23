@@ -74,9 +74,12 @@ namespace HyggyBackend.DAL.Repositories
 		{
 			await _context.Shops.AddAsync(shop);
 		}
-		public void Update(Shop shop)
+		public void Update(Shop updatedShop)
 		{
-			_context.Shops.Update(shop);
+			Shop? shop = _context.Shops.Where(s => s.Id == updatedShop.Id).FirstOrDefault();
+			shop.PhotoUrl = updatedShop.PhotoUrl;
+			shop.WorkHours = updatedShop.WorkHours;
+			shop.AddressId = updatedShop.AddressId;
 		}
 		public async Task Delete(long id)
 		{

@@ -16,11 +16,6 @@ namespace HyggyBackend.Controllers
         {
             _service = service;
         }
-		[HttpGet]
-        public IActionResult Index()
-		{
-			return Ok("Everthing all right");
-		}
 		[HttpPost("register")]
 		public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
 		{
@@ -33,15 +28,22 @@ namespace HyggyBackend.Controllers
 			var result = await _service.Login(loginDto);
 			return Ok(result);
 		}
-  //      [HttpGet]
-  //      public async Task<IActionResult> GetEmployeeById(string id)
+		//      [HttpGet]
+		//      public async Task<IActionResult> GetEmployeeById(string id)
 		//{
 
 		//}
-		//[HttpGet]
-		//public async Task<IActionResult> GetAll()
-		//{
-		//	return Ok(_service.GetAllAsync());
-		//}
+		[HttpGet("shop-employees")]
+		public async Task<IActionResult> GetAll()
+		{
+			return Ok(_service.GetAllAsync());
+		}
+		[HttpGet("shop-employees/{id}")]
+		public async Task<IActionResult> GetAllByShopId(long id)
+		{
+			return Ok(await _service.GetEmployeesByWorkPlaceId(id));
+		}
+
+
 	}
 }

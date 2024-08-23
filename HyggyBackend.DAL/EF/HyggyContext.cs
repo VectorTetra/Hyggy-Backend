@@ -60,8 +60,12 @@ namespace HyggyBackend.DAL.EF
 				.HasForeignKey(o => o.ShopId)
 				.OnDelete(DeleteBehavior.NoAction);
 
+            builder.Entity<Shop>()
+                .HasOne(s => s.Address)
+                .WithOne(a => a.Shop)
+                .OnDelete(DeleteBehavior.SetNull);
 
-			List<IdentityRole> roles = new List<IdentityRole>
+            List <IdentityRole> roles = new List<IdentityRole>
 			{
 				new IdentityRole
 				{

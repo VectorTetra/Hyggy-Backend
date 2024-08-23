@@ -17,15 +17,16 @@ namespace HyggyBackend.BLL.Services.Employees
         private readonly UserManager<User> _userManager;
         private readonly ITokenService _tokenService;
 		private readonly SignInManager<User> _signInManager;
-        public ShopEmployeeDTOService(IUnitOfWork database, IMapper mapper, UserManager<User> userManager, ITokenService tokenService, SignInManager<User> signInManager)
+		private readonly IShopService _shopService;
+        public ShopEmployeeDTOService(IUnitOfWork database, IMapper mapper, UserManager<User> userManager, ITokenService tokenService, SignInManager<User> signInManager, IShopService shopService)
 		{
 			Database = database;
 			_mapper = mapper;
 			_userManager = userManager;
 			_tokenService = tokenService;
+			_shopService = shopService;
 			_signInManager = signInManager;
 		}
-
 		public async Task<IEnumerable<ShopEmployeeDTO>> GetAllAsync()
         {
             var employees = await Database.ShopEmployees.GetAllAsync();
@@ -72,6 +73,7 @@ namespace HyggyBackend.BLL.Services.Employees
 				{
 					UserName = shopEmployee.UserName,
 					Email = shopEmployee.Email,
+					ShopId = shopEmployee.ShopId
 				};
 
 				var employee = _mapper.Map<ShopEmployee>(emloyeeDto);
@@ -115,5 +117,16 @@ namespace HyggyBackend.BLL.Services.Employees
 
 			return null;
 		}
-    }
+
+		public async Task<IEnumerable<ShopEmployeeDTO>> GetEmployeesByWorkPlaceId(long id)
+		{
+			var shop = await Database.Shops.GetById(id);
+			if (shop == null)
+				return null;
+
+			var employees = shop.ShopEmployees.ToList();
+
+			return _mapper.Map<IEnumerable<ShopEmployeeDTO>>(employees);
+		}
+	}
 }

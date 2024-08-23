@@ -25,9 +25,16 @@ namespace HyggyBackend.DAL.Repositories
 		{
 			await _context.Addresses.AddAsync(address);
 		}
-		public void Update(Address address)
+		public void Update(Address updatedAddress)
 		{
-			_context.Addresses.Update(address);
+			Address? address = _context.Addresses.Where(a => a.Id == updatedAddress.Id).FirstOrDefault();
+			address.Street = updatedAddress.Street;
+			address.City = updatedAddress.City;
+			address.State = updatedAddress.State;
+			address.PostalCode = updatedAddress.PostalCode;
+			address.HouseNumber = updatedAddress.HouseNumber;
+			address.Latitude = updatedAddress.Latitude;
+			address.Longitude = updatedAddress.Longitude;
 		}
 		public async Task DeleteAsync(long id)
 		{
