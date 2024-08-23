@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HyggyBackend.DAL.Queries
+﻿namespace HyggyBackend.DAL.Queries
 {
     public class WareCategory3QueryDAL
     {
