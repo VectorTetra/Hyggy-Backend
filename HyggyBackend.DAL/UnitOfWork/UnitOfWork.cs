@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HyggyBackend.DAL.EF;
+using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Entities.Employes;
 using HyggyBackend.DAL.Interfaces;
 using HyggyBackend.DAL.Repositories;
@@ -20,6 +21,7 @@ namespace HyggyBackend.DAL.UnitOfWork
         private StorageEmployeeRepository _storageEmployees;
         private IProffessionRepository _proffessions;
         private IOrderRepository _orders;
+        private IOrderItemRepository _orderItems;
 
 
         public UnitOfWork(HyggyContext context)
@@ -82,6 +84,16 @@ namespace HyggyBackend.DAL.UnitOfWork
                 if (_orders == null)
                     _orders = new OrderRepository(_context);
                 return _orders;
+            }
+        }
+
+        public IOrderItemRepository OrderItems
+        {
+            get
+            {
+                if (_orderItems == null)
+                    _orderItems = new OrderItemsRepository(_context);
+                return _orderItems;
             }
         }
 

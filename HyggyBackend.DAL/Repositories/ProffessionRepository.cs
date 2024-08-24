@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using HyggyBackend.DAL.Queries;
 using HyggyBackend.DAL.Entities.Employes;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 
 namespace HyggyBackend.DAL.Repositories
@@ -52,6 +53,11 @@ namespace HyggyBackend.DAL.Repositories
         public async Task<IEnumerable<Proffession>> GetByQuery(ProffessionQueryDAL queryDAL)
         {
             var proffessionCollections = new List<IEnumerable<Proffession>>();
+
+            if (queryDAL.Id != null)
+            {
+                proffessionCollections.Add(new List<Proffession> { await GetById(queryDAL.Id.Value) });
+            }
 
             if (queryDAL.Name != null)
             {
