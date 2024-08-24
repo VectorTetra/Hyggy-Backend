@@ -10,8 +10,8 @@ namespace HyggyBackend.BLL.Interfaces
 		Task<AddressDTO?> GetByIdAsync(long id);
 		Task<bool> IsAddressExist(long id);
 
-		Task<bool> CreateAsync(AddressDTO address);
-		Task<bool> Update(AddressDTO address);
-		Task<bool> DeleteAsync(long id);
+		Task<AddressDTO> CreateAsync(AddressDTO address);
+		void Update(AddressDTO address);
+		Task DeleteAsync(long id);
 	}
 }

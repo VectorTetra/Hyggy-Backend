@@ -43,12 +43,12 @@ namespace HyggyBackend.Controllers
 		[Route("add-new-address")]
 		public async Task<IActionResult> CreateAddress([FromBody] AddressDTO addressDto)
 		{
-			if (!await _addressService.CreateAsync(addressDto))
-			{
-				ModelState.AddModelError("", "Щось пішло не так при створенні адреси");
-				return StatusCode(500, ModelState);
-			}
-
+			//if (!await _addressService.CreateAsync(addressDto))
+			//{
+			//	ModelState.AddModelError("", "Щось пішло не так при створенні адреси");
+			//	return StatusCode(500, ModelState);
+			//}
+			await _addressService.CreateAsync(addressDto);
 			return Ok(addressDto);
 		}
 		[HttpPut]
@@ -64,11 +64,12 @@ namespace HyggyBackend.Controllers
 			if(!ModelState.IsValid) 
 				return BadRequest(ModelState);
 
-			if(!await _addressService.Update(address))
-			{
-				ModelState.AddModelError("", "Щось пішло не так при оновленні адреси");
-				return StatusCode(500, ModelState);
-			}
+			//if(!await _addressService.Update(address))
+			//{
+			//	ModelState.AddModelError("", "Щось пішло не так при оновленні адреси");
+			//	return StatusCode(500, ModelState);
+			//}
+			_addressService.Update(address);
 			return Ok("Адреса вдало оновлена");
 		}
 		[HttpDelete("{addressId}")]
@@ -80,11 +81,12 @@ namespace HyggyBackend.Controllers
 			if(!ModelState.IsValid)
 				return BadRequest(ModelState);
 
-			if(!await _addressService.DeleteAsync(addressId))
-			{
-				ModelState.AddModelError("", "Щось пішло не так при видаленні адреси");
-				return StatusCode(500, ModelState);
-			}
+			//if(!await _addressService.DeleteAsync(addressId))
+			//{
+			//	ModelState.AddModelError("", "Щось пішло не так при видаленні адреси");
+			//	return StatusCode(500, ModelState);
+			//}
+			await _addressService.DeleteAsync(addressId);
 			return Ok("Адресу видалено");
 		}
 	}

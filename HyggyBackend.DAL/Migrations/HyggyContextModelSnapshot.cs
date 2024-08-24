@@ -522,13 +522,13 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "83df5277-a7e2-4f13-91cd-8448e7bd1bdd",
+                            Id = "2d792123-c7d6-4ce2-a0e0-28b54f1dc85d",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "0f524de0-0c2d-4722-925b-0f6bc58d2f25",
+                            Id = "1025e107-0c3f-42c4-b473-533e846e6114",
                             Name = "User",
                             NormalizedName = "USER"
                         });

@@ -26,36 +26,27 @@ namespace HyggyBackend.BLL.Services
 			var address = await Database.Addresses.GetByIdAsync(id);
 			return _mapper.Map<AddressDTO>(address);
 		}
-		public async Task<bool> CreateAsync(AddressDTO addressDto)
+		public async Task<AddressDTO> CreateAsync(AddressDTO addressDto)
 		{
 			var address = _mapper.Map<Address>(addressDto);
-			if (address == null)
-				return false;
-
 			await Database.Addresses.CreateAsync(address);
-			if(!await Database.Save())
-				return false;
+			await Database.Save();
 
-			return true;
+			return addressDto;
 		}
-		public async Task<bool> Update(AddressDTO addressDto)
+		public void Update(AddressDTO addressDto)
 		{
 			var address = _mapper.Map<Address>(addressDto);
 
 			Database.Addresses.Update(address);
-			if(! await Database.Save()) 
-				return false;
+            Database.Save();
 
-			return true;
 		}
-		public async Task<bool> DeleteAsync(long id)
+		public async Task DeleteAsync(long id)
 		{
 			await Database.Addresses.DeleteAsync(id);
+			await Database.Save();
 
-			if(!await Database.Save() ) 
-				return false;
-
-			return true;
 		}
 
 		public async Task<bool> IsAddressExist(long id)

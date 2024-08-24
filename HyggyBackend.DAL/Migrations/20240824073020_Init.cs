@@ -14,7 +14,7 @@ namespace HyggyBackend.DAL.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Address",
+                name: "Addresses",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -29,7 +29,7 @@ namespace HyggyBackend.DAL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Address", x => x.Id);
+                    table.PrimaryKey("PK_Addresses", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -109,17 +109,17 @@ namespace HyggyBackend.DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PhotoUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     WorkHours = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AddressId = table.Column<long>(type: "bigint", nullable: false)
+                    AddressId = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Shops", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Shops_Address_AddressId",
+                        name: "FK_Shops_Addresses_AddressId",
                         column: x => x.AddressId,
-                        principalTable: "Address",
+                        principalTable: "Addresses",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -177,9 +177,9 @@ namespace HyggyBackend.DAL.Migrations
                 {
                     table.PrimaryKey("PK_Storages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Storages_Address_AddressId",
+                        name: "FK_Storages_Addresses_AddressId",
                         column: x => x.AddressId,
-                        principalTable: "Address",
+                        principalTable: "Addresses",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Storages_Shops_ShopId",
@@ -217,10 +217,8 @@ namespace HyggyBackend.DAL.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Surname = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Discriminator = table.Column<string>(type: "nvarchar(21)", maxLength: 21, nullable: false),
-                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ProffessionId = table.Column<long>(type: "bigint", nullable: true),
-                    ShopId1 = table.Column<long>(type: "bigint", nullable: true),
                     ShopId = table.Column<long>(type: "bigint", nullable: true),
+                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: true),
                     StorageId = table.Column<long>(type: "bigint", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -241,22 +239,11 @@ namespace HyggyBackend.DAL.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetUsers_Proffessions_ProffessionId",
-                        column: x => x.ProffessionId,
-                        principalTable: "Proffessions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_AspNetUsers_Shops_ShopId",
                         column: x => x.ShopId,
                         principalTable: "Shops",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AspNetUsers_Shops_ShopId1",
-                        column: x => x.ShopId1,
-                        principalTable: "Shops",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_AspNetUsers_Storages_StorageId",
                         column: x => x.StorageId,
@@ -400,9 +387,9 @@ namespace HyggyBackend.DAL.Migrations
                 {
                     table.PrimaryKey("PK_Orders", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Orders_Address_DeliveryAddressId",
+                        name: "FK_Orders_Addresses_DeliveryAddressId",
                         column: x => x.DeliveryAddressId,
-                        principalTable: "Address",
+                        principalTable: "Addresses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -500,8 +487,8 @@ namespace HyggyBackend.DAL.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "579f2498-9b0a-4224-82e2-c71b895508cf", null, "Admin", "ADMIN" },
-                    { "f6271734-38a7-41ed-b3a6-4ec6e380cd2b", null, "User", "USER" }
+                    { "1025e107-0c3f-42c4-b473-533e846e6114", null, "User", "USER" },
+                    { "2d792123-c7d6-4ce2-a0e0-28b54f1dc85d", null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -537,19 +524,9 @@ namespace HyggyBackend.DAL.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_ProffessionId",
-                table: "AspNetUsers",
-                column: "ProffessionId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_ShopId",
                 table: "AspNetUsers",
                 column: "ShopId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_ShopId1",
-                table: "AspNetUsers",
-                column: "ShopId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_StorageId",
@@ -601,21 +578,19 @@ namespace HyggyBackend.DAL.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Shops_AddressId",
                 table: "Shops",
-                column: "AddressId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Storages_AddressId",
-                table: "Storages",
                 column: "AddressId",
                 unique: true,
                 filter: "[AddressId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Storages_AddressId",
+                table: "Storages",
+                column: "AddressId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Storages_ShopId",
                 table: "Storages",
-                column: "ShopId",
-                unique: true,
-                filter: "[ShopId] IS NOT NULL");
+                column: "ShopId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_WareCategories2_WareCategory1Id",
@@ -670,6 +645,9 @@ namespace HyggyBackend.DAL.Migrations
                 name: "OrderItems");
 
             migrationBuilder.DropTable(
+                name: "Proffessions");
+
+            migrationBuilder.DropTable(
                 name: "WareImages");
 
             migrationBuilder.DropTable(
@@ -691,9 +669,6 @@ namespace HyggyBackend.DAL.Migrations
                 name: "Wares");
 
             migrationBuilder.DropTable(
-                name: "Proffessions");
-
-            migrationBuilder.DropTable(
                 name: "Storages");
 
             migrationBuilder.DropTable(
@@ -709,7 +684,7 @@ namespace HyggyBackend.DAL.Migrations
                 name: "WareCategories2");
 
             migrationBuilder.DropTable(
-                name: "Address");
+                name: "Addresses");
 
             migrationBuilder.DropTable(
                 name: "WareCategories1");

@@ -96,10 +96,9 @@ namespace HyggyBackend.DAL.UnitOfWork
         }
 
 
-        public async Task<bool> Save()
+        public async Task Save()
         {
            var saved = await _context.SaveChangesAsync();
-           return saved > 0 ? true : false;
         }
     }
 }

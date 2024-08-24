@@ -19,6 +19,7 @@ namespace HyggyBackend.BLL.Services
 			Database = database;
 			_mapper = mapper;
 		}
+		
 		public async Task<IEnumerable<ShopDTO>> GetAll()
 		{
 			var shops = await Database.Shops.GetAll();
@@ -84,36 +85,28 @@ namespace HyggyBackend.BLL.Services
 
 			return _mapper.Map<IEnumerable<Shop>, IEnumerable<ShopDTO>>(shop);
 		}
-		public async Task<bool> Create(ShopDTO shopDTO)
+		public async Task<ShopDTO> Create(ShopDTO shopDTO)
 		{
 			var shop = _mapper.Map<Shop>(shopDTO);
-			if(shop == null)
-				return false;
 
 			await Database.Shops.Create(shop);
-			if(! await Database.Save()) 
-				return false;
+			await Database.Save();
 
-			return true;
+			return shopDTO;
 		}
-		public async Task<bool> Update(ShopDTO shopDTO)
+		public void Update(ShopDTO shopDTO)
 		{
 			var shop = _mapper.Map<Shop>(shopDTO);
 
 			Database.Shops.Update(shop);
-			if(! await Database.Save() ) 
-				return false;
+            Database.Save();
 
-			return true;
 		}
-		public async Task<bool> Delete(long id)
+		public async Task Delete(long id)
 		{
 			await Database.Shops.Delete(id);
+			await Database.Save();
 
-			if (!await Database.Save())
-				return false;
-
-			return true;
 		}
 
 		public async Task<bool> IsShopExist(long id)
@@ -121,6 +114,14 @@ namespace HyggyBackend.BLL.Services
 			var shops = await Database.Shops.GetAll();
 			
 			return shops.Any(shop => shop.Id == id);
+		}
+
+		public async Task<bool> IsShopExistByAddress(long? addressId)
+		{
+			var shops = await GetAll();
+			var shop = shops.Select(s => s.AddressId);
+
+			return shop.Any(s => s == addressId);
 		}
 	}
 }

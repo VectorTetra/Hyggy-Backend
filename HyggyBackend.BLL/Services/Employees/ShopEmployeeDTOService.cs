@@ -81,13 +81,13 @@ namespace HyggyBackend.BLL.Services.Employees
 			    
 				if (createdUser.Succeeded)
 				{
-					var roleResult = await _userManager.AddToRoleAsync(employee, "User");
+					var roleResult = await _userManager.AddToRoleAsync(employee, "Admin");
 					var token = _tokenService.CreateToken(employee);
 					return token;
 				}
 
 			// await Database.ShopEmployees.CreateAsync(employee);
-			return "Співробітник не создан";
+			return "Співробітник не зареєсторван";
 
 		}
 		public void Update(ShopEmployeeDTO shopEmployee)
@@ -107,15 +107,16 @@ namespace HyggyBackend.BLL.Services.Employees
 			var user = await _userManager.Users.FirstOrDefaultAsync(x =>  x.UserName == login.UserName.ToLower());
 
 			var result = await _signInManager.CheckPasswordSignInAsync(user, login.Password, false);
+			var shopEmployee = new ShopEmployeeDTO();
 			if(result.Succeeded)
 			{
-				var userDto = _mapper.Map<ShopEmployeeDTO>(user);
-				userDto.Token = _tokenService.CreateToken(user);
-				return userDto;
+				shopEmployee = _mapper.Map<ShopEmployeeDTO>(user);
+				shopEmployee.Token = _tokenService.CreateToken(user);
+				return shopEmployee;
 			}
 
 
-			return null;
+			return shopEmployee;
 		}
 
 		public async Task<IEnumerable<ShopEmployeeDTO>> GetEmployeesByWorkPlaceId(long id)

@@ -28,20 +28,12 @@ namespace HyggyBackend.Controllers
 			var result = await _service.Login(loginDto);
 			return Ok(result);
 		}
-		//      [HttpGet]
-		//      public async Task<IActionResult> GetEmployeeById(string id)
-		//{
-
-		//}
+		
+		
 		[HttpGet("shop-employees")]
-		public async Task<IActionResult> GetAll()
+		public async Task<IActionResult> GetAll(long shopId)
 		{
-			return Ok(_service.GetAllAsync());
-		}
-		[HttpGet("shop-employees/{id}")]
-		public async Task<IActionResult> GetAllByShopId(long id)
-		{
-			return Ok(await _service.GetEmployeesByWorkPlaceId(id));
+			return Ok(await _service.GetEmployeesByWorkPlaceId(shopId));
 		}
 
 

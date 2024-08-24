@@ -63,7 +63,8 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization(opt =>
 {
     opt.AddPolicy("StoreManagerPolicy", policy => policy.RequireRole("Store manager"));
-    opt.AddPolicy("StorekeeperPolicy", policy => policy.RequireRole("Storekeeper"));
+    opt.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+	opt.AddPolicy("StorekeeperPolicy", policy => policy.RequireRole("Storekeeper"));
     opt.AddPolicy("SellerPolicy", policy => policy.RequireRole("Seller"));
     opt.AddPolicy("AccountantPolicy", policy => policy.RequireRole("Accountant"));
     opt.AddPolicy("MainAccountantPolicy", policy => policy.RequireRole("Main Accountant"));
