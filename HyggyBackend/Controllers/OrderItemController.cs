@@ -82,11 +82,11 @@ namespace HyggyBackend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<OrderItemDTO>> CreateBookingChildren(OrderItemDTO bookingChildrenDTO)
+        public async Task<ActionResult<OrderItemDTO>> Create(OrderItemDTO orderItemDTO)
         {
             try
             {
-                var dto = await _serv.Create(bookingChildrenDTO);
+                var dto = await _serv.Create(orderItemDTO);
                 return Ok(dto);
             }
             catch (ValidationException ex)
@@ -100,11 +100,11 @@ namespace HyggyBackend.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult<OrderItemDTO>> UpdateBookingChildren(OrderItemDTO bookingChildrenDTO)
+        public async Task<ActionResult<OrderItemDTO>> Update(OrderItemDTO orderItemDTO)
         {
             try
             {
-                var dto = await _serv.Update(bookingChildrenDTO);
+                var dto = await _serv.Update(orderItemDTO);
                 return Ok(dto);
             }
             catch (ValidationException ex)
@@ -118,7 +118,7 @@ namespace HyggyBackend.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<OrderItemDTO>> DeleteBookingChildren(long id)
+        public async Task<ActionResult<OrderItemDTO>> Delete(long id)
         {
             try
             {
