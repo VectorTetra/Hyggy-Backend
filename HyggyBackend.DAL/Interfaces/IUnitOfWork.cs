@@ -25,6 +25,7 @@ namespace HyggyBackend.DAL.Interfaces
         IWareCategory3Repository Categories3 { get; }
 
         IWareStatusRepository WareStatuses { get; }
+        IWareImageRepository WareImages { get; }
         Task Save();
     }
 }

@@ -35,7 +35,6 @@ namespace HyggyBackend.Controllers
         });
 
         [HttpGet]
-        [HttpGet]
         public async Task<ActionResult<IEnumerable<WareStatusDTO>>> GetWares([FromQuery] WareStatusQueryPL query)
         {
             try

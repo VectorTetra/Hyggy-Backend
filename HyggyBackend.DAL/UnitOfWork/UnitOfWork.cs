@@ -20,6 +20,7 @@ namespace HyggyBackend.DAL.UnitOfWork
         private IWareCategory2Repository _categories2;
         private IWareCategory3Repository _categories3;
         private IWareStatusRepository _wareStatuses;
+        private IWareImageRepository _wareImages;
 
 
         public UnitOfWork(HyggyContext context)
@@ -128,6 +129,16 @@ namespace HyggyBackend.DAL.UnitOfWork
                 if (_wareStatuses == null)
                     _wareStatuses = new WareStatusRepository(_context);
                 return _wareStatuses;
+            }
+        }
+
+        public IWareImageRepository WareImages
+        {
+            get
+            {
+                if (_wareImages == null)
+                    _wareImages = new WareImageRepository(_context);
+                return _wareImages;
             }
         }
 
