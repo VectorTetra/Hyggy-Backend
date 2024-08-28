@@ -22,7 +22,7 @@ namespace HyggyBackend.BLL.Interfaces
         Task<IEnumerable<OrderDTO>> GetByOrderItemId(long orderItemId);
         Task<IEnumerable<OrderDTO>> GetByWareId(long wareId);
         Task<IEnumerable<OrderDTO>> GetByWarePriceHistoryId(long warePriceHistoryId);
-        Task<IEnumerable<OrderDTO>> GetByCustomerId(long customerId);
+        Task<IEnumerable<OrderDTO>> GetByCustomerId(string customerId);
         Task<IEnumerable<OrderDTO>> GetByShopId(long shopId);
         Task<IEnumerable<OrderDTO>> GetByQuery(OrderQueryBLL query);
         Task<OrderDTO> Create(OrderDTO order);

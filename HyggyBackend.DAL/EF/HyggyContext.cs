@@ -15,7 +15,7 @@ namespace HyggyBackend.DAL.EF
             : base(options)
         {
         }
-
+        public DbSet<Address> Addresses { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
@@ -32,7 +32,54 @@ namespace HyggyBackend.DAL.EF
         public DbSet<WareStatus> WareStatuses { get; set; }
         public DbSet<ShopEmployee> ShopEmployees { get; set; }
         public DbSet<StorageEmployee> StorageEmployees { get; set; }
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
 
+            builder.Entity<OrderItem>()
+                .HasOne(o => o.Ware)
+                .WithMany(o => o.OrderItems)
+                .HasForeignKey(o => o.WareId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<OrderItem>()
+                 .HasOne(o => o.Order)
+                 .WithMany(o => o.OrderItems)
+                 .HasForeignKey(o => o.OrderId)
+                 .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<OrderItem>()
+                .HasOne(o => o.PriceHistory)
+                .WithMany(o => o.OrderItems)
+                .HasForeignKey(o => o.PriceHistoryId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+			builder.Entity<Order>()
+				.HasOne(o => o.Shop)
+				.WithMany(o => o.Orders)
+				.HasForeignKey(o => o.ShopId)
+				.OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Shop>()
+                .HasOne(s => s.Address)
+                .WithOne(a => a.Shop)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            List <IdentityRole> roles = new List<IdentityRole>
+			{
+				new IdentityRole
+				{
+					Name = "Admin",
+					NormalizedName = "ADMIN"
+				},
+				new IdentityRole
+				{
+					Name = "User",
+					NormalizedName = "USER"
+				},
+			};
+			builder.Entity<IdentityRole>().HasData(roles);
+		}
         public class SampleContextFactory : IDesignTimeDbContextFactory<HyggyContext>
         {
             public HyggyContext CreateDbContext(string[] args)
@@ -55,4 +102,5 @@ namespace HyggyBackend.DAL.EF
             }
         }
     }
+
 }

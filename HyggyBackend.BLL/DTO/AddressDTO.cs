@@ -9,7 +9,7 @@ namespace HyggyBackend.BLL.DTO
 {
     public class AddressDTO
     {
-        public long Id;
+        public long Id {  get; set; }
 
         // Адреса доставки, розділена на компоненти
         public string Street { get; set; } // Назва вулиці
@@ -25,8 +25,8 @@ namespace HyggyBackend.BLL.DTO
         public double? Longitude { get; set; }
 
 
-		public virtual ICollection<OrderDTO> Orders { get; set; } = new List<OrderDTO>();	
+		public virtual List<long> OrderIds { get; set; } = new List<long>();	
 
-		public virtual StorageDTO? Storage { get; set; }
+		//public virtual StorageDTO? Storage { get; set; }
     }
 }

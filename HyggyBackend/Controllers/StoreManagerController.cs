@@ -8,6 +8,7 @@ namespace HyggyBackend.Controllers
     [ApiController]
     public class StoreManagerController : ControllerBase
     {
+        [HttpGet]
         public IActionResult Index()
         {
             return Ok("Ви отримали доступ як Керуючий магазином");

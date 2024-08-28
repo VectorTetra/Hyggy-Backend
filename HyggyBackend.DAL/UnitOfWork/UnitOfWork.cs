@@ -9,6 +9,7 @@ using HyggyBackend.DAL.Entities.Employes;
 using HyggyBackend.DAL.Interfaces;
 using HyggyBackend.DAL.Repositories;
 using HyggyBackend.DAL.Repositories.Employes;
+using Microsoft.AspNetCore.Identity;
 
 namespace HyggyBackend.DAL.UnitOfWork
 {
@@ -22,13 +23,22 @@ namespace HyggyBackend.DAL.UnitOfWork
         private IProffessionRepository _proffessions;
         private IOrderRepository _orders;
         private IOrderItemRepository _orderItems;
-
+        private IAddressRepository _addresses;
 
         public UnitOfWork(HyggyContext context)
         {
             _context = context;
         }
-        public IWareRepository Wares
+		public IAddressRepository Addresses
+		{
+			get
+			{
+				if (_addresses == null)
+					_addresses = new AddressRepository(_context);
+				return _addresses;
+			}
+		}
+		public IWareRepository Wares
         {
             get
             {
@@ -57,9 +67,9 @@ namespace HyggyBackend.DAL.UnitOfWork
         }
         public IEmployeeRepository<ShopEmployee> ShopEmployees
         {
-            get
-            {
-                if (_shopEmployees == null)
+			get
+			{
+				if (_shopEmployees == null)
                     _shopEmployees = new ShopEmployeeRepository(_context);
                 return _shopEmployees;
             }
@@ -100,7 +110,7 @@ namespace HyggyBackend.DAL.UnitOfWork
 
         public async Task Save()
         {
-            await _context.SaveChangesAsync();
+           var saved = await _context.SaveChangesAsync();
         }
     }
 }

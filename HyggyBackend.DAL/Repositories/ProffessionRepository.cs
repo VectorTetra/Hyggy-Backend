@@ -40,14 +40,16 @@ namespace HyggyBackend.DAL.Repositories
 
         public async Task<IEnumerable<Proffession>> GetByEmployeeName(string employeeName)
         {
-            return await _context.Proffessions
-                .Where(x => x.Employes.Any(x => x.Name.Contains(employeeName))).ToListAsync();
+            //return await _context.Proffessions
+            //    .Where(x => x.Employes.Any(x => x.Name.Contains(employeeName))).ToListAsync();
+            return null;
         }
 
         public async Task<IEnumerable<Proffession>> GetByEmployeeSurname(string employeeSurname)
         {
-            return await _context.Proffessions
-                .Where(x => x.Employes.Any(x => x.Name.Contains(employeeSurname))).ToListAsync();
+            //return await _context.Proffessions
+            //    .Where(x => x.Employes.Any(x => x.Name.Contains(employeeSurname))).ToListAsync();
+            return null;
         }
 
         public async Task<IEnumerable<Proffession>> GetByQuery(ProffessionQueryDAL queryDAL)

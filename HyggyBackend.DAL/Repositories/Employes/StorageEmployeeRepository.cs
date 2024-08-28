@@ -15,7 +15,7 @@ namespace HyggyBackend.DAL.Repositories.Employes
 		public async Task<IEnumerable<StorageEmployee>> GetAllAsync()
 		{
 			return await _context.StorageEmployees
-				.Include(se => se.Proffession)
+				//.Include(se => se.Proffession)
 				.Include(se => se.Storage).ToListAsync();
 		}
 		public async Task<IEnumerable<StorageEmployee>> GetPaginatedEmployeesAsync(int? page)
@@ -35,7 +35,8 @@ namespace HyggyBackend.DAL.Repositories.Employes
 		public async Task<IEnumerable<StorageEmployee>> GetEmployeesByProfessionAsync(string professionName)
 		{
 			var employees = await GetAllAsync();
-			return employees.Where(se => se.Proffession.Name == professionName).ToList();
+			//return employees.Where(se => se.Proffession.Name == professionName).ToList();
+			return employees;
 		}
 		public async Task<StorageEmployee?> GetByNameAsync(string fullName)
 		{
@@ -49,7 +50,7 @@ namespace HyggyBackend.DAL.Repositories.Employes
 			return employees.Where(se => se.Email == email)
 				.FirstOrDefault();
 		}
-		public async Task<StorageEmployee?> GetByIdAsync(long id)
+		public async Task<StorageEmployee?> GetByIdAsync(string id)
 		{
 			var employees = await GetAllAsync();
 			return employees.Where(se => se.Id == id)
@@ -70,7 +71,7 @@ namespace HyggyBackend.DAL.Repositories.Employes
 		{
 			_context.StorageEmployees.Update(employee);
 		}
-		public async Task DeleteAsync(long id)
+		public async Task DeleteAsync(string id)
 		{
 			var employee = await GetByIdAsync(id);
 			if (employee != null)
