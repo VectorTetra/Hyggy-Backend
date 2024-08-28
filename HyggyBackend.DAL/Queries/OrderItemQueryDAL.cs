@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace HyggyBackend.DAL.Queries
 {
-    public class ProffessionQueryDAL
+    public class OrderItemQueryDAL
     {
         public long? Id;
-        public string? Name { get; set; }
+        public long? OrderId;
+        public long? WareId;
+        public int? OrderCount { get; set; }
     }
 }
