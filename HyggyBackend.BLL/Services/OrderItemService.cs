@@ -25,7 +25,8 @@ namespace HyggyBackend.BLL.Services
         .ForMember("Id", opt => opt.MapFrom(c => c.Id))
         .ForMember("OrderId", opt => opt.MapFrom(c => c.OrderId))
         .ForMember("WareId", opt => opt.MapFrom(c => c.WareId))
-        .ForMember("OrderCount", opt => opt.MapFrom(c => c.OrderCount))
+        .ForMember("PriceHistoryId", opt => opt.MapFrom(c => c.PriceHistoryId))
+        .ForMember("Count", opt => opt.MapFrom(c => c.Count))
         );
 
         MapperConfiguration OrderItemQueryBLL_OrderItemQueryDALMapConfig = new MapperConfiguration(cfg => cfg.CreateMap<OrderItemQueryBLL, OrderItemQueryDAL>());
@@ -57,11 +58,16 @@ namespace HyggyBackend.BLL.Services
             IMapper mapper = new Mapper(OrderItem_OrderItemDTOMapConfig);
             return mapper.Map<IEnumerable<OrderItem>, IEnumerable<OrderItemDTO>>(await Database.OrderItems.GetByWareId(wareId));
         }
+        public async Task<IEnumerable<OrderItemDTO>> GetByPriceHistoryId(long priceHistoryId)
+        {
+            IMapper mapper = new Mapper(OrderItem_OrderItemDTOMapConfig);
+            return mapper.Map<IEnumerable<OrderItem>, IEnumerable<OrderItemDTO>>(await Database.OrderItems.GetByPriceHistoryId(priceHistoryId));
+        }
 
-        public async Task<IEnumerable<OrderItemDTO>> GetByCount(int orderCount)
+        public async Task<IEnumerable<OrderItemDTO>> GetByCount(int count)
         {
             var mapper = new Mapper(OrderItem_OrderItemDTOMapConfig);
-            var orderItems = await Database.OrderItems.GetByCount(orderCount);
+            var orderItems = await Database.OrderItems.GetByCount(count);
             return mapper.Map<IEnumerable<OrderItem>, IEnumerable<OrderItemDTO>>(orderItems);
         }
 
@@ -70,14 +76,14 @@ namespace HyggyBackend.BLL.Services
             var existingId = await Database.OrderItems.GetById(orderItemDTO.Id);
             if (existingId != null)
             {
-                throw new ValidationException($"Такий ID вже зайнято! (Id : {existingId.Id})", "");
+                throw new ValidationException($"Такий ID вже зайнято! (Id : {existingId.Id.ToString()})", "");
             }
             if (orderItemDTO.OrderId != null)
             {
                 var existingOrderId = await Database.Orders.GetById((long)orderItemDTO.OrderId);
                 if (existingOrderId == null)
                 {
-                    throw new ValidationException($"Такий OrderId не знайдено : {orderItemDTO.OrderId})", "");
+                    throw new ValidationException($"Такий OrderId не знайдено : {orderItemDTO.OrderId.ToString()})", "");
                 }
             }
             if (orderItemDTO.WareId != null)
@@ -85,7 +91,15 @@ namespace HyggyBackend.BLL.Services
                 var existingWareId = await Database.Orders.GetById((long)orderItemDTO.WareId);
                 if (existingWareId == null)
                 {
-                    throw new ValidationException($"Такий WareId не знайдено : {orderItemDTO.WareId})", "");
+                    throw new ValidationException($"Такий WareId не знайдено : {orderItemDTO.WareId.ToString()})", "");
+                }
+            }
+            if (orderItemDTO.PriceHistoryId != null)
+            {
+                var existingPriceHistoryId = await Database.Orders.GetById((long)orderItemDTO.PriceHistoryId);
+                if (existingPriceHistoryId == null)
+                {
+                    throw new ValidationException($"Такий PriceHistoryId не знайдено : {orderItemDTO.PriceHistoryId.ToString()})", "");
                 }
             }
             var mapper = new Mapper(OrderItem_OrderItemDTOMapConfig);
@@ -116,6 +130,14 @@ namespace HyggyBackend.BLL.Services
                 if (existingWareId == null)
                 {
                     throw new ValidationException($"Такий WareId не знайдено : {orderItemDTO.WareId.ToString()})", "");
+                }
+            }
+            if (orderItemDTO.PriceHistoryId != null)
+            {
+                var existingPriceHistoryId = await Database.Orders.GetById((long)orderItemDTO.PriceHistoryId);
+                if (existingPriceHistoryId == null)
+                {
+                    throw new ValidationException($"Такий PriceHistoryId не знайдено : {orderItemDTO.PriceHistoryId.ToString()})", "");
                 }
             }
             var mapper = new Mapper(OrderItem_OrderItemDTOMapConfig);

@@ -13,7 +13,9 @@ namespace HyggyBackend.DAL.Interfaces
 
         Task<IEnumerable<OrderItem>> GetByOrderId(long orderId);
         Task<IEnumerable<OrderItem>> GetByWareId(long wareId);
-        Task<IEnumerable<OrderItem>> GetByCount(int orderCount);
+        Task<IEnumerable<OrderItem>> GetByPriceHistoryId(long priceHistoryId);
+
+        Task<IEnumerable<OrderItem>> GetByCount(int count);
         
         Task Create(OrderItem orderItem);
         void Update(OrderItem orderItem);

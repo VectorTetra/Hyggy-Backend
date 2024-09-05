@@ -13,7 +13,8 @@ namespace HyggyBackend.BLL.Interfaces
 
         Task<IEnumerable<OrderItemDTO>> GetByOrderId(long orderId);
         Task<IEnumerable<OrderItemDTO>> GetByWareId(long wareId);
-        Task<IEnumerable<OrderItemDTO>> GetByCount(int orderCount);
+        Task<IEnumerable<OrderItemDTO>> GetByPriceHistoryId(long priceHistoryId);
+        Task<IEnumerable<OrderItemDTO>> GetByCount(int count);
 
         Task<OrderItemDTO> Create(OrderItemDTO orderItemDTO);
         Task<OrderItemDTO> Update(OrderItemDTO orderItemDTO);

@@ -23,6 +23,15 @@ namespace HyggyBackend.BLL.Helper
 			CreateMap<StorageEmployee, StorageEmployeeDTO>();
 			CreateMap<StorageEmployeeDTO, StorageEmployee>();
 
+            CreateMap<OrderStatusDTO, OrderStatus>();
+            CreateMap<OrderStatus, OrderStatusDTO>();
+
+            CreateMap<ProffessionDTO, Proffession>();
+            CreateMap<Proffession, ProffessionDTO>();
+
+            CreateMap<WarePriceHistoryDTO, WarePriceHistory>();
+            CreateMap<WarePriceHistory, WarePriceHistoryDTO>();
+
             CreateMap<Address, AddressDTO>()
                 .ForMember(dest => dest.OrderIds, opts => opts.MapFrom(src => src.Orders.Select(o => o.Id)));
             CreateMap<AddressDTO, Address>();

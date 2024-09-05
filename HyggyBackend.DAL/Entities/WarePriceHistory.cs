@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HyggyBackend.DAL.Entities
 {
@@ -8,29 +9,25 @@ namespace HyggyBackend.DAL.Entities
     {
         public long Id { get; set; }
         public virtual Ware Ware { get; set; }
+        [ForeignKey("WareId")]
         public float Price { get; set; }
         public DateTime EffectiveDate { get; set; } // Дата початку дії ціни
 
         public virtual ICollection<OrderItem> OrderItems { get; set; }
 
-        // Як цим користуватися під час замовлення?
-        //public void AddOrderItem(Order order, Ware ware, int count)
-        //{
-        //    // Отримайте поточну ціну з історії
-        //    var currentPriceRecord = _context.WarePriceHistories
-        //        .Where(p => p.WareId == ware.Id && p.EffectiveDate <= DateTime.Now)
-        //        .OrderByDescending(p => p.EffectiveDate)
-        //        .FirstOrDefault();
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
 
-        //    var orderItem = new OrderItem
-        //    {
-        //        Order = order,
-        //        Ware = ware,
-        //        Count = count,
-        //        PriceHistoryId = currentPriceRecord.Id
-        //    };
-
-        //    order.OrderItems.Add(orderItem);
-        //}
+            var otherTour = (WarePriceHistory)obj;
+            return Id == otherTour.Id;
+        }
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
     }
 }

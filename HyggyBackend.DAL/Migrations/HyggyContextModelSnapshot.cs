@@ -119,13 +119,13 @@ namespace HyggyBackend.DAL.Migrations
                     b.Property<int>("Count")
                         .HasColumnType("int");
 
-                    b.Property<long>("OrderId")
+                    b.Property<long?>("OrderId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("PriceHistoryId")
+                    b.Property<long?>("PriceHistoryId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("WareId")
+                    b.Property<long?>("WareId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -522,13 +522,13 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "2d792123-c7d6-4ce2-a0e0-28b54f1dc85d",
+                            Id = "18f8efe7-da54-4d40-93db-d465baa801e0",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "1025e107-0c3f-42c4-b473-533e846e6114",
+                            Id = "a1b2ae7b-f3aa-4719-9f0b-5b69ab3d9472",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -717,20 +717,17 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasOne("HyggyBackend.DAL.Entities.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("HyggyBackend.DAL.Entities.WarePriceHistory", "PriceHistory")
                         .WithMany("OrderItems")
                         .HasForeignKey("PriceHistoryId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("HyggyBackend.DAL.Entities.Ware", "Ware")
                         .WithMany("OrderItems")
                         .HasForeignKey("WareId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Order");
 

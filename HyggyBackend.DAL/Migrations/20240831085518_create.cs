@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HyggyBackend.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class create : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -457,10 +457,10 @@ namespace HyggyBackend.DAL.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Count = table.Column<int>(type: "int", nullable: false),
-                    OrderId = table.Column<long>(type: "bigint", nullable: false),
-                    WareId = table.Column<long>(type: "bigint", nullable: false),
-                    PriceHistoryId = table.Column<long>(type: "bigint", nullable: false)
+                    OrderId = table.Column<long>(type: "bigint", nullable: true),
+                    WareId = table.Column<long>(type: "bigint", nullable: true),
+                    PriceHistoryId = table.Column<long>(type: "bigint", nullable: true),
+                    Count = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -487,8 +487,8 @@ namespace HyggyBackend.DAL.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "1025e107-0c3f-42c4-b473-533e846e6114", null, "User", "USER" },
-                    { "2d792123-c7d6-4ce2-a0e0-28b54f1dc85d", null, "Admin", "ADMIN" }
+                    { "18f8efe7-da54-4d40-93db-d465baa801e0", null, "Admin", "ADMIN" },
+                    { "a1b2ae7b-f3aa-4719-9f0b-5b69ab3d9472", null, "User", "USER" }
                 });
 
             migrationBuilder.CreateIndex(

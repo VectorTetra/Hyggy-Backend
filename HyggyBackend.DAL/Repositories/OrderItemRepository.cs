@@ -31,10 +31,14 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.OrderItems.Where(x => x.WareId == wareId).ToListAsync();
         }
-
-        public async Task<IEnumerable<OrderItem>> GetByCount(int orderCount)
+        public async Task<IEnumerable<OrderItem>> GetByPriceHistoryId(long priceHistoryId)
         {
-            return await _context.OrderItems.Where(x => x.OrderCount == orderCount).ToListAsync();
+            return await _context.OrderItems.Where(x => x.PriceHistoryId == priceHistoryId).ToListAsync();
+        }
+
+        public async Task<IEnumerable<OrderItem>> GetByCount(int count)
+        {
+            return await _context.OrderItems.Where(x => x.Count == count).ToListAsync();
         }
 
         public async Task<IEnumerable<OrderItem>> GetByQuery(OrderItemQueryDAL query)
@@ -53,9 +57,13 @@ namespace HyggyBackend.DAL.Repositories
             {
                 orderItemCollections.Add(await GetByWareId(query.WareId.Value));
             }
-            if (query.OrderCount != null)
+            if (query.PriceHistoryId != null)
             {
-                orderItemCollections.Add(await GetByCount(query.OrderCount.Value));
+                orderItemCollections.Add(await GetByWareId(query.PriceHistoryId.Value));
+            }
+            if (query.Count != null)
+            {
+                orderItemCollections.Add(await GetByCount(query.Count.Value));
             }
 
             if (!orderItemCollections.Any())
