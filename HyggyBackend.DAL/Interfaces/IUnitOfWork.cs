@@ -20,6 +20,7 @@ namespace HyggyBackend.DAL.Interfaces
         IEmployeeRepository<ShopEmployee> ShopEmployees { get; }
         IOrderRepository Orders { get; }
         IAddressRepository Addresses { get; }
+        IMainStorageRepository MainStorages { get; }
         Task Save();
     }
 }

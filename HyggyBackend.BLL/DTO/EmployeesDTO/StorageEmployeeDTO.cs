@@ -2,6 +2,8 @@
 {
 	public class StorageEmployeeDTO : EmployeeDTO
 	{
-        public virtual StorageDTO Storage { get; set; }
-    }
+		// public virtual StorageDTO Storage { get; set; }
+		public virtual MainStorageDto Storage { get; set; } = new MainStorageDto();
+
+	}
 }

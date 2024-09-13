@@ -1,5 +1,6 @@
 ﻿using HyggyBackend.BLL.Interfaces;
 using HyggyBackend.BLL.Services;
+using HyggyBackend.BLL.Services.EmailService;
 using HyggyBackend.DAL.EF;
 using HyggyBackend.DAL.Interfaces;
 using HyggyBackend.DAL.UnitOfWork;
@@ -16,6 +17,9 @@ namespace HyggyBackend.BLL.Infrastructure
             services.AddScoped<ITokenService, TokenService>();
 			services.AddScoped<IShopService, ShopService>();
             services.AddScoped<IAddressService, AddressService>();
+            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<IMainStorageService, MainStorageService>();
 			services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 		}
     }

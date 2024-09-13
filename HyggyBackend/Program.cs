@@ -12,6 +12,7 @@ using HyggyBackend.BLL.Services.Employees;
 using HyggyBackend.BLL.DTO.EmployeesDTO;
 using HyggyBackend.DAL.Entities;
 using Microsoft.OpenApi.Models;
+using HyggyBackend.BLL.Services.EmailService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,9 @@ var builder = WebApplication.CreateBuilder(args);
 //CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
 //CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
+var emailConfig = builder.Configuration.GetSection("EmailConfiguration")
+	.Get<EmailConfiguration>();
+builder.Services.AddSingleton(emailConfig!);
 // Add services to the container.
 string? connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddUnitOfWorkService();
@@ -36,7 +40,11 @@ builder.Services.AddIdentity<User, IdentityRole>(opt =>
     opt.Password.RequireDigit = false;
     opt.Password.RequireLowercase = false;
     opt.Password.RequireUppercase = false;
+	opt.SignIn.RequireConfirmedEmail = true;
 }).AddEntityFrameworkStores<HyggyContext>().AddDefaultTokenProviders();
+
+builder.Services.Configure<DataProtectionTokenProviderOptions>(opt =>
+	opt.TokenLifespan = TimeSpan.FromHours(4));
 
 builder.Services.AddAuthentication(options =>
 {

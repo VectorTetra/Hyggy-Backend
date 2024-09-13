@@ -1,4 +1,5 @@
 ﻿using HyggyBackend.BLL.DTO;
+using HyggyBackend.BLL.DTO.AccountDtos;
 using HyggyBackend.BLL.DTO.EmployeesDTO;
 using HyggyBackend.DAL.Entities.Employes;
 
@@ -19,7 +20,9 @@ namespace HyggyBackend.BLL.Interfaces
 		Task<T?> GetByPhoneAsync(string phone);
 
 		Task<ShopEmployeeDTO> Login(LoginDto login);
-		Task<string> CreateAsync(RegisterDto item);
+		Task<RegistrationResponseDto> CreateAsync(EmployeeForRegistrationDto registrationDto);
+		Task<AuthResponseDto> AuthenticateAsync(UserForAuthenticationDto authenticationDto);
+		Task<string> EmailConfirmation(string email, string code);
 		void Update(T item);
 		Task DeleteAsync(string id);
 	}

@@ -14,6 +14,12 @@ namespace HyggyBackend.DAL.EF
         public HyggyContext(DbContextOptions<HyggyContext> options)
             : base(options)
         {
+            //if (Database.EnsureCreated())
+            //{
+            //    Addresses?.Add(new Address { Id = 1, State = "Odessa", City = "Odessa", Street = "Shevchenko str.", HouseNumber = "23", PostalCode = "6600", Latitude = 48, Longitude = 38 });
+            //    MainStorages?.Add(new MainStorage { AddressId = 1, Id = 1 });
+            //    SaveChanges();
+            //}
         }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Customer> Customers { get; set; }
@@ -32,9 +38,18 @@ namespace HyggyBackend.DAL.EF
         public DbSet<WareStatus> WareStatuses { get; set; }
         public DbSet<ShopEmployee> ShopEmployees { get; set; }
         public DbSet<StorageEmployee> StorageEmployees { get; set; }
+        public DbSet<MainStorage> MainStorages { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+    //        builder.Entity<Address>().HasData(
+    //            new Address { Id = 1, State = "Odessa", City = "Odessa", Street = "Shevchenko str.", HouseNumber = "23", PostalCode = "6600", Latitude = 48, Longitude = 38 }
+    //            );
+
+    //        builder.Entity<MainStorage>().HasData(
+				//new MainStorage { Id = 1, AddressId = 1}
+				//);
 
             builder.Entity<OrderItem>()
                 .HasOne(o => o.Ware)
@@ -65,7 +80,12 @@ namespace HyggyBackend.DAL.EF
                 .WithOne(a => a.Shop)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            List <IdentityRole> roles = new List<IdentityRole>
+			builder.Entity<MainStorage>()
+			   .HasOne(s => s.Address)
+			   .WithOne(a => a.MainStorage)
+			   .OnDelete(DeleteBehavior.SetNull);
+
+			List <IdentityRole> roles = new List<IdentityRole>
 			{
 				new IdentityRole
 				{

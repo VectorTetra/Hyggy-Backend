@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HyggyBackend.BLL.DTO;
+using HyggyBackend.BLL.DTO.AccountDtos;
 using HyggyBackend.BLL.DTO.EmployeesDTO;
 using HyggyBackend.BLL.Interfaces;
 using HyggyBackend.DAL.Entities.Employes;
@@ -80,6 +81,31 @@ namespace HyggyBackend.BLL.Services.Employees
 		}
 
 		public Task<IEnumerable<StorageEmployeeDTO>> GetEmployeesByWorkPlaceId(long id)
+		{
+			throw new NotImplementedException();
+		}
+		
+		Task<AuthResponseDto> IEmployeeService<StorageEmployeeDTO>.AuthenticateAsync(UserForAuthenticationDto authenticationDto)
+		{
+			throw new NotImplementedException();
+		}
+
+		Task<RegistrationResponseDto> IEmployeeService<StorageEmployeeDTO>.CreateAsync(EmployeeForRegistrationDto registrationDto)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<string> EmailVerification(string email, string code)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<string> EmailConfirmation(string email, string code)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<RegistrationResponseDto> CreateAsync(EmployeeForRegistrationDto registrationDto)
 		{
 			throw new NotImplementedException();
 		}

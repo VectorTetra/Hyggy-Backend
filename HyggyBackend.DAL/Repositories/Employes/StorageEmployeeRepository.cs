@@ -16,7 +16,7 @@ namespace HyggyBackend.DAL.Repositories.Employes
 		{
 			return await _context.StorageEmployees
 				//.Include(se => se.Proffession)
-				.Include(se => se.Storage).ToListAsync();
+				.Include(se => se.MainStorage).ToListAsync();
 		}
 		public async Task<IEnumerable<StorageEmployee>> GetPaginatedEmployeesAsync(int? page)
 		{

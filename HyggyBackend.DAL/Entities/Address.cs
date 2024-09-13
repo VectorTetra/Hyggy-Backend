@@ -32,10 +32,12 @@ namespace HyggyBackend.DAL.Entities
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
 
-        public virtual Shop Shop { get; set; }
-        // Замовлення
-        public virtual ICollection<Order> Orders { get; set; }
         //Адреса магазину
+        public virtual Shop Shop { get; set; } = new Shop();
+        //Адреса складу
+        public virtual MainStorage MainStorage { get; set; } = new MainStorage();
+        // Замовлення
+        public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
         //public virtual Storage Storage{ get; set; }
     }
 
