@@ -7,6 +7,9 @@ using HyggyBackend.BLL.Services.EmailService;
 using HyggyBackend.DAL.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using RazorEngine;
+using RazorEngine.Templating;
+using System.Text;
 
 namespace HyggyBackend.BLL.Services
 {
@@ -45,7 +48,8 @@ namespace HyggyBackend.BLL.Services
 			};
 
 			var callback = QueryHelpers.AddQueryString(registrationDto.UserUri, param);
-			var message = new Message([user.Email!], "Ласкаво просимо на Hyggy", callback);
+			var emailTemplate = EmailRegistrationTemplate(user.Name, callback);
+			var message = new Message([user.Email!], "Ласкаво просимо на Hyggy", emailTemplate);
 			_emailSender.SendEmail(message);
 
 			return new RegistrationResponseDto { IsSuccessfullRegistration = true, EmailToken = token };
@@ -79,7 +83,6 @@ namespace HyggyBackend.BLL.Services
 
 			return "Обліковий запис підтвержено!";
 		}
-
 		public async Task<string> ForgotPassword(ForgotPasswordDto passwordDto)
 		{
 			var user = await _userManager.FindByEmailAsync(passwordDto.Email!);
@@ -100,7 +103,6 @@ namespace HyggyBackend.BLL.Services
 
 			return token;
 		}
-
 		public async Task<string> ResetPassword(ResetPasswordDto resetPasswordDto)
 		{
 			var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email!);
@@ -116,5 +118,180 @@ namespace HyggyBackend.BLL.Services
 
 			return "Ваш пароль оновлено";
 		}
+		//Оновлення аккаунта та видалення треба доробити
+		public async Task<string> EditAccount(UserForEditDto userDto)
+		{
+			var user = await _userManager.FindByIdAsync(userDto.Id!);
+			if(user is null)
+				throw new ValidationException("Ваш аккаунт не знайдено", userDto.Id!);
+
+			user = _mapper.Map<Customer>(userDto);
+
+			var result = await _userManager.UpdateAsync(user);
+			if(!result.Succeeded)
+			{
+				var errors = result.Errors.Select(e => e.Description);
+				throw new ValidationException(String.Join(',', errors), userDto.Id!);
+
+			}
+			//await _userManager.Cha
+
+			return "Ваш аккаунт оновлено";
+		}
+
+		public Task<string> Delete(string id)
+		{
+			throw new NotImplementedException();
+		}
+		private string EmailRegistrationTemplate(string name, string callback)
+		{
+			try
+			{
+				var template = $@"
+				<!DOCTYPE html>
+				<html lang='en'>
+				<head>
+					<meta charset='UTF-8'>
+					<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+				<style>
+					html{{
+						width: 800px;
+					}}
+					body{{
+						background-color: #F8F8F8;
+					}}
+					.container{{
+						margin: 60px;
+						margin-top: 40px;
+					}}
+					.innercontainer{{
+						background-color: white;
+					}}
+					.maincontainer{{
+						padding: 10px 20px;
+					}}
+					header{{
+						display: flex;
+						position: relative;
+						justify-content: space-between;
+					}}
+					header>h1{{
+						background-color: #143C8A;
+						color: white;
+						padding: 2px;
+					}}
+					header>h3{{
+						position: absolute;
+						right: 0;
+						bottom: 0;
+						color:gray;
+						font-weight: 100;
+					}}
+					.reference{{
+						display: flex;
+						justify-content: center;
+						border:1px gray solid;
+						height: 50px;
+					}}
+					.reference>a{{
+						font-size: large;
+						font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+					}}
+					.title{{
+						display: flex;
+						flex-direction: column;
+						text-align: end;
+					}}
+					.title>h2{{
+						margin-top: 50px;
+						margin-bottom: 0;
+					}}
+					.title>h4{{
+						margin-top: 0;
+						font-weight: 100;
+					}}
+					p{{	
+						font-size: 18px;
+						font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+						font-weight:400;
+					}}
+					.buttonlink{{
+					    font-size: medium;
+					    background-color: #143C8A;
+					    color: white;
+					    height: 50px;
+					    margin-left: 20px;
+					    padding-left: 20px;
+					    padding-right: 20px;
+					}}
+					.buttonlink>p{{
+						margin: auto;    
+						font-weight:bolder;
+					}}
+					footer{{
+						margin-top: 50px;
+						padding: 10px 20px;
+						font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+					}}
+				</style>
+				</head>
+				<body style='background-color: #F8F8F8;'>
+					<div style='margin: 60px;margin-top: 40px;'>
+					<header style='display: flex;
+						position: relative;
+						justify-content: space-between;'>
+						<h1 style='background-color: #143C8A;
+						color: white;
+						padding: 2px;'>Hyggy</h1>
+						<h3 style='position: absolute;
+						right: 0;
+						bottom: 0;
+						color:gray;
+						font-weight: 100;'>Відділ по роботі з клієнтами</h3>
+					</header>
+					<div style>
+					<main>
+						<div class='reference'>
+							<a href='#'>Перейти на сайт Hyggy.ua</a>
+						</div>
+						<div class='maincontainer'>
+							<div class='title'>
+								<h2>Ласкаво просимо на Hyggy.ua</h2>
+								<h4>{DateTime.Now}</h4>
+							</div>
+							<div>
+								<p>Вітаємо {name}<br/><br/>Ми раді вітати вас на Hyggy.ua. Все що вам потрібно - це активувати свій обліковий запис!
+								<br/><br/>Зверніть увагу, що посилання активне лише 48 годин.<br/><br/>
+								<a class='buttonlink' href={callback}><p>Активувати обліковий запис</p></a>
+								<br/><br/>Для того, щоб зробити свої покупки максимально приємними просимо заповнити особисті дані у своєму обліковому записі.</p>
+							 </div>
+						</div>
+					</main>
+					<footer>
+						<h3>ВІДДІЛ ПО РОБОТІ З КЛІЄНТАМИ</h3>
+						<p>
+							У Вас виникли запитання чи потрібна допомога? <a href=\""#\"">Зверніться до Відділу по роботі з клієнтами</a>
+						</p>
+						<a href='#'>
+							Адреса та години роботи магазину
+						</a>
+						<p>З повагою,<br/><span style='color: #143C8A;font-weight: bolder;'>Hyggy</span></p>
+					</footer>
+					</div>
+					</div>
+				</body>
+				</html>";
+				return template;
+			}
+			catch(Exception ex)
+			{
+				return ex.Message;
+			}
+			//string result = System.Web.HttpUtility.HtmlEncode(template); 
+
+			
+		}
+
+		
 	}
 }

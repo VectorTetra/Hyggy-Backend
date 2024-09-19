@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HyggyBackend.DAL.Migrations
 {
     [DbContext(typeof(HyggyContext))]
-    [Migration("20240913142643_Init")]
-    partial class Init
+    [Migration("20240918222953_ChangeStorageId")]
+    partial class ChangeStorageId
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -65,6 +65,19 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Addresses");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            City = "Odessa",
+                            HouseNumber = "23",
+                            Latitude = 48.0,
+                            Longitude = 38.0,
+                            PostalCode = "6600",
+                            State = "Odessa",
+                            Street = "Shevchenko str."
+                        });
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.MainStorage", b =>
@@ -85,6 +98,13 @@ namespace HyggyBackend.DAL.Migrations
                         .HasFilter("[AddressId] IS NOT NULL");
 
                     b.ToTable("MainStorages");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            AddressId = 1L
+                        });
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Order", b =>
@@ -550,13 +570,13 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "78bec404-beaa-4519-9e36-8ff826717e00",
+                            Id = "bc74f9a9-e6e8-477b-8214-88f539ebd814",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "cd520762-68d1-407d-850f-6478b252cca6",
+                            Id = "85a452a4-aca7-45ff-af58-3101cc42aa05",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -717,7 +737,7 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasOne("HyggyBackend.DAL.Entities.Address", "Address")
                         .WithOne("MainStorage")
                         .HasForeignKey("HyggyBackend.DAL.Entities.MainStorage", "AddressId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Address");
                 });
@@ -787,11 +807,12 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasOne("HyggyBackend.DAL.Entities.Address", "Address")
                         .WithOne("Shop")
                         .HasForeignKey("HyggyBackend.DAL.Entities.Shop", "AddressId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("HyggyBackend.DAL.Entities.MainStorage", "Storage")
                         .WithMany("Shops")
-                        .HasForeignKey("StorageId");
+                        .HasForeignKey("StorageId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Address");
 
@@ -955,13 +976,11 @@ namespace HyggyBackend.DAL.Migrations
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Address", b =>
                 {
-                    b.Navigation("MainStorage")
-                        .IsRequired();
+                    b.Navigation("MainStorage");
 
                     b.Navigation("Orders");
 
-                    b.Navigation("Shop")
-                        .IsRequired();
+                    b.Navigation("Shop");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.MainStorage", b =>

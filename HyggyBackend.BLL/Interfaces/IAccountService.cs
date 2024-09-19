@@ -9,6 +9,7 @@ namespace HyggyBackend.BLL.Interfaces
 		Task<string> EmailConfirmation(string email, string code);
 		Task<string> ForgotPassword(ForgotPasswordDto passwordDto);
 		Task<string> ResetPassword(ResetPasswordDto resetPasswordDto);
-
+		Task<string> EditAccount(UserForEditDto userDto);
+		Task<string> Delete(string id);
 	}
 }

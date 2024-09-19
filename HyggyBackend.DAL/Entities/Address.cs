@@ -15,8 +15,10 @@ namespace HyggyBackend.DAL.Entities
     Геокодування: Використовуйте геокодування для отримання координат, що може бути корисним для візуалізації та логістики.
     Автоматизація: Застосовуйте сервіси автозаповнення адрес для покращення користувацького досвіду.
      */
+    
     public class Address
     {
+        
         public long Id { get; set; }
 
         // Адреса доставки, розділена на компоненти
@@ -33,9 +35,9 @@ namespace HyggyBackend.DAL.Entities
         public double? Longitude { get; set; }
 
         //Адреса магазину
-        public virtual Shop Shop { get; set; } = new Shop();
+        public virtual Shop? Shop { get; set; }
         //Адреса складу
-        public virtual MainStorage MainStorage { get; set; } = new MainStorage();
+        public virtual MainStorage? MainStorage { get; set; } 
         // Замовлення
         public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
         //public virtual Storage Storage{ get; set; }

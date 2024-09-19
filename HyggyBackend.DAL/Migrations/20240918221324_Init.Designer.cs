@@ -4,6 +4,7 @@ using HyggyBackend.DAL.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HyggyBackend.DAL.Migrations
 {
     [DbContext(typeof(HyggyContext))]
-    partial class HyggyContextModelSnapshot : ModelSnapshot
+    [Migration("20240918221324_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -567,13 +570,13 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "bc74f9a9-e6e8-477b-8214-88f539ebd814",
+                            Id = "6cf8c858-6441-405c-9e3a-5b4cf8b46b09",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "85a452a4-aca7-45ff-af58-3101cc42aa05",
+                            Id = "7733a7eb-d008-48ea-ab72-dd21695e9430",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -719,7 +722,7 @@ namespace HyggyBackend.DAL.Migrations
                     b.Property<long>("MainStorageId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("StorageId")
+                    b.Property<long>("StorageId")
                         .HasColumnType("bigint");
 
                     b.HasIndex("MainStorageId");
@@ -966,7 +969,9 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasOne("HyggyBackend.DAL.Entities.Storage", null)
                         .WithMany("StorageEmployees")
-                        .HasForeignKey("StorageId");
+                        .HasForeignKey("StorageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("MainStorage");
                 });

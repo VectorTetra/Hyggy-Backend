@@ -4,6 +4,7 @@ using HyggyBackend.DAL.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HyggyBackend.DAL.Migrations
 {
     [DbContext(typeof(HyggyContext))]
-    partial class HyggyContextModelSnapshot : ModelSnapshot
+    [Migration("20240918222727_addStorageId")]
+    partial class addStorageId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -567,13 +570,13 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "bc74f9a9-e6e8-477b-8214-88f539ebd814",
+                            Id = "e82edabb-8e01-42d4-a411-2f22a91937fa",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "85a452a4-aca7-45ff-af58-3101cc42aa05",
+                            Id = "2bc818de-6a89-4f78-a2b0-fb610948c14d",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -716,15 +719,15 @@ namespace HyggyBackend.DAL.Migrations
                         .ValueGeneratedOnUpdateSometimes()
                         .HasColumnType("datetime2");
 
-                    b.Property<long>("MainStorageId")
+                    b.Property<long>("StorageId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("StorageId")
+                    b.Property<long?>("StorageId1")
                         .HasColumnType("bigint");
-
-                    b.HasIndex("MainStorageId");
 
                     b.HasIndex("StorageId");
+
+                    b.HasIndex("StorageId1");
 
                     b.HasDiscriminator().HasValue("StorageEmployee");
                 });
@@ -960,13 +963,13 @@ namespace HyggyBackend.DAL.Migrations
                 {
                     b.HasOne("HyggyBackend.DAL.Entities.MainStorage", "MainStorage")
                         .WithMany("Employees")
-                        .HasForeignKey("MainStorageId")
+                        .HasForeignKey("StorageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("HyggyBackend.DAL.Entities.Storage", null)
                         .WithMany("StorageEmployees")
-                        .HasForeignKey("StorageId");
+                        .HasForeignKey("StorageId1");
 
                     b.Navigation("MainStorage");
                 });

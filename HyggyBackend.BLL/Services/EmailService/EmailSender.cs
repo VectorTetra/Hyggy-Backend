@@ -56,13 +56,16 @@ namespace HyggyBackend.BLL.Services.EmailService
 
 		private MimeMessage CreateEmailMessage(Message message)
 		{
+			var bodyBuilder = new BodyBuilder();
+			bodyBuilder.HtmlBody = message.Content;
+
 			var emailMessage = new MimeMessage();
 			emailMessage.From.Add(new MailboxAddress("Hyggy", _emailConfig.From));
 			emailMessage.To.AddRange(message.To);
 			emailMessage.Subject = message.Subject;
-			emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-			{ Text = string.Format(message.Content!) };
-
+			//emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+			//{ Text = message.Content! };
+			emailMessage.Body = bodyBuilder.ToMessageBody();
 			return emailMessage;
 		}
 		private String RegistrationEmailTemplate(string content)

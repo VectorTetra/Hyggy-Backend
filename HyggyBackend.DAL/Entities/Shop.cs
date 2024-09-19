@@ -11,7 +11,7 @@ namespace HyggyBackend.DAL.Entities
 		public long? AddressId { get; set; }
 		[ForeignKey("AddressId")]
 		public virtual Address Address { get; set; }
-		public long? StorageId { get; set; }
+		public long? StorageId { get; set; } = 1;
 		[ForeignKey("StorageId")]
 		public virtual MainStorage Storage { get; set; }
 		public virtual ICollection<ShopEmployee> ShopEmployees { get; set; } = new List<ShopEmployee>();	

@@ -29,8 +29,15 @@ namespace HyggyBackend.BLL.Helper
 			CreateMap<EmployeeForRegistrationDto, ShopEmployee>()
                 .ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email));
 
+			CreateMap<EmployeeForRegistrationDto, StorageEmployee>()
+				.ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email));
+
 			CreateMap<UserForRegistrationDto, Customer>()
 				.ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email));
+
+            CreateMap<UserForEditDto, Customer>()
+                .ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email));
+			
 
 			CreateMap<StorageEmployee, StorageEmployeeDTO>();
 			CreateMap<StorageEmployeeDTO, StorageEmployee>();

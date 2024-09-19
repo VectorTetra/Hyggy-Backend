@@ -41,11 +41,11 @@ namespace HyggyBackend.DAL.Repositories.Employes
 			//return employees.Where(se => se.Proffession.Name == professionName).ToList();
 			return employees;
 		}
-		public async Task<ShopEmployee?> GetByNameAsync(string fullName)
+		public async Task<IEnumerable<ShopEmployee>> GetBySurnameAsync(string surname)
 		{
 			var employees = await GetAllAsync();
-			return employees.Where(se => se.Name + se.Surname == fullName)
-				.FirstOrDefault();	
+			return employees.Where(se => se.Surname == surname)
+				.ToList();	
 		}
 		public async Task<ShopEmployee?> GetByEmail(string email)
 		{
@@ -73,7 +73,13 @@ namespace HyggyBackend.DAL.Repositories.Employes
         }
 		public void Update(ShopEmployee employee)
 		{
-			_context.ShopEmployees.Update(employee);
+			ShopEmployee? shopEmployee = _context.ShopEmployees.Where(s => s.Id == employee.Id).FirstOrDefault();
+			shopEmployee.Surname = employee.Surname;
+			shopEmployee.Name = employee.Name;
+			shopEmployee.Email = employee.Email;
+			shopEmployee.PhoneNumber = employee.PhoneNumber;
+			shopEmployee.DateOfBirth = employee.DateOfBirth;
+			shopEmployee.ShopId = employee.ShopId;
 		}
 		public async Task DeleteAsync(string id)
         {

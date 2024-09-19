@@ -116,8 +116,7 @@ namespace HyggyBackend.DAL.Migrations
                         name: "FK_MainStorages_Addresses_AddressId",
                         column: x => x.AddressId,
                         principalTable: "Addresses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -180,13 +179,13 @@ namespace HyggyBackend.DAL.Migrations
                         name: "FK_Shops_Addresses_AddressId",
                         column: x => x.AddressId,
                         principalTable: "Addresses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Shops_MainStorages_StorageId",
                         column: x => x.StorageId,
                         principalTable: "MainStorages",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -276,8 +275,8 @@ namespace HyggyBackend.DAL.Migrations
                     Discriminator = table.Column<string>(type: "nvarchar(21)", maxLength: 21, nullable: false),
                     ShopId = table.Column<long>(type: "bigint", nullable: true),
                     DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    MainStorageId = table.Column<long>(type: "bigint", nullable: true),
                     StorageId = table.Column<long>(type: "bigint", nullable: true),
+                    MainStorageId = table.Column<long>(type: "bigint", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -312,7 +311,8 @@ namespace HyggyBackend.DAL.Migrations
                         name: "FK_AspNetUsers_Storages_StorageId",
                         column: x => x.StorageId,
                         principalTable: "Storages",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -514,13 +514,23 @@ namespace HyggyBackend.DAL.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "Addresses",
+                columns: new[] { "Id", "City", "HouseNumber", "Latitude", "Longitude", "PostalCode", "State", "Street" },
+                values: new object[] { 1L, "Odessa", "23", 48.0, 38.0, "6600", "Odessa", "Shevchenko str." });
+
+            migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "78bec404-beaa-4519-9e36-8ff826717e00", null, "Admin", "ADMIN" },
-                    { "cd520762-68d1-407d-850f-6478b252cca6", null, "User", "USER" }
+                    { "6cf8c858-6441-405c-9e3a-5b4cf8b46b09", null, "Admin", "ADMIN" },
+                    { "7733a7eb-d008-48ea-ab72-dd21695e9430", null, "User", "USER" }
                 });
+
+            migrationBuilder.InsertData(
+                table: "MainStorages",
+                columns: new[] { "Id", "AddressId" },
+                values: new object[] { 1L, 1L });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

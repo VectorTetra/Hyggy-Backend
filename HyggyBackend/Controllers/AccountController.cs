@@ -109,6 +109,24 @@ namespace HyggyBackend.Controllers
 				return StatusCode(500, ex.Message);
 			}
 		}
+		[HttpPut("editaccount")]
+		public async Task<IActionResult> EditAccount([FromBody] UserForEditDto userDto)
+		{
+			try
+			{
+				var result = await _service.EditAccount(userDto);
+
+				return Ok(result);
+			}
+			catch(ValidationException ex)
+			{
+				return StatusCode(500, ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, ex.Message);
+			}
+		}
 		//Закоментував, що було раніше
 
 		//private readonly UserManager<IdentityUser> _userManager;
