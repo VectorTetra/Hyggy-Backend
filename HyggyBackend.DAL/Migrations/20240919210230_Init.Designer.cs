@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HyggyBackend.DAL.Migrations
 {
     [DbContext(typeof(HyggyContext))]
-    [Migration("20240918222953_ChangeStorageId")]
-    partial class ChangeStorageId
+    [Migration("20240919210230_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -159,16 +159,16 @@ namespace HyggyBackend.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<int>("Count")
+                    b.Property<int>("OrderCount")
                         .HasColumnType("int");
 
-                    b.Property<long>("OrderId")
+                    b.Property<long?>("OrderId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("PriceHistoryId")
+                    b.Property<long?>("PriceHistoryId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("WareId")
+                    b.Property<long?>("WareId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -570,13 +570,13 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "bc74f9a9-e6e8-477b-8214-88f539ebd814",
+                            Id = "a37e55ce-27cc-466a-97e8-41686baee48e",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "85a452a4-aca7-45ff-af58-3101cc42aa05",
+                            Id = "38fe3886-1405-478f-af71-cfb18314fd52",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -780,20 +780,17 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasOne("HyggyBackend.DAL.Entities.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("HyggyBackend.DAL.Entities.WarePriceHistory", "PriceHistory")
                         .WithMany("OrderItems")
                         .HasForeignKey("PriceHistoryId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("HyggyBackend.DAL.Entities.Ware", "Ware")
                         .WithMany("OrderItems")
                         .HasForeignKey("WareId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Order");
 

@@ -171,121 +171,127 @@ namespace HyggyBackend.BLL.Services.Employees
 				<!DOCTYPE html>
 				<html lang='en'>
 				<head>
-				<meta charset='UTF-8'>
-				<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+					<meta charset='UTF-8'>
+					<meta name='viewport' content='width=device-width, initial-scale=1.0'>
 				<style>
-				html{{
-				width: 800px;
-				}}
-				body{{
-				background-color: #F8F8F8;
-				}}
-				.container{{
-				margin: 60px;
-				margin-top: 40px;
-				}}
-				.innercontainer{{
-				background-color: white;
-				}}
-				.maincontainer{{
-				padding: 10px 20px;
-				}}
-				header{{
-				display: flex;
-				position: relative;
-				justify-content: space-between;
-				}}
-				header>h1{{
-				background-color: #143C8A;
-				color: white;
-				padding: 2px;
-				}}
-				header>h3{{
-				position: absolute;
-				right: 0;
-				bottom: 0;
-				color:gray;
-				font-weight: 100;
-				}}
-				.reference{{
-				display: flex;
-				justify-content: center;
-				border:1px gray solid;
-				height: 50px;
-				}}
-				.reference>a{{
-				font-size: large;
-				font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
-				}}
-				.title{{
-				display: flex;
-				flex-direction: column;
-				text-align: end;
-				}}
-				.title>h2{{
-				margin-top: 50px;
-				margin-bottom: 0;
-				}}
-				.title>h4{{
-				margin-top: 0;
-				font-weight: 100;
-				}}
-				p{{	
-				font-size: 18px;
-				font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-				font-weight:400;
-				}}
-				.buttonlink{{
-				 background-color: #143C8A;
-				 color: white;
-				 padding: 14px 25px;
-				 text-align: center;
-				 text-decoration: none;
-				 display: inline-block;
-				}}
-				footer{{
-				margin-top: 50px;
-				padding: 10px 20px;
-				font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-				}}
+					html{{
+						width: 800px;
+					}}
+					body{{
+						background-color: #F8F8F8;
+					}}
+					.container{{
+						margin: 60px;
+						margin-top: 40px;
+					}}
+					.innercontainer{{
+						background-color: white;
+					}}
+					.maincontainer{{
+						padding: 10px 20px;
+					}}
+					header{{
+						display: flex;
+						position: relative;
+						justify-content: space-between;
+					}}
+					header>h1{{
+						background-color: #143C8A;
+						color: white;
+						padding: 2px;
+					}}
+					header>h3{{
+						position: absolute;
+						right: 0;
+						bottom: 0;
+						color:gray;
+						font-weight: 100;
+					}}
+					.reference{{
+						display: flex;
+						justify-content: center;
+						border:1px gray solid;
+						height: 50px;
+					}}
+					.reference>a{{
+						font-size: large;
+						font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+					}}
+					.title{{
+						display: flex;
+						flex-direction: column;
+						text-align: end;
+					}}
+					.title>h2{{
+						margin-top: 50px;
+						margin-bottom: 0;
+					}}
+					.title>h4{{
+						margin-top: 0;
+						font-weight: 100;
+					}}
+					p{{	
+						font-size: 18px;
+						font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+						font-weight:400;
+					}}
+					.buttonlink{{
+					     display: inline-block;
+						 padding: 10px 20px;
+						 background-color: #143C8A;
+						 text-decoration: none;
+						 border-radius: 5px;
+						 margin-top: 20px;
+						 font-weight:bolder;
+						 color: white;
+					}}
+					.buttonlink>p{{
+						margin: auto;    
+						
+
+					}}
+					footer{{
+						margin-top: 50px;
+						padding: 10px 20px;
+						font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+					}}
 				</style>
 				</head>
 				<body>
-				<div class='container'>
-				<header>
-				<h1>Hyggy</h1>
-				<h3>Відділ по роботі з клієнтами</h3>
-				</header>
-				<div class='innercontainer'>
-				<main>
-				<div class='reference'>
-				<a href='#'>Перейти на сайт Hyggy.ua</a>
-				</div>
-				<div class='maincontainer'>
-				<div class='title'>
-				<h2>Ласкаво просимо на Hyggy.ua</h2>
-				<h4>06.вересня 2024</h4>
-				</div>
-				<div>
-				<p>Вітаємо {name}<br/><br/>Ми раді вітати вас на JYSK.ua. Все що вам потрібно - це активувати свій обліковий запис!
-				<br/><br/>Зверніть увагу, що посилання активне лише 48 годин.<br/><br/>
-				<a class='buttonlink' href={callback}>Активувати обліковий запис</a>
-				<br/><br/>Для того, щоб зробити свої покупки максимально приємними просимо заповнити особисті дані у своєму обліковому записі.</p>
-			    </div>
-				</div>
-				</main>
-				<footer>
-				<h3>ВІДДІЛ ПО РОБОТІ З КЛІЄНТАМИ</h3>
-				<p>
-				У Вас виникли запитання чи потрібна допомога? <a href=\""#\"">Зверніться до Відділу по роботі з клієнтами</a>
-				</p>
-				<a href='#'>
-				Адреса та години роботи магазину
-				</a>
-				<p>З повагою,<br/><span style=\""color: #143C8A;font-weight: bolder;\"">Hyggy</span></p>
-				</footer>
-				</div>
-				</div>
+					<div class='container'>
+					<header>
+						<h1>Hyggy</h1>
+						<h3>Відділ по роботі з клієнтами</h3>
+					</header>
+					<div class='innercontainer'>
+					<main>
+						<div class='reference'>
+							<a href='#'>Перейти на сайт Hyggy.ua</a>
+						</div>
+						<div class='maincontainer'>
+							<div class='title'>
+								<h2>Ласкаво просимо на Hyggy.ua</h2>
+								<h4>{DateTime.Now}</h4>
+							</div>
+							<div>
+								<p>Вітаємо {name}<br/><br/>Ми раді вітати вас в команді Hyggy.ua. Все що вам потрібно - це активувати свій обліковий запис!
+								<br/><br/>Зверніть увагу, що посилання активне лише 48 годин.<br/><br/>
+								<a class='buttonlink' href='{callback}'>Активувати обліковий запис</a>
+							 </div>
+						</div>
+					</main>
+					<footer>
+						<h3>ВІДДІЛ ПО РОБОТІ З КЛІЄНТАМИ</h3>
+						<p>
+							У Вас виникли запитання чи потрібна допомога? <a href='#'>Зверніться до Відділу по роботі з клієнтами</a>
+						</p>
+						<a href='#'>
+							Адреса та години роботи магазину
+						</a>
+						<p>З повагою,<br/><span style='color: #143C8A;font-weight: bolder;'>Hyggy</span></p>
+					</footer>
+					</div>
+					</div>
 				</body>
 				</html>";
 			return template;

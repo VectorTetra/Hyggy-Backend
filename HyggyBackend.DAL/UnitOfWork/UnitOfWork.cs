@@ -111,7 +111,7 @@ namespace HyggyBackend.DAL.UnitOfWork
             get
             {
                 if (_orderItems == null)
-                    _orderItems = new OrderItemsRepository(_context);
+                    _orderItems = new OrderItemRepository(_context);
                 return _orderItems;
             }
         }

@@ -275,8 +275,8 @@ namespace HyggyBackend.DAL.Migrations
                     Discriminator = table.Column<string>(type: "nvarchar(21)", maxLength: 21, nullable: false),
                     ShopId = table.Column<long>(type: "bigint", nullable: true),
                     DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    StorageId = table.Column<long>(type: "bigint", nullable: true),
                     MainStorageId = table.Column<long>(type: "bigint", nullable: true),
+                    StorageId = table.Column<long>(type: "bigint", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -311,8 +311,7 @@ namespace HyggyBackend.DAL.Migrations
                         name: "FK_AspNetUsers_Storages_StorageId",
                         column: x => x.StorageId,
                         principalTable: "Storages",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -488,10 +487,10 @@ namespace HyggyBackend.DAL.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Count = table.Column<int>(type: "int", nullable: false),
-                    OrderId = table.Column<long>(type: "bigint", nullable: false),
-                    WareId = table.Column<long>(type: "bigint", nullable: false),
-                    PriceHistoryId = table.Column<long>(type: "bigint", nullable: false)
+                    OrderId = table.Column<long>(type: "bigint", nullable: true),
+                    WareId = table.Column<long>(type: "bigint", nullable: true),
+                    OrderCount = table.Column<int>(type: "int", nullable: false),
+                    PriceHistoryId = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -523,8 +522,8 @@ namespace HyggyBackend.DAL.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "6cf8c858-6441-405c-9e3a-5b4cf8b46b09", null, "Admin", "ADMIN" },
-                    { "7733a7eb-d008-48ea-ab72-dd21695e9430", null, "User", "USER" }
+                    { "38fe3886-1405-478f-af71-cfb18314fd52", null, "User", "USER" },
+                    { "a37e55ce-27cc-466a-97e8-41686baee48e", null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.InsertData(

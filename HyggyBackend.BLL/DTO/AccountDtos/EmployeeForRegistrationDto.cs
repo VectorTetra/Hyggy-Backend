@@ -22,6 +22,7 @@ namespace HyggyBackend.BLL.DTO.AccountDtos
 		public long ShopId { get; set; }
 		public long MainStorageId { get; set; }
 		//[Required]
+		[JsonIgnore]
 		public string? UserUri { get; set; } 
 	}
 }
