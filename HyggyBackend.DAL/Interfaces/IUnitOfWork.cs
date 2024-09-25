@@ -14,12 +14,14 @@ namespace HyggyBackend.DAL.Interfaces
     {
        
         IWareRepository Wares { get; }
+        IWarePriceHistoryRepository WarePriceHistories { get; }
         IShopRepository Shops { get; }
         IProffessionRepository Proffessions { get; }
         IEmployeeRepository<StorageEmployee> StorageEmployees { get; }
         IEmployeeRepository<ShopEmployee> ShopEmployees { get; }
         IOrderRepository Orders { get; }
         IOrderItemRepository OrderItems { get; }
+        IOrderStatusRepository OrderStatuses { get; }
         IAddressRepository Addresses { get; }
         IMainStorageRepository MainStorages { get; }
         Task Save();

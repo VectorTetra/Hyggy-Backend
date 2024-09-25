@@ -11,6 +11,7 @@ namespace HyggyBackend.DAL.Queries
         public long? Id;
         public long? OrderId;
         public long? WareId;
-        public int? OrderCount { get; set; }
+        public long? PriceHistoryId;
+        public int? Count { get; set; }
     }
 }

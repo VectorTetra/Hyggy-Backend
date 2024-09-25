@@ -14,7 +14,9 @@ namespace HyggyBackend.DAL.Entities
         [ForeignKey("OrderId")]
         public long? WareId { get; set; }
         [ForeignKey("WareId")]
-        public int OrderCount { get; set; }
+        public long? PriceHistoryId { get; set; }
+        [ForeignKey("PriceHistoryId")]
+        public int Count { get; set; }
         public virtual Order? Order { get; set; }
         public virtual Ware? Ware { get; set; }
         public virtual WarePriceHistory? PriceHistory { get; set; }
