@@ -16,7 +16,7 @@ namespace HyggyBackend.DAL.Repositories.Employes
 		{
 			return await _context.StorageEmployees
 				//.Include(se => se.Proffession)
-				.Include(se => se.Storage).ToListAsync();
+				.Include(se => se.MainStorage).ToListAsync();
 		}
 		public async Task<IEnumerable<StorageEmployee>> GetPaginatedEmployeesAsync(int? page)
 		{
@@ -69,13 +69,24 @@ namespace HyggyBackend.DAL.Repositories.Employes
 		}
 		public void Update(StorageEmployee employee)
 		{
-			_context.StorageEmployees.Update(employee);
+			StorageEmployee? storageEmployee = _context.StorageEmployees.Where(s => s.Id == employee.Id).FirstOrDefault();
+			storageEmployee.Surname = employee.Surname;
+			storageEmployee.Name = employee.Name;
+			storageEmployee.Email = employee.Email;
+			storageEmployee.PhoneNumber = employee.PhoneNumber;
+			storageEmployee.DateOfBirth = employee.DateOfBirth;
+			storageEmployee.MainStorageId = employee.MainStorageId;
 		}
 		public async Task DeleteAsync(string id)
 		{
 			var employee = await GetByIdAsync(id);
 			if (employee != null)
 				_context.StorageEmployees.Remove(employee);
+		}
+
+		public Task<IEnumerable<StorageEmployee>> GetBySurnameAsync(string surname)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

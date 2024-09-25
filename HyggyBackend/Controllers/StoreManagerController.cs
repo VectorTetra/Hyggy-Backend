@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using HyggyBackend.BLL.DTO.AccountDtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HyggyBackend.Controllers
@@ -13,5 +14,6 @@ namespace HyggyBackend.Controllers
         {
             return Ok("Ви отримали доступ як Керуючий магазином");
         }
+        
     }
 }

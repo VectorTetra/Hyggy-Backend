@@ -18,12 +18,19 @@ namespace HyggyBackend.Controllers
 		[HttpGet("addresses")]
 		public async Task<IActionResult> GetAll()
 		{
-			var addresses = await _addressService.GetAllAsync();
+			try
+			{
+				var addresses = await _addressService.GetAllAsync();
 
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
+				if (!ModelState.IsValid)
+					return BadRequest();
 
-			return Ok(addresses);
+				return Ok(addresses);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex);
+			}
 		}
 		[HttpGet]
 		[Route("addresses/{id}")]

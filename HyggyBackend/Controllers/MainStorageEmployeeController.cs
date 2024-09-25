@@ -1,39 +1,32 @@
-﻿using HyggyBackend.BLL.DTO;
+﻿using HyggyBackend.BLL.DTO.AccountDtos;
 using HyggyBackend.BLL.DTO.EmployeesDTO;
 using HyggyBackend.BLL.Interfaces;
-using HyggyBackend.BLL.Services.Employees;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using HyggyBackend.BLL.DTO.AccountDtos;
-using HyggyBackend.BLL.Services.EmailService;
-using HyggyBackend.DAL.Entities.Employes;
-using Org.BouncyCastle.Tsp;
 
 namespace HyggyBackend.Controllers
 {
 	[ApiController]
-	[Route("api/employee")]
-	public class EmployeeController : Controller
+	[Route("api/storageemployee")]
+	public class MainStorageEmployeeController : Controller
 	{
-		private IEmployeeService<ShopEmployeeDTO> _service;
+		private IEmployeeService<StorageEmployeeDTO> _service;
 
-		public EmployeeController(IEmployeeService<ShopEmployeeDTO> service)
+		public MainStorageEmployeeController(IEmployeeService<StorageEmployeeDTO> service)
 		{
 			_service = service;
 		}
-		
+
 		[HttpPost("register")]
 		public async Task<IActionResult> Register([FromBody] EmployeeForRegistrationDto registerDto)
 		{
-			
+
 			try
 			{
 				if (registerDto is null)
 					return BadRequest();
 
 				var response = await _service.CreateAsync(registerDto);
-				if(!response.IsSuccessfullRegistration)
+				if (!response.IsSuccessfullRegistration)
 					return BadRequest(response.Errors);
 
 				return Ok("Надішлить співробітнику повідомлення про підтверження аккаунту.");
@@ -42,7 +35,7 @@ namespace HyggyBackend.Controllers
 			{
 				return StatusCode(500, ex.Message);
 			}
-			
+
 		}
 		[HttpPost("authenticate")]
 		public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDto authentication)
@@ -55,7 +48,7 @@ namespace HyggyBackend.Controllers
 
 				return Ok(response);
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				return StatusCode(500, ex.Message);
 
@@ -68,26 +61,26 @@ namespace HyggyBackend.Controllers
 
 			return Ok(result);
 		}
-		
-		[HttpGet("shopemployee/{shopId}")]
-		public async Task<IActionResult> GetAllByShopId(long shopId)
+
+		//[HttpGet("storageemployee/{shopId}")]
+		//public async Task<IActionResult> GetAllByShopId(long shopId)
+		//{
+		//	var employees = await _service.GetEmployeesByWorkPlaceId(shopId);
+		//	if (employees is null)
+		//		return NotFound();
+
+		//	return Ok(employees);
+		//}
+		[HttpGet("storageemployees")]
+		public async Task<IActionResult> GetAll()
 		{
-			var employees = await _service.GetEmployeesByWorkPlaceId(shopId);
+			var employees = await _service.GetAllAsync();
 			if (employees is null)
 				return NotFound();
 
 			return Ok(employees);
 		}
-		[HttpGet("shopemployes")]
-		public async Task<IActionResult> GetAll()
-		{
-			var employees = await _service.GetAllAsync();
-			if(employees is null)
-				return NotFound();
-
-			return Ok(employees);
-		}
-		[HttpGet("shopemployee-email")]
+		[HttpGet("storageemployee-email")]
 		public async Task<IActionResult> GetByEmail(string email)
 		{
 			var employee = await _service.GetByEmail(email);
@@ -96,7 +89,7 @@ namespace HyggyBackend.Controllers
 
 			return Ok(employee);
 		}
-		[HttpGet("shopemployee-surname")]
+		[HttpGet("storageemployee-surname")]
 		public async Task<IActionResult> GetBySurname(string surname)
 		{
 			var employee = await _service.GetBySurnameAsync(surname);
@@ -105,7 +98,7 @@ namespace HyggyBackend.Controllers
 
 			return Ok(employee);
 		}
-		[HttpGet("shopemployee-phone")]
+		[HttpGet("storageemployee-phone")]
 		public async Task<IActionResult> GetByPhone(string phone)
 		{
 			var employee = await _service.GetByPhoneAsync(phone);
@@ -115,10 +108,10 @@ namespace HyggyBackend.Controllers
 			return Ok(employee);
 		}
 		[HttpPut("editemployee")]
-		public async Task<IActionResult> EditEmployee(ShopEmployeeDTO employeeDTO)
+		public async Task<IActionResult> EditEmployee([FromBody] StorageEmployeeDTO employeeDTO)
 		{
 			var employee = await _service.GetByIdAsync(employeeDTO.Id!);
-			if(employee is null)	
+			if (employee is null)
 				return NotFound();
 
 			_service.Update(employeeDTO);
@@ -129,7 +122,7 @@ namespace HyggyBackend.Controllers
 		public async Task<IActionResult> DeleteEmployee(string id)
 		{
 			var employee = await _service.GetByIdAsync(id);
-			if(employee is null)
+			if (employee is null)
 				return NotFound();
 
 			await _service.DeleteAsync(id);

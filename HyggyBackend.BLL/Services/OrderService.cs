@@ -57,7 +57,7 @@ namespace HyggyBackend.BLL.Services
                 src.OrderItems.Select(oi => new OrderItemDTO
                 {
                     Id = oi.Id,
-                    Count = oi.Count,
+                    //Count = oi.Count,
                     Ware = new WareDTO
                     {
                         Id = oi.Ware.Id,
@@ -140,7 +140,7 @@ namespace HyggyBackend.BLL.Services
             src.OrderItems.Select(dto => new OrderItem
             {
                 Id = dto.Id,
-                Count = dto.Count,
+                //Count = dto.Count,
                 Ware = new Ware
                 {
                     Id = dto.Ware.Id,

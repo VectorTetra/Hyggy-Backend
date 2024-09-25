@@ -26,7 +26,7 @@ namespace HyggyBackend.DAL.UnitOfWork
         private IOrderItemRepository _orderItems;
         private IOrderStatusRepository _orderStatuses;
         private IAddressRepository _addresses;
-
+        private IMainStorageRepository _globalStorage;
         public UnitOfWork(HyggyContext context)
         {
             _context = context;
@@ -66,6 +66,15 @@ namespace HyggyBackend.DAL.UnitOfWork
                 if (_shops == null)
                     _shops = new ShopRepository(_context);
                 return _shops;
+            }
+        }
+        public IMainStorageRepository MainStorages
+        {
+            get
+            {
+                if(_globalStorage == null)
+                    _globalStorage = new MainStorageRepository(_context);
+                return _globalStorage;
             }
         }
         public IEmployeeRepository<StorageEmployee> StorageEmployees

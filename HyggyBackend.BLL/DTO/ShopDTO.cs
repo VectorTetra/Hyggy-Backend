@@ -14,7 +14,7 @@ namespace HyggyBackend.BLL.DTO
 		public string PhotoUrl { get; set; } = String.Empty;
 		public string WorkHours { get; set; } = String.Empty;
 		public long? AddressId { get; set; } 
-        //public long? StorageId { get; set; } 
+       // public long? StorageId { get; set; } 
 		public List<long> OrderIds { get; set; } = new List<long>();
 	}
 }

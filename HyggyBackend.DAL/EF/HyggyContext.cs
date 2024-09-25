@@ -14,6 +14,7 @@ namespace HyggyBackend.DAL.EF
         public HyggyContext(DbContextOptions<HyggyContext> options)
             : base(options)
         {
+           
         }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Customer> Customers { get; set; }
@@ -32,9 +33,18 @@ namespace HyggyBackend.DAL.EF
         public DbSet<WareStatus> WareStatuses { get; set; }
         public DbSet<ShopEmployee> ShopEmployees { get; set; }
         public DbSet<StorageEmployee> StorageEmployees { get; set; }
+        public DbSet<MainStorage> MainStorages { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<Address>().HasData(
+                new Address { Id = 1, State = "Odessa", City = "Odessa", Street = "Shevchenko str.", HouseNumber = "23", PostalCode = "6600", Latitude = 48, Longitude = 38 }
+                );
+
+            builder.Entity<MainStorage>().HasData(
+                new MainStorage { Id = 1, AddressId = 1 }
+                );
 
             builder.Entity<OrderItem>()
                 .HasOne(o => o.Ware)
@@ -51,7 +61,7 @@ namespace HyggyBackend.DAL.EF
             builder.Entity<OrderItem>()
                 .HasOne(o => o.PriceHistory)
                 .WithMany(o => o.OrderItems)
-                .HasForeignKey(o => o.PriceHistoryId)
+                //.HasForeignKey(o => o.PriceHistoryId)
                 .OnDelete(DeleteBehavior.NoAction);
 
 			builder.Entity<Order>()
@@ -63,9 +73,19 @@ namespace HyggyBackend.DAL.EF
             builder.Entity<Shop>()
                 .HasOne(s => s.Address)
                 .WithOne(a => a.Shop)
+                .OnDelete(DeleteBehavior.NoAction);
+
+			builder.Entity<MainStorage>()
+			   .HasOne(s => s.Address)
+			   .WithOne(a => a.MainStorage)
+			   .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<MainStorage>()
+                .HasMany(m => m.Shops)
+                .WithOne(s => s.Storage)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            List <IdentityRole> roles = new List<IdentityRole>
+			List <IdentityRole> roles = new List<IdentityRole>
 			{
 				new IdentityRole
 				{
