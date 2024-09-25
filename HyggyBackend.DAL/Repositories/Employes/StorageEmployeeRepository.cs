@@ -15,8 +15,8 @@ namespace HyggyBackend.DAL.Repositories.Employes
 		public async Task<IEnumerable<StorageEmployee>> GetAllAsync()
 		{
 			return await _context.StorageEmployees
-				.Include(se => se.Proffession)
-				.Include(se => se.Storage).ToListAsync();
+				//.Include(se => se.Proffession)
+				.Include(se => se.MainStorage).ToListAsync();
 		}
 		public async Task<IEnumerable<StorageEmployee>> GetPaginatedEmployeesAsync(int? page)
 		{
@@ -35,7 +35,8 @@ namespace HyggyBackend.DAL.Repositories.Employes
 		public async Task<IEnumerable<StorageEmployee>> GetEmployeesByProfessionAsync(string professionName)
 		{
 			var employees = await GetAllAsync();
-			return employees.Where(se => se.Proffession.Name == professionName).ToList();
+			//return employees.Where(se => se.Proffession.Name == professionName).ToList();
+			return employees;
 		}
 		public async Task<StorageEmployee?> GetByNameAsync(string fullName)
 		{
@@ -49,7 +50,7 @@ namespace HyggyBackend.DAL.Repositories.Employes
 			return employees.Where(se => se.Email == email)
 				.FirstOrDefault();
 		}
-		public async Task<StorageEmployee?> GetByIdAsync(long id)
+		public async Task<StorageEmployee?> GetByIdAsync(string id)
 		{
 			var employees = await GetAllAsync();
 			return employees.Where(se => se.Id == id)
@@ -68,13 +69,24 @@ namespace HyggyBackend.DAL.Repositories.Employes
 		}
 		public void Update(StorageEmployee employee)
 		{
-			_context.StorageEmployees.Update(employee);
+			StorageEmployee? storageEmployee = _context.StorageEmployees.Where(s => s.Id == employee.Id).FirstOrDefault();
+			storageEmployee.Surname = employee.Surname;
+			storageEmployee.Name = employee.Name;
+			storageEmployee.Email = employee.Email;
+			storageEmployee.PhoneNumber = employee.PhoneNumber;
+			storageEmployee.DateOfBirth = employee.DateOfBirth;
+			storageEmployee.MainStorageId = employee.MainStorageId;
 		}
-		public async Task DeleteAsync(long id)
+		public async Task DeleteAsync(string id)
 		{
 			var employee = await GetByIdAsync(id);
 			if (employee != null)
 				_context.StorageEmployees.Remove(employee);
+		}
+
+		public Task<IEnumerable<StorageEmployee>> GetBySurnameAsync(string surname)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

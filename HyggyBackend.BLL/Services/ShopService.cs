@@ -19,9 +19,12 @@ namespace HyggyBackend.BLL.Services
 			Database = database;
 			_mapper = mapper;
 		}
-		public Task<IEnumerable<ShopDTO>> GetAll()
+		
+		public async Task<IEnumerable<ShopDTO>> GetAll()
 		{
-			throw new NotImplementedException();
+			var shops = await Database.Shops.GetAll();
+
+			return _mapper.Map<IEnumerable<Shop>, IEnumerable<ShopDTO>>(shops);
 		}
 		public async Task<IEnumerable<ShopDTO>> GetPaginatedShops(int? page)
 		{
@@ -82,21 +85,43 @@ namespace HyggyBackend.BLL.Services
 
 			return _mapper.Map<IEnumerable<Shop>, IEnumerable<ShopDTO>>(shop);
 		}
-		public async Task Create(ShopDTO shopDTO)
+		public async Task<ShopDTO> Create(ShopDTO shopDTO)
 		{
 			var shop = _mapper.Map<Shop>(shopDTO);
 
 			await Database.Shops.Create(shop);
+			await Database.Save();
+
+			return shopDTO;
 		}
 		public void Update(ShopDTO shopDTO)
 		{
 			var shop = _mapper.Map<Shop>(shopDTO);
 
 			Database.Shops.Update(shop);
+            Database.Save();
+
 		}
 		public async Task Delete(long id)
 		{
 			await Database.Shops.Delete(id);
+			await Database.Save();
+
+		}
+
+		public async Task<bool> IsShopExist(long id)
+		{
+			var shops = await Database.Shops.GetAll();
+			
+			return shops.Any(shop => shop.Id == id);
+		}
+
+		public async Task<bool> IsShopExistByAddress(long? addressId)
+		{
+			var shops = await GetAll();
+			var shop = shops.Select(s => s.AddressId);
+
+			return shop.Any(s => s == addressId);
 		}
 	}
 }

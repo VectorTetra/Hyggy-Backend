@@ -24,7 +24,7 @@ namespace HyggyBackend.BLL.Services
         cfg.CreateMap<Proffession, ProffessionDTO>()
         .ForMember("Id", opt => opt.MapFrom(c => c.Id))
         .ForMember("Name", opt => opt.MapFrom(c => c.Name))
-        .ForPath(d => d.EmployeeIds, opt => opt.MapFrom(c => c.Employes != null ? c.Employes.Select(b => b.Id) : new List<long>()))
+        //.ForPath(d => d.EmployeeIds, opt => opt.MapFrom(c => c.Employes != null ? c.Employes.Select(b => b.Id) : new List<string>()))
         );
 
         MapperConfiguration ProffessionQueryBLL_ProffessionQueryDALMapConfig = new MapperConfiguration(cfg => cfg.CreateMap<ProffessionQueryBLL, ProffessionQueryDAL>());

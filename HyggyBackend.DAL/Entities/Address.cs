@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,8 +15,10 @@ namespace HyggyBackend.DAL.Entities
     Геокодування: Використовуйте геокодування для отримання координат, що може бути корисним для візуалізації та логістики.
     Автоматизація: Застосовуйте сервіси автозаповнення адрес для покращення користувацького досвіду.
      */
+    
     public class Address
     {
+        
         public long Id { get; set; }
 
         // Адреса доставки, розділена на компоненти
@@ -31,12 +34,13 @@ namespace HyggyBackend.DAL.Entities
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
 
-        // Замовлення
-
-        public virtual ICollection<Order> Orders { get; set; }
-
         //Адреса магазину
-        public virtual Storage Storage { get; set; }
+        public virtual Shop? Shop { get; set; }
+        //Адреса складу
+        public virtual MainStorage? MainStorage { get; set; } 
+        // Замовлення
+        public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+        //public virtual Storage Storage{ get; set; }
     }
 
 }

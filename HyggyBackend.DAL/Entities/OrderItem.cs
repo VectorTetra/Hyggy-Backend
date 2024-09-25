@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,10 +10,16 @@ namespace HyggyBackend.DAL.Entities
     public class OrderItem
     {
         public long Id { get; set; }
+        public long? OrderId { get; set; }
+        [ForeignKey("OrderId")]
+        public long? WareId { get; set; }
+        [ForeignKey("WareId")]
+        public long? PriceHistoryId { get; set; }
+        [ForeignKey("PriceHistoryId")]
         public int Count { get; set; }
-        public virtual Order Order { get; set; }
-        public virtual Ware Ware { get; set; }
-        public virtual WarePriceHistory PriceHistory { get; set; }
+        public virtual Order? Order { get; set; }
+        public virtual Ware? Ware { get; set; }
+        public virtual WarePriceHistory? PriceHistory { get; set; }
 
         public override bool Equals(object obj)
         {

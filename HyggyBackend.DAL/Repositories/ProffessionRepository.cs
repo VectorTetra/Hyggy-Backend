@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using HyggyBackend.DAL.Queries;
 using HyggyBackend.DAL.Entities.Employes;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 
 namespace HyggyBackend.DAL.Repositories
@@ -39,19 +40,26 @@ namespace HyggyBackend.DAL.Repositories
 
         public async Task<IEnumerable<Proffession>> GetByEmployeeName(string employeeName)
         {
-            return await _context.Proffessions
-                .Where(x => x.Employes.Any(x => x.Name.Contains(employeeName))).ToListAsync();
+            //return await _context.Proffessions
+            //    .Where(x => x.Employes.Any(x => x.Name.Contains(employeeName))).ToListAsync();
+            return null;
         }
 
         public async Task<IEnumerable<Proffession>> GetByEmployeeSurname(string employeeSurname)
         {
-            return await _context.Proffessions
-                .Where(x => x.Employes.Any(x => x.Name.Contains(employeeSurname))).ToListAsync();
+            //return await _context.Proffessions
+            //    .Where(x => x.Employes.Any(x => x.Name.Contains(employeeSurname))).ToListAsync();
+            return null;
         }
 
         public async Task<IEnumerable<Proffession>> GetByQuery(ProffessionQueryDAL queryDAL)
         {
             var proffessionCollections = new List<IEnumerable<Proffession>>();
+
+            if (queryDAL.Id != null)
+            {
+                proffessionCollections.Add(new List<Proffession> { await GetById(queryDAL.Id.Value) });
+            }
 
             if (queryDAL.Name != null)
             {

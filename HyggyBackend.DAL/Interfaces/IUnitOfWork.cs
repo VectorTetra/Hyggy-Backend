@@ -15,6 +15,9 @@ namespace HyggyBackend.DAL.Interfaces
        
         IWareRepository Wares { get; }
         ICustomerRepository Customers { get; }
+
+        IWarePriceHistoryRepository WarePriceHistories { get; }
+
         IShopRepository Shops { get; }
         IProffessionRepository Proffessions { get; }
         IEmployeeRepository<StorageEmployee> StorageEmployees { get; }
@@ -23,9 +26,12 @@ namespace HyggyBackend.DAL.Interfaces
         IWareCategory1Repository Categories1 { get; }
         IWareCategory2Repository Categories2 { get; }
         IWareCategory3Repository Categories3 { get; }
-
         IWareStatusRepository WareStatuses { get; }
         IWareImageRepository WareImages { get; }
+        IOrderItemRepository OrderItems { get; }
+        IOrderStatusRepository OrderStatuses { get; }
+        IAddressRepository Addresses { get; }
+        IMainStorageRepository MainStorages { get; }
         Task Save();
     }
 }

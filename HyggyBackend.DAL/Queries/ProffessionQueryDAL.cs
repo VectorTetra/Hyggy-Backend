@@ -8,6 +8,7 @@ namespace HyggyBackend.DAL.Queries
 {
     public class ProffessionQueryDAL
     {
-        public string Name { get; set; }
+        public long? Id;
+        public string? Name { get; set; }
     }
 }

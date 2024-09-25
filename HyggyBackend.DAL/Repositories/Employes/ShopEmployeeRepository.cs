@@ -1,7 +1,10 @@
 ﻿using HyggyBackend.DAL.EF;
+using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Entities.Employes;
 using HyggyBackend.DAL.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
 
 namespace HyggyBackend.DAL.Repositories.Employes
 {
@@ -14,9 +17,9 @@ namespace HyggyBackend.DAL.Repositories.Employes
 		}
 		public async Task<IEnumerable<ShopEmployee>> GetAllAsync()
 		{
-			return await _context.ShopEmployees
-				.Include(se => se.Proffession)
-				.Include(se => se.Shop).ToListAsync();
+			return await _context.ShopEmployees.ToListAsync();
+			//.Include(se => se.Proffession)
+			//.Include(se => se.Shop).ToListAsync();
 		}
 		public async Task<IEnumerable<ShopEmployee>> GetPaginatedEmployeesAsync(int? page)
 		{
@@ -35,13 +38,14 @@ namespace HyggyBackend.DAL.Repositories.Employes
 		public async Task<IEnumerable<ShopEmployee>> GetEmployeesByProfessionAsync(string professionName)
 		{
 			var employees = await GetAllAsync();
-			return employees.Where(se => se.Proffession.Name == professionName).ToList();
+			//return employees.Where(se => se.Proffession.Name == professionName).ToList();
+			return employees;
 		}
-		public async Task<ShopEmployee?> GetByNameAsync(string fullName)
+		public async Task<IEnumerable<ShopEmployee>> GetBySurnameAsync(string surname)
 		{
 			var employees = await GetAllAsync();
-			return employees.Where(se => se.Name + se.Surname == fullName)
-				.FirstOrDefault();	
+			return employees.Where(se => se.Surname == surname)
+				.ToList();	
 		}
 		public async Task<ShopEmployee?> GetByEmail(string email)
 		{
@@ -49,7 +53,7 @@ namespace HyggyBackend.DAL.Repositories.Employes
 			return employees.Where(se => se.Email == email)
 				.FirstOrDefault();
 		}
-		public async Task<ShopEmployee?> GetByIdAsync(long id)
+		public async Task<ShopEmployee?> GetByIdAsync(string id)
 		{
 			var employees = await GetAllAsync();
 			return employees.Where(se => se.Id == id)
@@ -64,13 +68,20 @@ namespace HyggyBackend.DAL.Repositories.Employes
 
 		public async Task CreateAsync(ShopEmployee employee)
         {
+			
 			await _context.ShopEmployees.AddAsync(employee);
         }
 		public void Update(ShopEmployee employee)
 		{
-			_context.ShopEmployees.Update(employee);
+			ShopEmployee? shopEmployee = _context.ShopEmployees.Where(s => s.Id == employee.Id).FirstOrDefault();
+			shopEmployee.Surname = employee.Surname;
+			shopEmployee.Name = employee.Name;
+			shopEmployee.Email = employee.Email;
+			shopEmployee.PhoneNumber = employee.PhoneNumber;
+			shopEmployee.DateOfBirth = employee.DateOfBirth;
+			shopEmployee.ShopId = employee.ShopId;
 		}
-		public async Task DeleteAsync(long id)
+		public async Task DeleteAsync(string id)
         {
 			var employee = await GetByIdAsync(id);
 			if(employee != null)

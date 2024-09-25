@@ -2,6 +2,6 @@
 {
 	public class ShopEmployeeDTO : EmployeeDTO
 	{
-        public virtual ShopDTO Shop { get; set; }
+        public long ShopId { get; set; }
     }
 }

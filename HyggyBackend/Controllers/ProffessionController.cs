@@ -1,10 +1,8 @@
 ﻿using HyggyBackend.BLL.DTO;
 using HyggyBackend.BLL.Infrastructure;
 using HyggyBackend.BLL.Interfaces;
-using HyggyBackend.DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace HyggyBackend.Controllers
 {
@@ -72,10 +70,7 @@ namespace HyggyBackend.Controllers
                         }
                         break;
                     default:
-                        {
-                            collection = new List<ProffessionDTO>();
-                        }
-                        break;
+                        throw new ValidationException("Невідомий параметр пошуку!", nameof(proffessionQuery.SearchParameter));
                 }
                 if (collection.IsNullOrEmpty())
                 {
@@ -158,6 +153,7 @@ namespace HyggyBackend.Controllers
     public class ProffessionQuery
     {
         public string? SearchParameter { get; set; }
+
         public long? Id { get; set; }
         public string? Name { get; set; }
         public string? EmployeeName { get; set; }

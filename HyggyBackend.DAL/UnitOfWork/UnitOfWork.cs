@@ -1,8 +1,15 @@
-﻿using HyggyBackend.DAL.EF;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using HyggyBackend.DAL.EF;
+using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Entities.Employes;
 using HyggyBackend.DAL.Interfaces;
 using HyggyBackend.DAL.Repositories;
 using HyggyBackend.DAL.Repositories.Employes;
+using Microsoft.AspNetCore.Identity;
 
 namespace HyggyBackend.DAL.UnitOfWork
 {
@@ -10,6 +17,7 @@ namespace HyggyBackend.DAL.UnitOfWork
     {
         private readonly HyggyContext _context;
         private IWareRepository _wares;
+        private IWarePriceHistoryRepository _warePriceHistories;
         private IShopRepository _shops;
         private ICustomerRepository _customers;
         private ShopEmployeeRepository _shopEmployees;
@@ -23,11 +31,24 @@ namespace HyggyBackend.DAL.UnitOfWork
         private IWareImageRepository _wareImages;
 
 
+        private IOrderItemRepository _orderItems;
+        private IOrderStatusRepository _orderStatuses;
+        private IAddressRepository _addresses;
+        private IMainStorageRepository _globalStorage;
         public UnitOfWork(HyggyContext context)
         {
             _context = context;
         }
-        public IWareRepository Wares
+		public IAddressRepository Addresses
+		{
+			get
+			{
+				if (_addresses == null)
+					_addresses = new AddressRepository(_context);
+				return _addresses;
+			}
+		}
+		public IWareRepository Wares
         {
             get
             {
@@ -36,6 +57,16 @@ namespace HyggyBackend.DAL.UnitOfWork
                 return _wares;
             }
         }
+        public IWarePriceHistoryRepository WarePriceHistories
+        {
+            get
+            {
+                if (_warePriceHistories == null)
+                    _warePriceHistories = new WarePriceHistoryRepository(_context);
+                return _warePriceHistories;
+            }
+        }
+
         public IShopRepository Shops
         {
             get
@@ -43,6 +74,15 @@ namespace HyggyBackend.DAL.UnitOfWork
                 if (_shops == null)
                     _shops = new ShopRepository(_context);
                 return _shops;
+            }
+        }
+        public IMainStorageRepository MainStorages
+        {
+            get
+            {
+                if(_globalStorage == null)
+                    _globalStorage = new MainStorageRepository(_context);
+                return _globalStorage;
             }
         }
         public IEmployeeRepository<StorageEmployee> StorageEmployees
@@ -56,9 +96,9 @@ namespace HyggyBackend.DAL.UnitOfWork
         }
         public IEmployeeRepository<ShopEmployee> ShopEmployees
         {
-            get
-            {
-                if (_shopEmployees == null)
+			get
+			{
+				if (_shopEmployees == null)
                     _shopEmployees = new ShopEmployeeRepository(_context);
                 return _shopEmployees;
             }
@@ -139,12 +179,28 @@ namespace HyggyBackend.DAL.UnitOfWork
                 if (_wareImages == null)
                     _wareImages = new WareImageRepository(_context);
                 return _wareImages;
+        public IOrderItemRepository OrderItems
+        {
+            get
+            {
+                if (_orderItems == null)
+                    _orderItems = new OrderItemRepository(_context);
+                return _orderItems;
+            }
+        }
+        public IOrderStatusRepository OrderStatuses
+        {
+            get
+            {
+                if (_orderStatuses == null)
+                    _orderStatuses = new OrderStatusRepository(_context);
+                return _orderStatuses;
             }
         }
 
         public async Task Save()
         {
-            await _context.SaveChangesAsync();
+           var saved = await _context.SaveChangesAsync();
         }
     }
 }

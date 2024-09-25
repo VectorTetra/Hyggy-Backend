@@ -284,7 +284,7 @@ namespace HyggyBackend.Controllers
                             }
                             else
                             {
-                                collection = await _serv.GetByCustomerId((long)orderQueryPL.CustomerId);
+                                collection = await _serv.GetByCustomerId(orderQueryPL.CustomerId.ToString());
                             }
                         }
                         break;

@@ -32,16 +32,16 @@ namespace HyggyBackend.BLL.Services
                     PostalCode = src.DeliveryAddress.PostalCode,
                     Latitude = src.DeliveryAddress.Latitude,
                     Longitude = src.DeliveryAddress.Longitude,
-                    Storage = src.DeliveryAddress.Storage == null ? null : new StorageDTO
-                    {
-                        Id = src.DeliveryAddress.Storage.Id,
-                        Shop = src.DeliveryAddress.Storage.Shop == null ? null : new ShopDTO
-                        {
-                            Id = src.DeliveryAddress.Storage.Shop.Id,
-                            PhotoUrl = src.DeliveryAddress.Storage.Shop.PhotoUrl,
-                            WorkHours = src.DeliveryAddress.Storage.Shop.WorkHours
-                        }
-                    }
+                    //Storage = src.DeliveryAddress.Storage == null ? null : new StorageDTO
+                    //{
+                    //    Id = src.DeliveryAddress.Storage.Id,
+                    //    Shop = src.DeliveryAddress.Storage.Shop == null ? null : new ShopDTO
+                    //    {
+                    //        Id = src.DeliveryAddress.Storage.Shop.Id,
+                    //        PhotoUrl = src.DeliveryAddress.Storage.Shop.PhotoUrl,
+                    //        WorkHours = src.DeliveryAddress.Storage.Shop.WorkHours
+                    //    }
+                    //}
                 }))
             .ForMember("OrderDate", opt => opt.MapFrom(src => src.OrderDate))
             .ForMember("Phone", opt => opt.MapFrom(src => src.Phone))
@@ -57,7 +57,7 @@ namespace HyggyBackend.BLL.Services
                 src.OrderItems.Select(oi => new OrderItemDTO
                 {
                     Id = oi.Id,
-                    Count = oi.Count,
+                    //Count = oi.Count,
                     Ware = new WareDTO
                     {
                         Id = oi.Ware.Id,
@@ -115,16 +115,16 @@ namespace HyggyBackend.BLL.Services
                 PostalCode = src.DeliveryAddress.PostalCode,
                 Latitude = src.DeliveryAddress.Latitude,
                 Longitude = src.DeliveryAddress.Longitude,
-                Storage = src.DeliveryAddress.Storage == null ? null : new Storage
-                {
-                    Id = src.DeliveryAddress.Storage.Id,
-                    Shop = src.DeliveryAddress.Storage.Shop == null ? null : new Shop
-                    {
-                        Id = src.DeliveryAddress.Storage.Shop.Id,
-                        PhotoUrl = src.DeliveryAddress.Storage.Shop.PhotoUrl,
-                        WorkHours = src.DeliveryAddress.Storage.Shop.WorkHours
-                    }
-                }
+                //Storage = src.DeliveryAddress.Storage == null ? null : new Storage
+                //{
+                //    Id = src.DeliveryAddress.Storage.Id,
+                //    Shop = src.DeliveryAddress.Storage.Shop == null ? null : new Shop
+                //    {
+                //        Id = src.DeliveryAddress.Storage.Shop.Id,
+                //        PhotoUrl = src.DeliveryAddress.Storage.Shop.PhotoUrl,
+                //        WorkHours = src.DeliveryAddress.Storage.Shop.WorkHours
+                //    }
+                //}
             }))
         .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => src.OrderDate))
         .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))
@@ -140,7 +140,7 @@ namespace HyggyBackend.BLL.Services
             src.OrderItems.Select(dto => new OrderItem
             {
                 Id = dto.Id,
-                Count = dto.Count,
+                //Count = dto.Count,
                 Ware = new Ware
                 {
                     Id = dto.Ware.Id,
@@ -294,7 +294,7 @@ namespace HyggyBackend.BLL.Services
             var mapper = new Mapper(config);
             return mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
-        public async Task<IEnumerable<OrderDTO>> GetByCustomerId(long customerId)
+        public async Task<IEnumerable<OrderDTO>> GetByCustomerId(string customerId)
         {
             var orders = await Database.Orders.GetByCustomerId(customerId);
             var mapper = new Mapper(config);

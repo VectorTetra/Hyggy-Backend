@@ -13,6 +13,7 @@
         public virtual OrderStatus Status { get; set; }
         public virtual ICollection<OrderItem> OrderItems { get; set; }
         public virtual Customer Customer { get; set; }
+        public long ShopId { get; set; }
         public virtual Shop Shop { get; set; }
         public override bool Equals(object obj)
         {
