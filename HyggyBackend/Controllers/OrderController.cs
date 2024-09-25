@@ -401,8 +401,8 @@ namespace HyggyBackend.Controllers
     {
         public string? SearchParameter { get; set; } // Вибраний критерій пошуку
 
-        public long? Id;
-        public long? AddressId;
+        public long? Id { get; set; }
+        public long? AddressId { get; set; }
 
         // Адреса доставки, розділена на компоненти
         public string? Street { get; set; } // Назва вулиці

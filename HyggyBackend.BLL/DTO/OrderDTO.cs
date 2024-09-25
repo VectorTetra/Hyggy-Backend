@@ -9,13 +9,13 @@ namespace HyggyBackend.BLL.DTO
     public class OrderDTO
     {
         public long Id { get; set; }
-        public AddressDTO DeliveryAddress { get; set; }
+        public AddressDTO? DeliveryAddress { get; set; }
         public DateTime OrderDate { get; set; }
         public string Phone { get; set; }
         public string Comment { get; set; }
-        public OrderStatusDTO Status { get; set; }
-        public ShopDTO Shop { get; set; }
-        public CustomerDTO Customer { get; set; }
+        public OrderStatusDTO? Status { get; set; }
+        public ShopDTO? Shop { get; set; }
+        public CustomerDTO? Customer { get; set; }
         public ICollection<OrderItemDTO> OrderItems { get; set; }
     }
 }

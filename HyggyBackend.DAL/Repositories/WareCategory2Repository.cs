@@ -22,40 +22,50 @@ namespace HyggyBackend.DAL.Repositories
 
         public async Task<IEnumerable<WareCategory2>> GetPagedCategories(int pageNumber, int pageSize)
         {
-            return _context.WareCategories2
+            return await _context.WareCategories2
                 .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize);
+                .Take(pageSize).ToListAsync();
         }
         public async Task<IEnumerable<WareCategory2>> GetByNameSubstring(string nameSubstring)
         {
-            return _context.WareCategories2.Where(x => x.Name.Contains(nameSubstring));
+            return await _context.WareCategories2.Where(x => x.Name.Contains(nameSubstring)).ToListAsync();
         }
         public async Task<IEnumerable<WareCategory2>> GetByJSONStructureFilePathSubstring(string JSONStructureFilePathSubstring)
         {
-            return _context.WareCategories2.Where(x => x.JSONStructureFilePath.Contains(JSONStructureFilePathSubstring));
+            return await _context.WareCategories2.Where(x => x.JSONStructureFilePath.Contains(JSONStructureFilePathSubstring)).ToListAsync();
         }
         public async Task<IEnumerable<WareCategory2>> GetByWareCategory1Id(long id)
         {
 
-            return _context.WareCategories2.Where(x => x.WareCategory1.Id == id);
+            return await _context.WareCategories2.Where(x => x.WareCategory1.Id == id).ToListAsync();
         }
         public async Task<IEnumerable<WareCategory2>> GetByWareCategory1NameSubstring(string WareCategory1NameSubstring)
         {
 
-            return _context.WareCategories2.Where(x => x.WareCategory1.Name.Contains(WareCategory1NameSubstring));
+            return await _context.WareCategories2.Where(x => x.WareCategory1.Name.Contains(WareCategory1NameSubstring)).ToListAsync();
 
         }
         public async Task<IEnumerable<WareCategory2>> GetByWareCategory3Id(long id)
         {
-            return _context.WareCategories2.Where(x => x.WaresCategory3.Any(m => m.Id == id));
+            return await _context.WareCategories2.Where(x => x.WaresCategory3.Any(m => m.Id == id)).ToListAsync();
         }
         public async Task<IEnumerable<WareCategory2>> GetByWareCategory3NameSubstring(string WareCategory3NameSubstring)
         {
-            return _context.WareCategories2.Where(x => x.WaresCategory3.Any(m => m.Name.Contains(WareCategory3NameSubstring)));
+            return await _context.WareCategories2.Where(x => x.WaresCategory3.Any(m => m.Name.Contains(WareCategory3NameSubstring))).ToListAsync();
         }
         public async Task<IEnumerable<WareCategory2>> GetByQuery(WareCategory2QueryDAL query)
         {
             var WareCategories2Collection = new List<IEnumerable<WareCategory2>>();
+
+            if (query.Id != null)
+            {
+                WareCategories2Collection.Add(await _context.WareCategories2.Where(x => x.Id == query.Id).ToListAsync());
+            }
+
+            if (query.NameSubstring != null)
+            {
+                WareCategories2Collection.Add(await GetByNameSubstring(query.NameSubstring));
+            }
 
             if (query.JSONStructureFilePathSubstring != null)
             {
@@ -76,6 +86,18 @@ namespace HyggyBackend.DAL.Repositories
             if (query.WareCategory3NameSubstring != null)
             {
                 WareCategories2Collection.Add(await GetByWareCategory3NameSubstring(query.WareCategory3NameSubstring));
+            }
+
+            if (!WareCategories2Collection.Any())
+            {
+                return new List<WareCategory2>();
+            }
+
+            if(query.PageNumber != null && query.PageSize != null)
+            {
+                return WareCategories2Collection.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList())
+                   .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                   .Take(query.PageSize.Value);
             }
             return WareCategories2Collection.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
         }

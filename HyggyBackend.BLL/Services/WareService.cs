@@ -30,7 +30,7 @@ namespace HyggyBackend.BLL.Services
             .ForMember(d => d.Price, opt => opt.MapFrom(c => c.Price))
             .ForMember(d => d.Discount, opt => opt.MapFrom(c => c.Discount))
             .ForMember(d => d.IsDeliveryAvailable, opt => opt.MapFrom(c => c.IsDeliveryAvailable))
-            .ForPath(d => d.Category3, opt => opt.MapFrom(c =>
+            .ForPath(d => d.WareCategory3, opt => opt.MapFrom(c =>
                 new WareCategory3DTO
                 {
                     Id = c.WareCategory3.Id,
@@ -60,7 +60,41 @@ namespace HyggyBackend.BLL.Services
             {
                 Id = image.Id,
                 Path = image.Path,
-                Ware = image.Ware
+                Ware = new WareDTO
+                {
+                    Id = image.Ware.Id,
+                    Name = image.Ware.Name,
+                    Description = image.Ware.Description,
+                    Price = image.Ware.Price,
+                    Discount = image.Ware.Discount,
+                    IsDeliveryAvailable = image.Ware.IsDeliveryAvailable,
+                    WareCategory3 = new WareCategory3DTO
+                    {
+                        Id = image.Ware.WareCategory3.Id,
+                        Name = image.Ware.WareCategory3.Name,
+                        WareCategory2 = new WareCategory2DTO
+                        {
+                            Id = image.Ware.WareCategory3.WareCategory2.Id,
+                            Name = image.Ware.WareCategory3.WareCategory2.Name,
+                            WareCategory1 = new WareCategory1DTO
+                            {
+                                Id = image.Ware.WareCategory3.WareCategory2.WareCategory1.Id,
+                                Name = image.Ware.WareCategory3.WareCategory2.WareCategory1.Name
+                            }
+                        }
+                    },
+                    Status = new WareStatusDTO
+                    {
+                        Id = image.Ware.Status.Id,
+                        Name = image.Ware.Status.Name,
+                        Description = image.Ware.Status.Description
+                    },
+                    Images = image.Ware.Images.Select(i => new WareImageDTO
+                    {
+                        Id = i.Id,
+                        Path = i.Path
+                    }).ToList()
+                }
             })));
 
         cfg.CreateMap<WareDTO, Ware>()
@@ -74,19 +108,19 @@ namespace HyggyBackend.BLL.Services
             .ForPath(c => c.WareCategory3, opt => opt.MapFrom(d =>
                 new WareCategory3
                 {
-                    Id = d.Category3.Id,
-                    JSONStructureFilePath = d.Category3.JSONStructureFilePath,
-                    Name = d.Category3.Name,
+                    Id = d.WareCategory3.Id,
+                    JSONStructureFilePath = d.WareCategory3.JSONStructureFilePath,
+                    Name = d.WareCategory3.Name,
                     WareCategory2 = new WareCategory2
                     {
-                        Id = d.Category3.WareCategory2.Id,
-                        JSONStructureFilePath = d.Category3.WareCategory2.JSONStructureFilePath,
-                        Name = d.Category3.WareCategory2.Name,
+                        Id = d.WareCategory3.WareCategory2.Id,
+                        JSONStructureFilePath = d.WareCategory3.WareCategory2.JSONStructureFilePath,
+                        Name = d.WareCategory3.WareCategory2.Name,
                         WareCategory1 = new WareCategory1
                         {
-                            Id = d.Category3.WareCategory2.WareCategory1.Id,
-                            JSONStructureFilePath = d.Category3.WareCategory2.WareCategory1.JSONStructureFilePath,
-                            Name = d.Category3.WareCategory2.WareCategory1.Name
+                            Id = d.WareCategory3.WareCategory2.WareCategory1.Id,
+                            JSONStructureFilePath = d.WareCategory3.WareCategory2.WareCategory1.JSONStructureFilePath,
+                            Name = d.WareCategory3.WareCategory2.WareCategory1.Name
                         }
                     }
                 }))
@@ -101,11 +135,45 @@ namespace HyggyBackend.BLL.Services
             {
                 Id = imageDTO.Id,
                 Path = imageDTO.Path,
-                Ware = imageDTO.Ware
+                Ware = new Ware
+                {
+                    Id = imageDTO.Ware.Id,
+                    Name = imageDTO.Ware.Name,
+                    Description = imageDTO.Ware.Description,
+                    Price = imageDTO.Ware.Price,
+                    Discount = imageDTO.Ware.Discount,
+                    IsDeliveryAvailable = imageDTO.Ware.IsDeliveryAvailable,
+                    WareCategory3 = new WareCategory3
+                    {
+                        Id = imageDTO.Ware.WareCategory3.Id,
+                        Name = imageDTO.Ware.WareCategory3.Name,
+                        WareCategory2 = new WareCategory2
+                        {
+                            Id = imageDTO.Ware.WareCategory3.WareCategory2.Id,
+                            Name = imageDTO.Ware.WareCategory3.WareCategory2.Name,
+                            WareCategory1 = new WareCategory1
+                            {
+                                Id = imageDTO.Ware.WareCategory3.WareCategory2.WareCategory1.Id,
+                                Name = imageDTO.Ware.WareCategory3.WareCategory2.WareCategory1.Name
+                            }
+                        }
+                    },
+                    Status = new WareStatus
+                    {
+                        Id = imageDTO.Ware.Status.Id,
+                        Name = imageDTO.Ware.Status.Name,
+                        Description = imageDTO.Ware.Status.Description
+                    },
+                    Images = imageDTO.Ware.Images.Select(i => new WareImage
+                    {
+                        Id = i.Id,
+                        Path = i.Path
+                    }).ToList()
+                }
             })))
-            .ForPath(c => c.PriceHistories, opt => opt.MapFrom(d => d.PriceHistories.Select(ph => new WarePriceHistory
+            .ForPath(c => c.PriceHistories, opt => opt.MapFrom(d => d.PriceHistories.Select(ph => new WarePriceHistoryDTO
             {
-                Id = ph.Id,
+                Id = ph.Id, 
                 Price = ph.Price,
                 EffectiveDate = ph.EffectiveDate,
                 Ware = ph.Ware
@@ -266,9 +334,9 @@ namespace HyggyBackend.BLL.Services
             throw new ValidationException("Знижка не може бути від'ємною!", wareDTO.Discount.ToString());
         }
 
-        if (wareDTO.Category3 == null)
+        if (wareDTO.WareCategory3 == null)
         {
-            throw new ValidationException("Категорія не може бути пустою!", wareDTO.Category3.ToString());
+            throw new ValidationException("Категорія не може бути пустою!", wareDTO.WareCategory3.ToString());
         }
 
         if (wareDTO.Status == null)
@@ -311,9 +379,9 @@ namespace HyggyBackend.BLL.Services
             throw new ValidationException("Знижка не може бути від'ємною!", wareDTO.Discount.ToString());
         }
 
-        if (wareDTO.Category3 == null)
+        if (wareDTO.WareCategory3 == null)
         {
-            throw new ValidationException("Категорія не може бути пустою!", wareDTO.Category3.ToString());
+            throw new ValidationException("Категорія не може бути пустою!", wareDTO.WareCategory3.ToString());
         }
 
         if (wareDTO.Status == null)

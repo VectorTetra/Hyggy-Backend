@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HyggyBackend.DAL.Queries
+namespace HyggyBackend.BLL.Queries
 {
-    public class WareCategory1QueryDAL
+    public class WareCategory1QueryBLL
     {
         public long? Id { get; set; }
         public string? NameSubstring { get; set; }

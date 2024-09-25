@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,10 +19,18 @@ namespace HyggyBackend.DAL.UnitOfWork
         private IWareRepository _wares;
         private IWarePriceHistoryRepository _warePriceHistories;
         private IShopRepository _shops;
+        private ICustomerRepository _customers;
         private ShopEmployeeRepository _shopEmployees;
         private StorageEmployeeRepository _storageEmployees;
         private IProffessionRepository _proffessions;
         private IOrderRepository _orders;
+        private IWareCategory1Repository _categories1;
+        private IWareCategory2Repository _categories2;
+        private IWareCategory3Repository _categories3;
+        private IWareStatusRepository _wareStatuses;
+        private IWareImageRepository _wareImages;
+
+
         private IOrderItemRepository _orderItems;
         private IOrderStatusRepository _orderStatuses;
         private IAddressRepository _addresses;
@@ -95,8 +103,6 @@ namespace HyggyBackend.DAL.UnitOfWork
                 return _shopEmployees;
             }
         }
-
-
         public IProffessionRepository Proffessions
         {
             get
@@ -107,7 +113,6 @@ namespace HyggyBackend.DAL.UnitOfWork
             }
         }
 
-
         public IOrderRepository Orders
         {
             get
@@ -117,7 +122,63 @@ namespace HyggyBackend.DAL.UnitOfWork
                 return _orders;
             }
         }
+        public ICustomerRepository Customers
+        {
+            get
+            {
+                if (_customers == null)
+                    _customers = new CustomerRepository(_context);
+                return _customers;
+            }
+        }
 
+        public IWareCategory1Repository Categories1
+        {
+            get
+            {
+                if (_categories1 == null)
+                    _categories1 = new WareCategory1Repository(_context);
+                return _categories1;
+            }
+        }
+
+        public IWareCategory2Repository Categories2
+        {
+            get
+            {
+                if (_categories2 == null)
+                    _categories2 = new WareCategory2Repository(_context);
+                return _categories2;
+            }
+        }
+
+        public IWareCategory3Repository Categories3
+        {
+            get
+            {
+                if (_categories3 == null)
+                    _categories3 = new WareCategory3Repository(_context);
+                return _categories3;
+            }
+        }
+
+        public IWareStatusRepository WareStatuses
+        {
+            get
+            {
+                if (_wareStatuses == null)
+                    _wareStatuses = new WareStatusRepository(_context);
+                return _wareStatuses;
+            }
+        }
+
+        public IWareImageRepository WareImages
+        {
+            get
+            {
+                if (_wareImages == null)
+                    _wareImages = new WareImageRepository(_context);
+                return _wareImages;
         public IOrderItemRepository OrderItems
         {
             get

@@ -11,6 +11,8 @@ using System.Linq.Expressions;
 
 namespace HyggyBackend.Controllers
 {
+    [Route("api/Ware")]
+    [ApiController]
     public class WareController : ControllerBase
     {
         private readonly IWareService _serv;
@@ -338,7 +340,7 @@ namespace HyggyBackend.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<ActionResult<WareDTO>> DeleteWare(long id)
         {
             try

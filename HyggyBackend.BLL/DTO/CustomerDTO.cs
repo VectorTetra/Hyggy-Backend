@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HyggyBackend.DAL.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,5 +13,6 @@ namespace HyggyBackend.BLL.DTO
         public string Name { get; set; }
         public string Surname { get; set; }
         public string Email { get; set; }
+        public ICollection<OrderDTO> Orders { get; set; }
     }
 }
