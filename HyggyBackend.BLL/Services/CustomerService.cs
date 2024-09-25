@@ -233,7 +233,7 @@ namespace HyggyBackend.BLL.Services
             var mapper = new Mapper(config);
             return mapper.Map<IEnumerable<Customer>, IEnumerable<CustomerDTO>>(customers);
         }
-        public async Task<CustomerDTO?> GetByIdAsync(long id)
+        public async Task<CustomerDTO?> GetByIdAsync(string id)
         { 
             var customer = await Database.Customers.GetByIdAsync(id);
             var mapper = new Mapper(config);
@@ -267,7 +267,7 @@ namespace HyggyBackend.BLL.Services
             var returnedDTO = await GetByIdAsync(customer.Id);
             return returnedDTO;
         }
-        public async Task DeleteAsync(long id) 
+        public async Task DeleteAsync(string id) 
         {
             await Database.Customers.DeleteAsync(id);
         }

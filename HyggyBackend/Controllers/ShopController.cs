@@ -47,7 +47,7 @@ namespace HyggyBackend.Controllers
 		{
 			try
 			{
-				if (await _shopService.IsShopExistByAddress(shopDto.AddressId))
+				if (await _shopService.IsShopExistByAddress(shopDto.Address.Id))
 					return Ok("За такою адресою вже існує зареєстрований магазин");
 
 				await _shopService.Create(shopDto);

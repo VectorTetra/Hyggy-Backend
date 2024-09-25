@@ -13,8 +13,8 @@ namespace HyggyBackend.BLL.Helper
         {
             CreateMap<Shop, ShopDTO>()
                 //.ForMember(dest => dest.StorageId, opts => opts.MapFrom(src => src.StorageId))
-                .ForMember(dest => dest.AddressId, opts => opts.MapFrom(src => src.AddressId))
-                .ForMember(dest => dest.OrderIds, opts => opts.MapFrom(src => src.Orders.Select(o => o.Id)));
+                .ForMember(dest => dest.Address, opts => opts.MapFrom(src => src.Address))
+                .ForMember(dest => dest.Orders, opts => opts.MapFrom(src => src.Orders));
             CreateMap<ShopDTO, Shop>();
 
             CreateMap<MainStorage, MainStorageDto>()

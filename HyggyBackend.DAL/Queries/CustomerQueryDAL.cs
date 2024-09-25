@@ -9,7 +9,7 @@ namespace HyggyBackend.DAL.Queries
     public class CustomerQueryDAL
     {
 
-        public long? Id;
+        public string? Id;
         public string? Name;
         public string? Surname;
         public string? Email;

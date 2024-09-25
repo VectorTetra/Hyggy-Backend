@@ -9,7 +9,7 @@ namespace HyggyBackend.BLL.DTO
 {
     public class CustomerDTO
     {
-        public long Id { get; set; }
+        public string Id { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
         public string Email { get; set; }

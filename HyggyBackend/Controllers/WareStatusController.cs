@@ -8,7 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace HyggyBackend.Controllers
 {
-    [Route("api/Ware")]
+    [Route("api/WareStatus")]
     [ApiController]
     public class WareStatusController : ControllerBase
     {

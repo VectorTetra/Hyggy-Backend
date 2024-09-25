@@ -23,6 +23,7 @@ namespace HyggyBackend.BLL.Infrastructure
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<IMainStorageService, MainStorageService>();
 			services.AddScoped<IEmployeeService<StorageEmployeeDTO>, StorageEmployeeDTOService>();
+            services.AddScoped<ICustomerService, CustomerService>();
 			services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 		}
     }

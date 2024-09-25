@@ -179,6 +179,8 @@ namespace HyggyBackend.DAL.UnitOfWork
                 if (_wareImages == null)
                     _wareImages = new WareImageRepository(_context);
                 return _wareImages;
+            }
+        }
         public IOrderItemRepository OrderItems
         {
             get

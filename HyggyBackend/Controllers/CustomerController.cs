@@ -52,7 +52,7 @@ namespace HyggyBackend.Controllers
                             }
                             else
                             {
-                                collection = new List<CustomerDTO> { await _serv.GetByIdAsync(query.Id.Value) };
+                                collection = new List<CustomerDTO> { await _serv.GetByIdAsync(query.Id) };
                             }
                         }
                         break;
@@ -203,7 +203,7 @@ namespace HyggyBackend.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<CustomerDTO>> DeleteCustomer(long id)
+        public async Task<ActionResult<CustomerDTO>> DeleteCustomer(string id)
         {
             try
             {
@@ -229,7 +229,7 @@ namespace HyggyBackend.Controllers
     public class CustomerQueryPL
     {
         public string SearchParameter { get; set; }
-        public long? Id { get; set; }
+        public string? Id { get; set; }
         public string? Name { get; set; }
         public string? Surname { get; set; }
         public string? Email { get; set; }

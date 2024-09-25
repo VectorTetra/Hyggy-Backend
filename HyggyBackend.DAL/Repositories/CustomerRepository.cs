@@ -47,7 +47,7 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.Customers.Where(x => x.PhoneNumber.Contains(phoneSubstring)).ToListAsync();
         }
-        public async Task<Customer?> GetByIdAsync(long id)
+        public async Task<Customer?> GetByIdAsync(string id)
         {
             return await _context.Customers.FindAsync(id);
         }
@@ -106,7 +106,7 @@ namespace HyggyBackend.DAL.Repositories
             _context.Entry(customer).State = EntityState.Modified;
 
         }
-        public async Task DeleteAsync(long id)
+        public async Task DeleteAsync(string id)
         {
             Customer? customer = await _context.Customers.FindAsync(id);
             if (customer != null)

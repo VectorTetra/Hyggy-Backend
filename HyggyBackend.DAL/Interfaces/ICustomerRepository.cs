@@ -16,11 +16,11 @@ namespace HyggyBackend.DAL.Interfaces
         Task<IEnumerable<Customer>> GetBySurnameSubstring(string surnameSubstring);
         Task<IEnumerable<Customer>> GetByEmailSubstring(string emailSubstring);
         Task<IEnumerable<Customer>> GetByPhoneSubstring(string phoneSubstring);
-        Task<Customer?> GetByIdAsync(long id);
+        Task<Customer?> GetByIdAsync(string id);
         Task<IEnumerable<Customer>> GetByQuery(CustomerQueryDAL query);
 
         Task CreateAsync(Customer item);
         void Update(Customer item);
-        Task DeleteAsync(long id);
+        Task DeleteAsync(string id);
     }
 }
