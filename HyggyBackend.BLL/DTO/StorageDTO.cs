@@ -10,7 +10,7 @@ namespace HyggyBackend.BLL.DTO
     public class StorageDTO
     {
         public long Id { get; set; }
-        public ShopDTO? Shop { get; set; }
-        public AddressDTO? Address { get; set; }
+        public long? ShopId { get; set; }
+        public long? AddressId { get; set; }
     }
 }

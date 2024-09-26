@@ -12,11 +12,11 @@ namespace HyggyBackend.BLL.DTO
         public long Id {  get; set; }
 
         // Адреса доставки, розділена на компоненти
-        public string Street { get; set; } // Назва вулиці
-        public string HouseNumber { get; set; } // Номер будинку
-        public string City { get; set; } // Місто
-        public string State { get; set; } // Область або штат
-        public string PostalCode { get; set; } // Поштовий індекс
+        public string? Street { get; set; } // Назва вулиці
+        public string? HouseNumber { get; set; } // Номер будинку
+        public string? City { get; set; } // Місто
+        public string? State { get; set; } // Область або штат
+        public string? PostalCode { get; set; } // Поштовий індекс
 
 
 
@@ -25,7 +25,7 @@ namespace HyggyBackend.BLL.DTO
         public double? Longitude { get; set; }
 
 
-		public virtual List<long> OrderIds { get; set; } = new List<long>();	
+		public virtual List<long>? OrderIds { get; set; } = new List<long>();	
 
 		//public virtual StorageDTO? Storage { get; set; }
     }

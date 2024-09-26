@@ -2,73 +2,55 @@
 using HyggyBackend.BLL.DTO;
 using HyggyBackend.BLL.Infrastructure;
 using HyggyBackend.BLL.Interfaces;
-using HyggyBackend.BLL.Queries;
 using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Interfaces;
-using HyggyBackend.DAL.Queries;
-using HyggyBackend.DAL.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HyggyBackend.BLL.Services
 {
     public class OrderItemService : IOrderItemService
     {
         IUnitOfWork Database;
+        private Mapper _mapper;
 
-        MapperConfiguration OrderItem_OrderItemDTOMapConfig = new MapperConfiguration(cfg =>
-        cfg.CreateMap<OrderItem, OrderItemDTO>()
-        .ForMember("Id", opt => opt.MapFrom(c => c.Id))
-        .ForMember("OrderId", opt => opt.MapFrom(c => c.OrderId))
-        .ForMember("WareId", opt => opt.MapFrom(c => c.WareId))
-        .ForMember("PriceHistoryId", opt => opt.MapFrom(c => c.PriceHistoryId))
-        .ForMember("Count", opt => opt.MapFrom(c => c.Count))
-        );
-
-        MapperConfiguration OrderItemQueryBLL_OrderItemQueryDALMapConfig = new MapperConfiguration(cfg => cfg.CreateMap<OrderItemQueryBLL, OrderItemQueryDAL>());
-
-        public OrderItemService(IUnitOfWork uow)
+        public OrderItemService(IUnitOfWork uow, Mapper mapper)
         {
             Database = uow;
+            _mapper = mapper;
         }
 
         public async Task<OrderItemDTO?> GetById(long id)
         {
-            var mapper = new Mapper(OrderItem_OrderItemDTOMapConfig);
+
             var orderItem = await Database.OrderItems.GetById(id);
             if (orderItem == null)
             {
                 return null;
             }
-            return mapper.Map<OrderItem, OrderItemDTO>(orderItem);
+            return _mapper.Map<OrderItem, OrderItemDTO>(orderItem);
         }
 
         public async Task<IEnumerable<OrderItemDTO>> GetByOrderId(long orderId)
         {
-            IMapper mapper = new Mapper(OrderItem_OrderItemDTOMapConfig);
-            return mapper.Map<IEnumerable<OrderItem>, IEnumerable<OrderItemDTO>>(await Database.OrderItems.GetByOrderId(orderId));
+
+            return _mapper.Map<IEnumerable<OrderItem>, IEnumerable<OrderItemDTO>>(await Database.OrderItems.GetByOrderId(orderId));
         }
 
         public async Task<IEnumerable<OrderItemDTO>> GetByWareId(long wareId)
         {
-            IMapper mapper = new Mapper(OrderItem_OrderItemDTOMapConfig);
-            return mapper.Map<IEnumerable<OrderItem>, IEnumerable<OrderItemDTO>>(await Database.OrderItems.GetByWareId(wareId));
+
+            return _mapper.Map<IEnumerable<OrderItem>, IEnumerable<OrderItemDTO>>(await Database.OrderItems.GetByWareId(wareId));
         }
         public async Task<IEnumerable<OrderItemDTO>> GetByPriceHistoryId(long priceHistoryId)
         {
-            IMapper mapper = new Mapper(OrderItem_OrderItemDTOMapConfig);
-            return mapper.Map<IEnumerable<OrderItem>, IEnumerable<OrderItemDTO>>(await Database.OrderItems.GetByPriceHistoryId(priceHistoryId));
+
+            return _mapper.Map<IEnumerable<OrderItem>, IEnumerable<OrderItemDTO>>(await Database.OrderItems.GetByPriceHistoryId(priceHistoryId));
         }
 
         public async Task<IEnumerable<OrderItemDTO>> GetByCount(int count)
         {
-            var mapper = new Mapper(OrderItem_OrderItemDTOMapConfig);
+
             var orderItems = await Database.OrderItems.GetByCount(count);
-            return mapper.Map<IEnumerable<OrderItem>, IEnumerable<OrderItemDTO>>(orderItems);
+            return _mapper.Map<IEnumerable<OrderItem>, IEnumerable<OrderItemDTO>>(orderItems);
         }
 
         public async Task<OrderItemDTO> Create(OrderItemDTO orderItemDTO)
@@ -102,8 +84,8 @@ namespace HyggyBackend.BLL.Services
                     throw new ValidationException($"Такий PriceHistoryId не знайдено : {orderItemDTO.PriceHistoryId.ToString()})", "");
                 }
             }
-            var mapper = new Mapper(OrderItem_OrderItemDTOMapConfig);
-            var orderItemDAL = mapper.Map<OrderItemDTO, OrderItem>(orderItemDTO);
+
+            var orderItemDAL = _mapper.Map<OrderItemDTO, OrderItem>(orderItemDTO);
             await Database.OrderItems.Create(orderItemDAL);
             await Database.Save();
             orderItemDTO.Id = orderItemDAL.Id;
@@ -140,8 +122,8 @@ namespace HyggyBackend.BLL.Services
                     throw new ValidationException($"Такий PriceHistoryId не знайдено : {orderItemDTO.PriceHistoryId.ToString()})", "");
                 }
             }
-            var mapper = new Mapper(OrderItem_OrderItemDTOMapConfig);
-            var orderItemDAL = mapper.Map<OrderItemDTO, OrderItem>(orderItemDTO);
+
+            var orderItemDAL = _mapper.Map<OrderItemDTO, OrderItem>(orderItemDTO);
             Database.OrderItems.Update(orderItemDAL);
             await Database.Save();
             return orderItemDTO;
@@ -154,10 +136,10 @@ namespace HyggyBackend.BLL.Services
             {
                 throw new ValidationException("Такий ID не існує!", id.ToString());
             }
-            var mapper = new Mapper(OrderItem_OrderItemDTOMapConfig);
+
             await Database.OrderItems.Delete(id);
             await Database.Save();
-            return mapper.Map<OrderItem, OrderItemDTO>(existedId);
+            return _mapper.Map<OrderItem, OrderItemDTO>(existedId);
         }
     }
 }
