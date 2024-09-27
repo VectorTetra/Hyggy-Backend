@@ -21,7 +21,8 @@ namespace HyggyBackend.BLL.Infrastructure
             services.AddScoped<IAddressService, AddressService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IEmailSender, EmailSender>();
-            services.AddScoped<IMainStorageService, MainStorageService>();
+            //services.AddScoped<IMainStorageService, MainStorageService>();
+            services.AddScoped<IStorageService, StorageService>();
 			services.AddScoped<IEmployeeService<StorageEmployeeDTO>, StorageEmployeeDTOService>();
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IOrderService, OrderService>();

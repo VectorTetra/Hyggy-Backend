@@ -12,7 +12,7 @@ namespace HyggyBackend.DAL.Entities
         public long Id { get; set; }
         public string Name { get; set; } // Імя ролі співробітника
 
-       // public virtual ICollection<Employee>? Employes { get; set; } // Співробітники
+        //public virtual ICollection<Employee>? Employes { get; set; } // Співробітники
 
         public override bool Equals(object obj)
         {

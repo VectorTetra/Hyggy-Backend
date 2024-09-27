@@ -62,8 +62,8 @@ namespace HyggyBackend.BLL.Helper
             #region Profession Mappings
             CreateMap<Proffession, ProffessionDTO>()
             .ForMember(dst => dst.Id, opt => opt.MapFrom(c => c.Id))
-            .ForMember(dst => dst.Name, opt => opt.MapFrom(c => c.Name))
-            .ForMember(dst => dst.EmployeeIds, opt => opt.MapFrom(c => c.Employes.Select(b => b.Id).ToList()));
+            .ForMember(dst => dst.Name, opt => opt.MapFrom(c => c.Name));
+            //.ForMember(dst => dst.EmployeeIds, opt => opt.MapFrom(c => c.Employes.Select(b => b.Id).ToList()));
             CreateMap<ProffessionQueryBLL, ProffessionQueryDAL>();
             #endregion
 
@@ -74,13 +74,15 @@ namespace HyggyBackend.BLL.Helper
             CreateMap<ShopDTO, Shop>();
             #endregion
 
+
             #region Storage Mappings
-            CreateMap<MainStorage, MainStorageDto>()
-                .ForMember(dest => dest.AddressId, opts => opts.MapFrom(src => src.AddressId))
-                .ForMember(dest => dest.ShopIds, opts => opts.MapFrom(src => src.Shops.Select(s => s.Id)))
-                .ForMember(dest => dest.StorageEmployeeIds, opts => opts.MapFrom(src => src.Employees.Select(e => e.Id)));
-            CreateMap<MainStorageDto, MainStorage>();
+            CreateMap<Storage, StorageDTO>()
+                .ForMember(dst=>dst.Id, opt=>opt.MapFrom(src=>src.Id))
+                .ForMember(dst => dst.ShopId, opt => opt.MapFrom(src => src.Shop.Id))
+                .ForMember(dst => dst.AddressId, opt => opt.MapFrom(src => src.Address.Id));
+            CreateMap<StorageQueryBLL, StorageQueryDAL>();
             #endregion
+
 
             #region User Mappings
             CreateMap<UserForEditDto, Customer>()

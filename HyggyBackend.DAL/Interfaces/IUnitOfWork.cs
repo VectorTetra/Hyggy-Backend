@@ -31,7 +31,9 @@ namespace HyggyBackend.DAL.Interfaces
         IOrderItemRepository OrderItems { get; }
         IOrderStatusRepository OrderStatuses { get; }
         IAddressRepository Addresses { get; }
-        IMainStorageRepository MainStorages { get; }
+
+        IStorageRepository Storages { get; }
+        //IMainStorageRepository MainStorages { get; }
         Task Save();
     }
 }

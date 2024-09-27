@@ -31,12 +31,11 @@ namespace HyggyBackend.DAL.UnitOfWork
         private IWareCategory3Repository _categories3;
         private IWareStatusRepository _wareStatuses;
         private IWareImageRepository _wareImages;
-
-
+        private IStorageRepository _storages;
         private IOrderItemRepository _orderItems;
         private IOrderStatusRepository _orderStatuses;
         private IAddressRepository _addresses;
-        private IMainStorageRepository _globalStorage;
+        //private IMainStorageRepository _globalStorage;
         public UnitOfWork(HyggyContext context)
         {
             _context = context;
@@ -88,13 +87,23 @@ namespace HyggyBackend.DAL.UnitOfWork
                 return _shops;
             }
         }
-        public IMainStorageRepository MainStorages
+        //public IMainStorageRepository MainStorages
+        //{
+        //    get
+        //    {
+        //        if(_globalStorage == null)
+        //            _globalStorage = new MainStorageRepository(_context);
+        //        return _globalStorage;
+        //    }
+        //}
+
+        public IStorageRepository Storages
         {
             get
             {
-                if(_globalStorage == null)
-                    _globalStorage = new MainStorageRepository(_context);
-                return _globalStorage;
+                if (_storages == null)
+                    _storages = new StorageRepository(_context);
+                return _storages;
             }
         }
         public IEmployeeRepository<StorageEmployee> StorageEmployees

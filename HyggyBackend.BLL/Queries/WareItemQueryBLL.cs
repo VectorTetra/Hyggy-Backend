@@ -9,7 +9,6 @@ namespace HyggyBackend.BLL.Queries
     public class WareItemQueryBLL
     {
         public long? Id { get; set; }
-
         public long? Article { get; set; }
         public long? WareId { get; set; }
         public string? WareName { get; set; }

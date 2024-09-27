@@ -25,8 +25,8 @@ namespace HyggyBackend.BLL.Interfaces
         Task<IEnumerable<WareItemDTO>> GetByQuantityRange(long minQuantity, long maxQuantity);
         Task<IEnumerable<WareItemDTO>> GetPagedWareItems(int pageNumber, int pageSize);
         Task<IEnumerable<WareItemDTO>> GetByQuery(WareItemQueryBLL query);
-        Task Create(WareItemDTO WareItemDTO);
-        Task Update(WareItemDTO WareItemDTO);
-        Task Delete(long id);
+        Task<WareItemDTO> Create(WareItemDTO WareItemDTO);
+        Task<WareItemDTO> Update(WareItemDTO WareItemDTO);
+        Task<WareItemDTO> Delete(long id);
     }
 }

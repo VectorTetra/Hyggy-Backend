@@ -37,7 +37,7 @@ namespace HyggyBackend.DAL.Entities
         //Адреса магазину
         public virtual Shop? Shop { get; set; }
         //Адреса складу
-        public virtual MainStorage? MainStorage { get; set; } 
+        public virtual Storage? Storage { get; set; } 
         // Замовлення
         public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
         //public virtual Storage Storage{ get; set; }
