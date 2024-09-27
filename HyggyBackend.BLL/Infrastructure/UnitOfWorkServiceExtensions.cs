@@ -24,7 +24,17 @@ namespace HyggyBackend.BLL.Infrastructure
             services.AddScoped<IMainStorageService, MainStorageService>();
 			services.AddScoped<IEmployeeService<StorageEmployeeDTO>, StorageEmployeeDTOService>();
             services.AddScoped<ICustomerService, CustomerService>();
-			services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IWareService, WareService>();
+            //services.AddScoped<IWareCategoryService, WareCategoryService>();
+            //services.AddScoped<IWareItemService, WareItemService>();
+            services.AddScoped<IOrderItemService, OrderItemService>();
+            services.AddScoped<IOrderStatusService, OrderStatusService>();
+            services.AddScoped<IWareStatusService, WareStatusService>();
+            services.AddScoped<IWarePriceHistoryService, WarePriceHistoryService>();
+            services.AddScoped<IWareImageService, WareImageService>();
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 		}
     }
 }

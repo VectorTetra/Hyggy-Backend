@@ -155,6 +155,16 @@ namespace HyggyBackend.BLL.Helper
                 .ForMember(d => d.Description, opt => opt.MapFrom(c => c.Description));
             CreateMap<WareStatusQueryBLL, WareStatusQueryDAL>();
             #endregion
+
+            #region WareItem Mappings
+            CreateMap<WareItem, WareItemDTO>()
+                .ForMember(d => d.Id, opt => opt.MapFrom(s => s.Id))
+                .ForMember(d => d.WareId, opt => opt.MapFrom(s => s.Ware.Id))
+                .ForMember(d => d.StorageId, opt => opt.MapFrom(s => s.Storage.Id))
+                .ForMember(d => d.Quantity, opt => opt.MapFrom(s => s.Quantity));
+
+            CreateMap<WareItemQueryBLL, WareItemQueryDAL>();
+            #endregion
         }
     }
 }

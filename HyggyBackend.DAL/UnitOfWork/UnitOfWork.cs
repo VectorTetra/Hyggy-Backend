@@ -17,6 +17,8 @@ namespace HyggyBackend.DAL.UnitOfWork
     {
         private readonly HyggyContext _context;
         private IWareRepository _wares;
+        private IWareItemRepository _wareItems;
+
         private IWarePriceHistoryRepository _warePriceHistories;
         private IShopRepository _shops;
         private ICustomerRepository _customers;
@@ -39,7 +41,17 @@ namespace HyggyBackend.DAL.UnitOfWork
         {
             _context = context;
         }
-		public IAddressRepository Addresses
+
+        public IWareItemRepository WareItems
+        {
+            get
+            {
+                if (_wareItems == null)
+                    _wareItems = new WareItemRepository(_context);
+                return _wareItems;
+            }
+        }
+        public IAddressRepository Addresses
 		{
 			get
 			{

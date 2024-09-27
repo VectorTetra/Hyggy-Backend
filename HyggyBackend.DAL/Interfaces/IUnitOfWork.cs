@@ -14,6 +14,8 @@ namespace HyggyBackend.DAL.Interfaces
     {
        
         IWareRepository Wares { get; }
+
+        IWareItemRepository WareItems { get; }
         ICustomerRepository Customers { get; }
         IWarePriceHistoryRepository WarePriceHistories { get; }
         IShopRepository Shops { get; }
