@@ -4,9 +4,9 @@
     {
         public long Id { get; set; }
 
-        public Ware Ware{ get; set; }
+        public virtual Ware Ware{ get; set; }
 
-        public Storage Storage { get; set; }
+        public virtual Storage Storage { get; set; }
 
         public long Quantity { get; set; }
     }

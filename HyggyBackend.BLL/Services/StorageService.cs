@@ -34,8 +34,7 @@ namespace HyggyBackend.BLL.Services
             var storageDAL = new Storage
             {
                 Id = storage.Id,
-                AddressId = storage.AddressId,
-                ShopId = storage.ShopId
+                AddressId = storage.AddressId
             };
 
             await Database.Storages.Create(storageDAL);
@@ -140,20 +139,16 @@ namespace HyggyBackend.BLL.Services
             {
                 throw new ValidationException($"Адреса з id {storage.AddressId} не знайдена!", "");
             }
-            if(storage.ShopId != null)
-            {
-                var existedShop = await Database.Shops.GetById(storage.ShopId.Value);
-                if (existedShop == null)
-                {
-                    throw new ValidationException($"Магазин з id {storage.ShopId} не знайдено!", "");
-                }
-            }
+
+			var existedShop = storage.ShopId != null ? await Database.Shops.GetById(storage.ShopId.Value) : null;
+			
+			
 
             var storageDAL = new Storage
             {
                 Id = storage.Id,
                 AddressId = storage.AddressId,
-                ShopId = storage.ShopId
+                Shop = existedShop
             };
 
             Database.Storages.Update(storageDAL);

@@ -10,9 +10,9 @@ namespace HyggyBackend.BLL.Services
     public class OrderItemService : IOrderItemService
     {
         IUnitOfWork Database;
-        private Mapper _mapper;
+        private IMapper _mapper;
 
-        public OrderItemService(IUnitOfWork uow, Mapper mapper)
+        public OrderItemService(IUnitOfWork uow, IMapper mapper)
         {
             Database = uow;
             _mapper = mapper;
@@ -70,7 +70,7 @@ namespace HyggyBackend.BLL.Services
             }
             if (orderItemDTO.WareId != null)
             {
-                var existingWareId = await Database.Orders.GetById((long)orderItemDTO.WareId);
+                var existingWareId = await Database.Wares.GetById((long)orderItemDTO.WareId);
                 if (existingWareId == null)
                 {
                     throw new ValidationException($"Такий WareId не знайдено : {orderItemDTO.WareId.ToString()})", "");
@@ -78,7 +78,7 @@ namespace HyggyBackend.BLL.Services
             }
             if (orderItemDTO.PriceHistoryId != null)
             {
-                var existingPriceHistoryId = await Database.Orders.GetById((long)orderItemDTO.PriceHistoryId);
+                var existingPriceHistoryId = await Database.WarePriceHistories.GetById((long)orderItemDTO.PriceHistoryId);
                 if (existingPriceHistoryId == null)
                 {
                     throw new ValidationException($"Такий PriceHistoryId не знайдено : {orderItemDTO.PriceHistoryId.ToString()})", "");

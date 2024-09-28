@@ -5,6 +5,7 @@ using HyggyBackend.BLL.Queries;
 using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Interfaces;
 using HyggyBackend.DAL.Queries;
+using Microsoft.AspNet.Identity;
 
 namespace HyggyBackend.BLL.Services
 {
@@ -12,10 +13,12 @@ namespace HyggyBackend.BLL.Services
     {
         IUnitOfWork Database;
         IMapper _mapper;
-        public CustomerService(IUnitOfWork uow, IMapper mapper)
+        ITokenService _tokenService;
+        public CustomerService(IUnitOfWork uow, IMapper mapper, ITokenService tokenService)
         {
             Database = uow;
             _mapper = mapper;
+            _tokenService = tokenService;
         }
 
 
@@ -67,8 +70,9 @@ namespace HyggyBackend.BLL.Services
             var customer = _mapper.Map<CustomerDTO, Customer>(item);
             await Database.Customers.CreateAsync(customer);
             await Database.Save();
-
-            item.Id = customer.Id;
+			var token = await _tokenService.CreateToken(customer);
+            item.Token = token;
+			item.Id = customer.Id;
             return item;
         }
         public async Task<CustomerDTO> Update(CustomerDTO item) 

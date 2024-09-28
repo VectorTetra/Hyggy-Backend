@@ -41,16 +41,16 @@ namespace HyggyBackend.DAL.EF
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<Address>().HasData(
-                new Address { Id = 1, State = "Odessa", City = "Odessa", Street = "Shevchenko str.", HouseNumber = "23", PostalCode = "6600", Latitude = 48, Longitude = 38 }
-                );
+            //builder.Entity<Address>().HasData(
+            //    new Address { Id = 1, State = "Odessa", City = "Odessa", Street = "Shevchenko str.", HouseNumber = "23", PostalCode = "6600", Latitude = 48, Longitude = 38 }
+            //    );
 
             //builder.Entity<MainStorage>().HasData(
             //    new MainStorage { Id = 1, AddressId = 1 }
             //    );            
-            builder.Entity<Storage>().HasData(
-                new Storage { Id = 1, AddressId = 1 }
-                );
+            //builder.Entity<Storage>().HasData(
+            //    new Storage { Id = 1, AddressId = 1 }
+            //    );
 
             builder.Entity<OrderItem>()
                 .HasOne(o => o.Ware)

@@ -26,12 +26,12 @@ namespace HyggyBackend.DAL.Repositories
         // Отримати всі центральні склади, не пов'язані з магазинами
         public async Task<IEnumerable<Storage>> GetGlobalStorages()
         {
-            return await _context.Storages.Where(s => s.ShopId == null).ToListAsync();
+            return await _context.Storages.Where(s => s.Shop.Id == null).ToListAsync();
         }
         // Отримати всі склади, які пов'язані з магазинами
         public async Task<IEnumerable<Storage>> GetNonGlobalStorages()
         {
-            return await _context.Storages.Where(s => s.ShopId != null).ToListAsync();
+            return await _context.Storages.Where(s => s.Shop.Id != null).ToListAsync();
         }
         public async Task<Storage?> GetById(long id)
         {
@@ -43,7 +43,7 @@ namespace HyggyBackend.DAL.Repositories
         }
         public async Task<Storage?> GetByShopId(long ShopId)
         {
-            return await _context.Storages.FirstOrDefaultAsync(x => x.ShopId == ShopId);
+            return await _context.Storages.FirstOrDefaultAsync(x => x.Shop.Id == ShopId);
         }
         public async Task<Storage?> GetByWareItemId(long WareItemId)
         {
@@ -82,7 +82,7 @@ namespace HyggyBackend.DAL.Repositories
 
             if (query.ShopId != null)
             {
-                storageCollections.Add(await _context.Storages.Where(x => x.ShopId == query.ShopId).ToListAsync());
+                storageCollections.Add(await _context.Storages.Where(x => x.Shop.Id == query.ShopId).ToListAsync());
             }
 
             if (query.WareItemId != null)
