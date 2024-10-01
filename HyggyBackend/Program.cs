@@ -30,12 +30,7 @@ builder.Services.AddUnitOfWorkService();
 builder.Services.AddControllers();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddHyggyContext(connection);
-builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IOrderStatusService, OrderStatusService>();
-builder.Services.AddScoped<IProffessionService, ProffessionService>();
-builder.Services.AddScoped<IWareService, WareService>();
-builder.Services.AddScoped<IWarePriceHistoryService, WarePriceHistoryService>();
-builder.Services.AddScoped<IEmployeeService<ShopEmployeeDTO>, ShopEmployeeDTOService>();
+
 builder.Services.AddIdentity<User, IdentityRole>(opt =>
 {
     opt.Password.RequiredLength = 6;

@@ -16,6 +16,11 @@ namespace HyggyBackend.BLL.Infrastructure
         public static void AddUnitOfWorkService(this IServiceCollection services)
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IBlogService, BlogService>();
+            services.AddScoped<IBlogCategory1Service, BlogCategory1Service>();
+            services.AddScoped<IBlogCategory2Service, BlogCategory2Service>();
+            services.AddScoped<IProffessionService, ProffessionService>();
+            services.AddScoped<IEmployeeService<ShopEmployeeDTO>, ShopEmployeeDTOService>();
             services.AddScoped<ITokenService, TokenService>();
 			services.AddScoped<IShopService, ShopService>();
             services.AddScoped<IAddressService, AddressService>();
@@ -34,6 +39,9 @@ namespace HyggyBackend.BLL.Infrastructure
             services.AddScoped<IWareStatusService, WareStatusService>();
             services.AddScoped<IWarePriceHistoryService, WarePriceHistoryService>();
             services.AddScoped<IWareImageService, WareImageService>();
+           
+
+
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 		}

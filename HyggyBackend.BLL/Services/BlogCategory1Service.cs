@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HyggyBackend.BLL.DTO;
 using HyggyBackend.BLL.Infrastructure;
+using HyggyBackend.BLL.Interfaces;
 using HyggyBackend.BLL.Queries;
 using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Interfaces;
@@ -8,7 +9,7 @@ using HyggyBackend.DAL.Queries;
 
 namespace HyggyBackend.BLL.Services
 {
-    public class BlogCategory1Service
+    public class BlogCategory1Service : IBlogCategory1Service
     {
         IUnitOfWork Database { get; set; }
         private readonly IMapper _mapper;
