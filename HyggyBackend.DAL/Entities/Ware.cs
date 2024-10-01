@@ -21,6 +21,7 @@ namespace HyggyBackend.DAL.Entities
         public virtual ICollection<WareItem> WareItems { get; set; } = new List<WareItem>();
         public virtual ICollection<WarePriceHistory> PriceHistories { get; set; } = new List<WarePriceHistory>();
         public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+        public virtual ICollection<Customer> CustomerFavorites { get; set; } = new List<Customer>();
         public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType())

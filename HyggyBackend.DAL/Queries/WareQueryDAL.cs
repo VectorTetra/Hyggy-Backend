@@ -28,6 +28,7 @@ namespace HyggyBackend.DAL.Queries
         public long? StatusId { get; set; }
         public string? StatusName { get; set; }
         public string? StatusDescription { get; set; }
+        public string? CustomerId { get; set; }
         public string? ImagePath { get; set; }
     }
 }

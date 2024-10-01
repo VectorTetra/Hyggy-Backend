@@ -23,6 +23,7 @@ namespace HyggyBackend.BLL.Interfaces
         Task<IEnumerable<WareDTO>> GetByStatusNameSubstring(string statusNameSubstring);
         Task<IEnumerable<WareDTO>> GetByStatusDescriptionSubstring(string statusDescriptionSubstring);
         Task<IEnumerable<WareDTO>> GetByImagePathSubstring(string imagePathSubstring);
+        Task<IEnumerable<WareDTO>> GetFavoritesByCustomerId(string customerId);
         Task<IEnumerable<WareDTO>> GetByQuery(WareQueryBLL queryDAL);
         Task<WareDTO> Create(WareDTO ware);
         Task<WareDTO> Update(WareDTO ware);

@@ -3,11 +3,6 @@ using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Interfaces;
 using HyggyBackend.DAL.Queries;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HyggyBackend.DAL.Repositories
 {
@@ -110,6 +105,11 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.Wares.Where(x => x.Images.Any(y => y.Path.Contains(imagePathSubstring))).ToListAsync();
         }
+
+        public async Task<IEnumerable<Ware>> GetFavoritesByCustomerId(string customerId)
+        {
+            return await _context.Wares.Where(x => x.CustomerFavorites.Any(cu => cu.Id == customerId)).ToListAsync();
+        }
         public async Task<IEnumerable<Ware>> GetByQuery(WareQueryDAL queryDAL)
         {
             var wareCollections = new List<IEnumerable<Ware>>();
@@ -199,12 +199,17 @@ namespace HyggyBackend.DAL.Repositories
                 wareCollections.Add(await GetByImagePathSubstring(queryDAL.ImagePath));
             }
 
+            if (queryDAL.CustomerId != null)
+            {
+                wareCollections.Add(await GetFavoritesByCustomerId(queryDAL.CustomerId));
+            }
+
             if (!wareCollections.Any())
             {
                 return new List<Ware>();
             }
 
-            if (queryDAL.PageNumber != null && queryDAL.PageSize!= null)
+            if (queryDAL.PageNumber != null && queryDAL.PageSize != null)
             {
                 return wareCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList())
                     .Skip((queryDAL.PageNumber.Value - 1) * queryDAL.PageSize.Value)

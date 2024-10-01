@@ -45,7 +45,8 @@ namespace HyggyBackend.Controllers
              .ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => src.StatusId))
              .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.StatusName))
              .ForMember(dest => dest.StatusDescription, opt => opt.MapFrom(src => src.StatusDescription))
-             .ForMember(dest => dest.ImagePath, opt => opt.MapFrom(src => src.ImagePath));
+             .ForMember(dest => dest.ImagePath, opt => opt.MapFrom(src => src.ImagePath))
+             .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.CustomerId));
 
         });
 
@@ -267,6 +268,18 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
+                    case "GetFavoritesByCustomerId":
+                        {
+                            if (query.CustomerId == null)
+                            {
+                                throw new ValidationException("Не вказано Ware.CustomerId для пошуку!", nameof(WareQueryPL.CustomerId));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetFavoritesByCustomerId(query.CustomerId);
+                            }
+                        }
+                        break;
                     case "GetByQuery":
                         {
                             var mapper = new Mapper(config);
@@ -383,6 +396,7 @@ namespace HyggyBackend.Controllers
         public long? StatusId { get; set; }
         public string? StatusName { get; set; }
         public string? StatusDescription { get; set; }
+        public string? CustomerId { get; set; }
         public string? ImagePath { get; set; }
     }
 

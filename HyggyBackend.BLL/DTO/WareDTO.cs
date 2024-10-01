@@ -20,7 +20,8 @@ namespace HyggyBackend.BLL.DTO
         public long? StatusId { get; set; }
         public ICollection<long>? ImageIds { get; set; } = new List<long>();
         public ICollection<long>? PriceHistoryIds { get; set; } = new List<long>();
-
-        //public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+        public ICollection<long>? WareItemIds { get; set; } = new List<long>();
+        public ICollection<long>? OrderItemIds { get; set; } = new List<long>();
+        public ICollection<string>? CustomerFavoriteIds { get; set; } = new List<string>();
     }
 }

@@ -1,15 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using HyggyBackend.DAL.EF;
-using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Entities.Employes;
 using HyggyBackend.DAL.Interfaces;
 using HyggyBackend.DAL.Repositories;
 using HyggyBackend.DAL.Repositories.Employes;
-using Microsoft.AspNetCore.Identity;
 
 namespace HyggyBackend.DAL.UnitOfWork
 {
@@ -35,6 +28,10 @@ namespace HyggyBackend.DAL.UnitOfWork
         private IOrderItemRepository _orderItems;
         private IOrderStatusRepository _orderStatuses;
         private IAddressRepository _addresses;
+        private IBlogRepository _blogs;
+        private IBlogCategory1Repository _blogCategories1;
+        private IBlogCategory2Repository _blogCategories2;
+
         //private IMainStorageRepository _globalStorage;
         public UnitOfWork(HyggyContext context)
         {
@@ -51,15 +48,15 @@ namespace HyggyBackend.DAL.UnitOfWork
             }
         }
         public IAddressRepository Addresses
-		{
-			get
-			{
-				if (_addresses == null)
-					_addresses = new AddressRepository(_context);
-				return _addresses;
-			}
-		}
-		public IWareRepository Wares
+        {
+            get
+            {
+                if (_addresses == null)
+                    _addresses = new AddressRepository(_context);
+                return _addresses;
+            }
+        }
+        public IWareRepository Wares
         {
             get
             {
@@ -77,7 +74,6 @@ namespace HyggyBackend.DAL.UnitOfWork
                 return _warePriceHistories;
             }
         }
-
         public IShopRepository Shops
         {
             get
@@ -96,7 +92,6 @@ namespace HyggyBackend.DAL.UnitOfWork
         //        return _globalStorage;
         //    }
         //}
-
         public IStorageRepository Storages
         {
             get
@@ -117,9 +112,9 @@ namespace HyggyBackend.DAL.UnitOfWork
         }
         public IEmployeeRepository<ShopEmployee> ShopEmployees
         {
-			get
-			{
-				if (_shopEmployees == null)
+            get
+            {
+                if (_shopEmployees == null)
                     _shopEmployees = new ShopEmployeeRepository(_context);
                 return _shopEmployees;
             }
@@ -133,7 +128,6 @@ namespace HyggyBackend.DAL.UnitOfWork
                 return _proffessions;
             }
         }
-
         public IOrderRepository Orders
         {
             get
@@ -152,7 +146,6 @@ namespace HyggyBackend.DAL.UnitOfWork
                 return _customers;
             }
         }
-
         public IWareCategory1Repository Categories1
         {
             get
@@ -162,7 +155,6 @@ namespace HyggyBackend.DAL.UnitOfWork
                 return _categories1;
             }
         }
-
         public IWareCategory2Repository Categories2
         {
             get
@@ -172,7 +164,6 @@ namespace HyggyBackend.DAL.UnitOfWork
                 return _categories2;
             }
         }
-
         public IWareCategory3Repository Categories3
         {
             get
@@ -182,7 +173,6 @@ namespace HyggyBackend.DAL.UnitOfWork
                 return _categories3;
             }
         }
-
         public IWareStatusRepository WareStatuses
         {
             get
@@ -192,7 +182,6 @@ namespace HyggyBackend.DAL.UnitOfWork
                 return _wareStatuses;
             }
         }
-
         public IWareImageRepository WareImages
         {
             get
@@ -220,10 +209,39 @@ namespace HyggyBackend.DAL.UnitOfWork
                 return _orderStatuses;
             }
         }
-
+        public IBlogRepository Blogs
+        {
+            get
+            {
+                if (_blogs == null)
+                    _blogs = new BlogRepository(_context);
+                return _blogs;
+            }
+        }
+        public IBlogCategory1Repository BlogCategories1
+        {
+            get
+            {
+                if (_blogCategories1 == null)
+                    _blogCategories1 = new BlogCategory1Repository(_context);
+                return _blogCategories1;
+            }
+        }
+        public IBlogCategory2Repository BlogCategories2
+        {
+            get
+            {
+                if (_blogCategories2 == null)
+                    _blogCategories2 = new BlogCategory2Repository(_context);
+                return _blogCategories2;
+            }
+        }
         public async Task Save()
         {
-           var saved = await _context.SaveChangesAsync();
+            var saved = await _context.SaveChangesAsync();
         }
+
+
+
     }
 }

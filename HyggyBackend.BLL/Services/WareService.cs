@@ -117,6 +117,11 @@ namespace HyggyBackend.BLL.Services
             var wares = await Database.Wares.GetByImagePathSubstring(imagePathSubstring);
             return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
         }
+        public async Task<IEnumerable<WareDTO>> GetFavoritesByCustomerId(string customerId)
+        {
+            var wares = await Database.Wares.GetFavoritesByCustomerId(customerId);
+            return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
+        }
         public async Task<IEnumerable<WareDTO>> GetByQuery(WareQueryBLL queryDAL)
         {
             var query = _mapper.Map<WareQueryBLL, WareQueryDAL>(queryDAL);

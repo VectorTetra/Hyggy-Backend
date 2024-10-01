@@ -23,6 +23,7 @@ namespace HyggyBackend.DAL.Interfaces
         Task<IEnumerable<Ware>> GetByStatusNameSubstring(string statusNameSubstring);
         Task<IEnumerable<Ware>> GetByStatusDescriptionSubstring(string statusDescriptionSubstring);
         Task<IEnumerable<Ware>> GetByImagePathSubstring(string imagePathSubstring);
+        Task<IEnumerable<Ware>> GetFavoritesByCustomerId(string customerId);
         Task<IEnumerable<Ware>> GetByQuery(WareQueryDAL queryDAL);
         Task Create(Ware ware);
         void Update(Ware ware);

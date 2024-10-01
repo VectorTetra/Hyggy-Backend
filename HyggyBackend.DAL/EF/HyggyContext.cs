@@ -35,6 +35,9 @@ namespace HyggyBackend.DAL.EF
         public DbSet<StorageEmployee> StorageEmployees { get; set; }
         //public DbSet<MainStorage> MainStorages { get; set; }
         public DbSet<WareItem> WareItems { get; set; }
+        public DbSet<Blog> Blogs { get; set; }
+        public DbSet<BlogCategory1> BlogCategories1 { get; set; }
+        public DbSet<BlogCategory2> BlogCategories2 { get; set; }
 
          
         protected override void OnModelCreating(ModelBuilder builder)
