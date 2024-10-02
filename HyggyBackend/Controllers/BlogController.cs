@@ -254,39 +254,31 @@ namespace HyggyBackend.Controllers
         {
             try
             {
-                JArray jsonObject = JArray.Parse(JsonConstructorItems);
-                // генерируем новый GUID
-                string guid = Guid.NewGuid().ToString();
-
-                // добавляем GUID к имени файла
-                string newFileName = $"{guid}.json";
-
-                // Путь к папке Files
-                string path = "/BlogPageJsonStructures/" + newFileName; // новое имя файла
-
-                // Сохраняем файл в папку Files в каталоге wwwroot
-                // Для получения полного пути к каталогу wwwroot
-                // применяется свойство WebRootPath объекта IWebHostEnvironment
-                using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
-                {
-                    // Записуємо JObject у файл
-                    using (var writer = new StreamWriter(fileStream))
-                    {
-                        writer.Write(jsonObject.ToString()); // jsonObject - ваш JObject
-                    }
-                }
-                //return new ObjectResult(_appEnvironment.WebRootPath + path);
-                path = "https://localhost:7288" + path;
-                return new ObjectResult(path);
-            }
-            catch (ValidationException ex)
-            {
-                return StatusCode(500, ex.Message);
+                JToken jsonToken = JToken.Parse(JsonConstructorItems);
+                return await SaveJsonToFile(jsonToken);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
             }
+        }
+        private async Task<ActionResult<string>> SaveJsonToFile(JToken jsonContent)
+        {
+            // генеруємо новий GUID
+            string guid = Guid.NewGuid().ToString();
+            string newFileName = $"{guid}.json";
+            string path = "/BlogPageJsonStructures/" + newFileName;
+
+            using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
+            {
+                using (var writer = new StreamWriter(fileStream))
+                {
+                    writer.Write(jsonContent.ToString()); // jsonContent може бути і JObject, і JArray
+                }
+            }
+
+            path = "https://localhost:7288" + path;
+            return new ObjectResult(path);
         }
 
         [HttpPut]
