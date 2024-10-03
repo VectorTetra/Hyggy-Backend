@@ -31,6 +31,8 @@ namespace HyggyBackend.DAL.UnitOfWork
         private IBlogRepository _blogs;
         private IBlogCategory1Repository _blogCategories1;
         private IBlogCategory2Repository _blogCategories2;
+        private IWareReviewRepository _wareReviews;
+        private IWareTrademarkRepository _wareTrademarks;
 
         //private IMainStorageRepository _globalStorage;
         public UnitOfWork(HyggyContext context)
@@ -234,6 +236,26 @@ namespace HyggyBackend.DAL.UnitOfWork
                 if (_blogCategories2 == null)
                     _blogCategories2 = new BlogCategory2Repository(_context);
                 return _blogCategories2;
+            }
+        }
+
+        public IWareReviewRepository WareReviews
+        {
+            get
+            {
+                if (_wareReviews == null)
+                    _wareReviews = new WareReviewRepository(_context);
+                return _wareReviews;
+            }
+        }
+
+        public IWareTrademarkRepository WareTrademarks
+        {
+            get
+            {
+                if (_wareTrademarks == null)
+                    _wareTrademarks = new WareTrademarkRepository(_context);
+                return _wareTrademarks;
             }
         }
         public async Task Save()

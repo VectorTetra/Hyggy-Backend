@@ -38,8 +38,10 @@ namespace HyggyBackend.DAL.EF
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<BlogCategory1> BlogCategories1 { get; set; }
         public DbSet<BlogCategory2> BlogCategories2 { get; set; }
+        public DbSet<WareTrademark> WareTrademarks { get; set; }
+        public DbSet<WareReview> WareReviews { get; set; }
 
-         
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

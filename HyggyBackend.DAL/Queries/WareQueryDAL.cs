@@ -20,6 +20,8 @@ namespace HyggyBackend.DAL.Queries
         public string? Category1NameSubstring { get; set; }
         public string? Category2NameSubstring { get; set; }
         public string? Category3NameSubstring { get; set; }
+        public long? TrademarkId { get; set; }
+        public string? TrademarkNameSubstring { get; set; }
         public float? MinPrice { get; set; }
         public float? MaxPrice { get; set; }
         public float? MinDiscount { get; set; }
@@ -30,5 +32,6 @@ namespace HyggyBackend.DAL.Queries
         public string? StatusDescription { get; set; }
         public string? CustomerId { get; set; }
         public string? ImagePath { get; set; }
+        public string? Sorting { get; set; }
     }
 }

@@ -178,9 +178,34 @@ namespace HyggyBackend.BLL.Helper
              .ForMember(d => d.PriceHistoryIds, opt => opt.MapFrom(c => c.PriceHistories.Select(price => price.Id)))
              .ForMember(d => d.WareItemIds, opt => opt.MapFrom(c => c.WareItems.Select(wareItem => wareItem.Id)))
              .ForMember(d => d.OrderItemIds, opt => opt.MapFrom(c => c.OrderItems.Select(orderItem => orderItem.Id)))
+             .ForMember(d => d.ReviewIds, opt => opt.MapFrom(c => c.Reviews.Select(review => review.Id)))
+             .ForMember(d => d.TrademarkId, opt => opt.MapFrom(c => c.WareTrademark != null ? c.WareTrademark.Id : 0))
+             .ForMember(d => d.AverageRating, opt => opt.MapFrom(c => c.Reviews.Any() ? c.Reviews.Average(r => (float)r.Rating) : 0))
+             .ForMember(d => d.PreviewImagePath, opt => opt.MapFrom(c => c.Images != null && c.Images.Any() ? c.Images.FirstOrDefault().Path : null))
              .ForMember(d => d.CustomerFavoriteIds, opt => opt.MapFrom(c => c.CustomerFavorites.Select(customer => customer.Id)));
 
             CreateMap<WareQueryBLL, WareQueryDAL>();
+            #endregion
+
+            #region WareReview Mappings
+            CreateMap<WareReview, WareReviewDTO>()
+                .ForMember(d => d.Id, opt => opt.MapFrom(c => c.Id))
+                .ForMember(d => d.WareId, opt => opt.MapFrom(c => c.Ware.Id))
+                .ForMember(d => d.CustomerName, opt => opt.MapFrom(c => c.CustomerName))
+                .ForMember(d => d.Rating, opt => opt.MapFrom(c => c.Rating))
+                .ForMember(d => d.Text, opt => opt.MapFrom(c => c.Text))
+                .ForMember(d => d.Theme, opt => opt.MapFrom(c => c.Theme))
+                .ForMember(d => d.Email, opt => opt.MapFrom(c => c.Email))
+                .ForMember(d => d.Date, opt => opt.MapFrom(c => c.Date));
+            CreateMap<WareReviewQueryBLL, WareReviewQueryDAL>();
+            #endregion
+
+            #region WareTrademark Mappings
+            CreateMap<WareTrademark, WareTrademarkDTO>()
+                .ForMember(d => d.Id, opt => opt.MapFrom(c => c.Id))
+                .ForMember(d => d.Name, opt => opt.MapFrom(c => c.Name))
+                .ForMember(d => d.WareIds, opt => opt.MapFrom(c => c.Wares.Select(w => w.Id)));
+            CreateMap<WareTrademarkQueryBLL, WareTrademarkQueryDAL>();
             #endregion
 
             #region WareStatus Mappings

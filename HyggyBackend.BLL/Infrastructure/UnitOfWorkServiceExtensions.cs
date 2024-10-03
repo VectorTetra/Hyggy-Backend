@@ -39,6 +39,8 @@ namespace HyggyBackend.BLL.Infrastructure
             services.AddScoped<IWareStatusService, WareStatusService>();
             services.AddScoped<IWarePriceHistoryService, WarePriceHistoryService>();
             services.AddScoped<IWareImageService, WareImageService>();
+            services.AddScoped<IWareTrademarkService, WareTrademarkService>();
+            services.AddScoped<IWareReviewService, WareReviewService>();
            
 
 

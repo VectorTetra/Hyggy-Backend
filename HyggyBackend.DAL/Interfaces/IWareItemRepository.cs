@@ -30,6 +30,8 @@ namespace HyggyBackend.DAL.Interfaces
         Task<IEnumerable<WareItem>> GetByQuantityRange(long minQuantity, long maxQuantity);
         Task<IEnumerable<WareItem>> GetPagedWareItems(int pageNumber, int pageSize);
         Task<IEnumerable<WareItem>> GetByQuery(WareItemQueryDAL query);
+
+        IAsyncEnumerable<WareItem> GetByIdsAsync(IEnumerable<long> ids);
         Task Create(WareItem wareItem);
         void Update(WareItem wareItem);
         Task Delete(long id);

@@ -37,6 +37,8 @@ namespace HyggyBackend.Controllers
              .ForMember(dest => dest.Category1NameSubstring, opt => opt.MapFrom(src => src.Category1NameSubstring))
              .ForMember(dest => dest.Category2NameSubstring, opt => opt.MapFrom(src => src.Category2NameSubstring))
              .ForMember(dest => dest.Category3NameSubstring, opt => opt.MapFrom(src => src.Category3NameSubstring))
+             .ForMember(dest => dest.TrademarkId, opt => opt.MapFrom(src => src.TrademarkId))
+             .ForMember(dest => dest.TrademarkNameSubstring, opt => opt.MapFrom(src => src.TrademarkNameSubstring))
              .ForMember(dest => dest.MinPrice, opt => opt.MapFrom(src => src.MinPrice))
              .ForMember(dest => dest.MaxPrice, opt => opt.MapFrom(src => src.MaxPrice))
              .ForMember(dest => dest.MinDiscount, opt => opt.MapFrom(src => src.MinDiscount))
@@ -46,6 +48,7 @@ namespace HyggyBackend.Controllers
              .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.StatusName))
              .ForMember(dest => dest.StatusDescription, opt => opt.MapFrom(src => src.StatusDescription))
              .ForMember(dest => dest.ImagePath, opt => opt.MapFrom(src => src.ImagePath))
+             .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Sorting))
              .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.CustomerId));
 
         });
@@ -176,6 +179,30 @@ namespace HyggyBackend.Controllers
                             else
                             {
                                 collection = await _serv.GetByCategory3NameSubstring(query.Category3NameSubstring);
+                            }
+                        }
+                        break;
+                    case "GetByTrademarkId":
+                        {
+                            if (query.TrademarkId == null)
+                            {
+                                throw new ValidationException("Не вказано Ware.TrademarkId для пошуку!", nameof(WareQueryPL.TrademarkId));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByTrademarkId(query.TrademarkId.Value);
+                            }
+                        }
+                        break;
+                    case "GetByTrademarkNameSubstring":
+                        {
+                            if (query.TrademarkNameSubstring == null)
+                            {
+                                throw new ValidationException("Не вказано Ware.TrademarkName для пошуку!", nameof(WareQueryPL.TrademarkNameSubstring));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByTrademarkNameSubstring(query.TrademarkNameSubstring);
                             }
                         }
                         break;
@@ -388,6 +415,8 @@ namespace HyggyBackend.Controllers
         public string? Category1NameSubstring { get; set; }
         public string? Category2NameSubstring { get; set; }
         public string? Category3NameSubstring { get; set; }
+        public long? TrademarkId { get; set; }
+        public string? TrademarkNameSubstring { get; set; }
         public float? MinPrice { get; set; }
         public float? MaxPrice { get; set; }
         public float? MinDiscount { get; set; }
@@ -398,6 +427,7 @@ namespace HyggyBackend.Controllers
         public string? StatusDescription { get; set; }
         public string? CustomerId { get; set; }
         public string? ImagePath { get; set; }
+        public string? Sorting { get; set; }
     }
 
 }

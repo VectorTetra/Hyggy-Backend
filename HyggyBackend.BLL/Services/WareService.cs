@@ -82,8 +82,18 @@ namespace HyggyBackend.BLL.Services
             var wares = await Database.Wares.GetByCategory3NameSubstring(category3NameSubstring);
             return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
         }
+        public async Task<IEnumerable<WareDTO>> GetByTrademarkId(long trademarkId)
+        {
+            var wares = await Database.Wares.GetByTrademarkId(trademarkId);
+            return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
+        }
+        public async Task<IEnumerable<WareDTO>> GetByTrademarkNameSubstring(string trademarkNameSubstring)
+        {
+            var wares = await Database.Wares.GetByTrademarkNameSubstring(trademarkNameSubstring);
+            return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
+        }
         public async Task<IEnumerable<WareDTO>> GetByPriceRange(float minPrice, float maxPrice)
-        { 
+        {
             var wares = await Database.Wares.GetByPriceRange(minPrice, maxPrice);
             return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
         }
@@ -130,41 +140,85 @@ namespace HyggyBackend.BLL.Services
         }
         public async Task<WareDTO> Create(WareDTO wareDTO)
         {
+            if (wareDTO.Article == null)
+            {
+                throw new ValidationException("Артикул не може бути пустим!", wareDTO.Article.ToString());
+            }
             //Перевірка на унікальність артикулу та назви
             var existedArticle = await Database.Wares.GetByArticle(wareDTO.Article.Value);
             if (existedArticle != null)
             {
                 throw new ValidationException("Товар з таким артикулом вже існує!", wareDTO.Article.ToString());
             }
-
             var existedNames = await Database.Wares.GetByNameSubstring(wareDTO.Name);
             if (existedNames.Any(x => x.Name == wareDTO.Name))
             {
                 throw new ValidationException("Товар з таким іменем вже існує!", wareDTO.Name);
             }
-
+            if (wareDTO.Price == null)
+            {
+                throw new ValidationException("Ціна не може бути пустою!", wareDTO.Price.ToString());
+            }
             if (wareDTO.Price < 0)
             {
                 throw new ValidationException("Ціна не може бути від'ємною!", wareDTO.Price.ToString());
             }
-
             if (wareDTO.Discount < 0)
             {
                 throw new ValidationException("Знижка не може бути від'ємною!", wareDTO.Discount.ToString());
             }
-
             if (wareDTO.WareCategory3Id == null)
             {
                 throw new ValidationException("Категорія не може бути пустою!", wareDTO.WareCategory3Id.ToString());
             }
-
+            var existedCategory = await Database.Categories3.GetById(wareDTO.WareCategory3Id.Value);
+            if (existedCategory == null)
+            {
+                throw new ValidationException("Категорії з таким Id не існує!", wareDTO.WareCategory3Id.ToString());
+            }
+            if (wareDTO.IsDeliveryAvailable == null)
+            {
+                throw new ValidationException("Доставка не може бути пустою!", "");
+            }
             if (wareDTO.StatusId == null)
             {
                 throw new ValidationException("Статус не може бути пустим!", wareDTO.StatusId.ToString());
             }
+            var existedStatus = await Database.WareStatuses.GetById(wareDTO.StatusId.Value);
+            if (existedStatus == null)
+            {
+                throw new ValidationException("Статусу з таким Id не існує!", wareDTO.StatusId.ToString());
+            }
+            var existedTrademark = new WareTrademark();
+            if (wareDTO.TrademarkId != null)
+            {
+                existedTrademark = await Database.WareTrademarks.GetById(wareDTO.TrademarkId.Value);
+                if (existedTrademark == null)
+                {
+                    throw new ValidationException("Торгової марки з таким Id не існує!", wareDTO.TrademarkId.ToString());
+                }
+            }
 
 
-            var wareDAL = _mapper.Map<WareDTO, Ware>(wareDTO);
+            var wareDAL = new Ware
+            {
+                Article = wareDTO.Article.Value,
+                WareCategory3 = existedCategory,
+                WareTrademark = existedTrademark.Id != 0 ? existedTrademark : null,
+                Name = wareDTO.Name,
+                Description = wareDTO.Description,
+                Price = wareDTO.Price.Value,
+                Discount = wareDTO.Discount != null ? wareDTO.Discount.Value : 0,
+                IsDeliveryAvailable = wareDTO.IsDeliveryAvailable.Value,
+                Status = existedStatus,
+                Images = new List<WareImage>(),
+                PriceHistories = new List<WarePriceHistory>(),
+                WareItems = new List<WareItem>(),
+                OrderItems = new List<OrderItem>(),
+                Reviews = new List<WareReview>(),
+                CustomerFavorites = new List<Customer>()
+            };
+
 
             await Database.Wares.Create(wareDAL);
             await Database.Save();
@@ -175,43 +229,138 @@ namespace HyggyBackend.BLL.Services
         }
         public async Task<WareDTO> Update(WareDTO wareDTO)
         {
-
-            var existedId = await Database.Wares.GetById(wareDTO.Id);
-            if (existedId == null)
+            var existedWare = await Database.Wares.GetById(wareDTO.Id);
+            if (wareDTO.Article == null)
             {
-                throw new ValidationException("Товару з таким Id не існує!", wareDTO.Id.ToString());
+                throw new ValidationException("Артикул не може бути пустим!", wareDTO.Article.ToString());
             }
-
+            //Перевірка на унікальність артикулу та назви
             var existedArticle = await Database.Wares.GetByArticle(wareDTO.Article.Value);
-            if (existedArticle != null && existedArticle.Id != wareDTO.Id)
+            if (existedArticle != null)
             {
                 throw new ValidationException("Товар з таким артикулом вже існує!", wareDTO.Article.ToString());
             }
-
+            var existedNames = await Database.Wares.GetByNameSubstring(wareDTO.Name);
+            if (existedNames.Any(x => x.Name == wareDTO.Name))
+            {
+                throw new ValidationException("Товар з таким іменем вже існує!", wareDTO.Name);
+            }
+            if (wareDTO.Price == null)
+            {
+                throw new ValidationException("Ціна не може бути пустою!", wareDTO.Price.ToString());
+            }
             if (wareDTO.Price < 0)
             {
                 throw new ValidationException("Ціна не може бути від'ємною!", wareDTO.Price.ToString());
             }
-
             if (wareDTO.Discount < 0)
             {
                 throw new ValidationException("Знижка не може бути від'ємною!", wareDTO.Discount.ToString());
             }
-
             if (wareDTO.WareCategory3Id == null)
             {
                 throw new ValidationException("Категорія не може бути пустою!", wareDTO.WareCategory3Id.ToString());
             }
-
+            var existedCategory = await Database.Categories3.GetById(wareDTO.WareCategory3Id.Value);
+            if (existedCategory == null)
+            {
+                throw new ValidationException("Категорії з таким Id не існує!", wareDTO.WareCategory3Id.ToString());
+            }
+            if (wareDTO.IsDeliveryAvailable == null)
+            {
+                throw new ValidationException("Доставка не може бути пустою!", "");
+            }
             if (wareDTO.StatusId == null)
             {
                 throw new ValidationException("Статус не може бути пустим!", wareDTO.StatusId.ToString());
             }
+            var existedStatus = await Database.WareStatuses.GetById(wareDTO.StatusId.Value);
+            if (existedStatus == null)
+            {
+                throw new ValidationException("Статусу з таким Id не існує!", wareDTO.StatusId.ToString());
+            }
+            var existedTrademark = new WareTrademark();
+            if (wareDTO.TrademarkId != null)
+            {
+                existedTrademark = await Database.WareTrademarks.GetById(wareDTO.TrademarkId.Value);
+                if (existedTrademark == null)
+                {
+                    throw new ValidationException("Торгової марки з таким Id не існує!", wareDTO.TrademarkId.ToString());
+                }
+            }
+            
+            existedWare.Article = wareDTO.Article.Value;
+            existedWare.WareCategory3 = existedCategory;
+            existedWare.WareTrademark = existedTrademark.Id != 0 ? existedTrademark : null;
+            existedWare.Name = wareDTO.Name;
+            existedWare.Description = wareDTO.Description;
+            existedWare.Price = wareDTO.Price.Value;
+            existedWare.Discount = wareDTO.Discount != null ? wareDTO.Discount.Value : 0;
+            existedWare.IsDeliveryAvailable = wareDTO.IsDeliveryAvailable.Value;
+            existedWare.Status = existedStatus;
+            existedWare.Images.Clear();
+            existedWare.PriceHistories.Clear();
+            existedWare.WareItems.Clear();
+            existedWare.OrderItems.Clear();
+            existedWare.Reviews.Clear();
+            existedWare.CustomerFavorites.Clear();
+
+            await foreach (var wareImage in Database.WareImages.GetByIdsAsync(wareDTO.ImageIds))
+            {
+                if (wareImage == null)
+                {
+                    throw new ValidationException($"Одна з WareImage не знайдена!", "");
+                }
+                existedWare.Images.Add(wareImage);
+            }
+
+            await foreach (var priceHistory in Database.WarePriceHistories.GetByIdsAsync(wareDTO.PriceHistoryIds))
+            {
+                if (priceHistory == null)
+                {
+                    throw new ValidationException($"Один з WarePriceHistory не знайдений!", "");
+                }
+                existedWare.PriceHistories.Add(priceHistory);
+            }
+
+            await foreach (var wareItem in Database.WareItems.GetByIdsAsync(wareDTO.WareItemIds))
+            {
+                if (wareItem == null)
+                {
+                    throw new ValidationException($"Один з WareItem не знайдений!", "");
+                }
+                existedWare.WareItems.Add(wareItem);
+            }
+
+            await foreach (var orderItem in Database.OrderItems.GetByIdsAsync(wareDTO.OrderItemIds))
+            {
+                if (orderItem == null)
+                {
+                    throw new ValidationException($"Один з OrderItem не знайдений!", "");
+                }
+                existedWare.OrderItems.Add(orderItem);
+            }
+
+            await foreach (var review in Database.WareReviews.GetByIdsAsync(wareDTO.ReviewIds))
+            {
+                if (review == null)
+                {
+                    throw new ValidationException($"Один з WareReview не знайдений!", "");
+                }
+                existedWare.Reviews.Add(review);
+            }
+
+            await foreach (var customer in Database.Customers.GetByIdsAsync(wareDTO.CustomerFavoriteIds))
+            {
+                if (customer == null)
+                {
+                    throw new ValidationException($"Один з Customer не знайдений!", "");
+                }
+                existedWare.CustomerFavorites.Add(customer);
+            }
 
 
-            var wareDAL = _mapper.Map<WareDTO, Ware>(wareDTO);
-
-            Database.Wares.Update(wareDAL);
+            Database.Wares.Update(existedWare);
             await Database.Save();
 
             var returnedDTO = await GetById(wareDTO.Id);
@@ -224,9 +373,6 @@ namespace HyggyBackend.BLL.Services
             {
                 throw new ValidationException("Товару з таким Id не існує!", id.ToString());
             }
-
-
-
             await Database.Wares.Delete(id);
             await Database.Save();
 

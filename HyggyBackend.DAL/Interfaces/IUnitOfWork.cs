@@ -27,6 +27,8 @@ namespace HyggyBackend.DAL.Interfaces
         IBlogRepository Blogs { get; }
         IBlogCategory1Repository BlogCategories1 { get; }
         IBlogCategory2Repository BlogCategories2 { get; }
+        IWareReviewRepository WareReviews { get; }
+        IWareTrademarkRepository WareTrademarks { get; }
         //IMainStorageRepository MainStorages { get; }
         Task Save();
     }

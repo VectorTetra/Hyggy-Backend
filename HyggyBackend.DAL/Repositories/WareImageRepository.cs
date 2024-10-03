@@ -57,6 +57,18 @@ namespace HyggyBackend.DAL.Repositories
             return wareImageCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
 
         }
+
+        public async IAsyncEnumerable<WareImage> GetByIdsAsync(IEnumerable<long> ids)
+        {
+            foreach (var id in ids)
+            {
+                var wareImage = await GetById(id);  // Виклик методу репозиторію
+                if (wareImage != null)
+                {
+                    yield return wareImage;
+                }
+            }
+        }
         public async Task Create(WareImage wareImage) 
         {
             await _context.WareImages.AddAsync(wareImage);

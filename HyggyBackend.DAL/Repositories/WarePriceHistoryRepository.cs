@@ -73,6 +73,18 @@ namespace HyggyBackend.DAL.Repositories
             return await warePriceHistories.ToListAsync();
         }
 
+        public async IAsyncEnumerable<WarePriceHistory> GetByIdsAsync(IEnumerable<long> ids)
+        {
+            foreach (var id in ids)
+            {
+                var warePriceHistory = await GetById(id);
+                if (warePriceHistory != null)
+                {
+                    yield return warePriceHistory;
+                }
+            }
+        }
+
         public async Task Create(WarePriceHistory warePriceHistory)
         {
             await _context.WarePriceHistories.AddAsync(warePriceHistory);
