@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HyggyBackend", "HyggyBackend\HyggyBackend.csproj", "{DEC9C618-464C-421E-AB3B-C29D1386CE1E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HyggyBackend", "HyggyBackend\HyggyBackend.csproj", "{DEC9C618-464C-421E-AB3B-C29D1386CE1E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HyggyBackend.BLL", "HyggyBackend.BLL\HyggyBackend.BLL.csproj", "{5A87CFF9-8E6C-4581-A989-38A580034307}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HyggyBackend.BLL", "HyggyBackend.BLL\HyggyBackend.BLL.csproj", "{5A87CFF9-8E6C-4581-A989-38A580034307}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HyggyBackend.DAL", "HyggyBackend.DAL\HyggyBackend.DAL.csproj", "{177ED5DF-37D3-4B93-A3E9-06CCD7D5652D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HyggyBackend.DAL", "HyggyBackend.DAL\HyggyBackend.DAL.csproj", "{177ED5DF-37D3-4B93-A3E9-06CCD7D5652D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

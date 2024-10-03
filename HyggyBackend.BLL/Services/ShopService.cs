@@ -119,7 +119,7 @@ namespace HyggyBackend.BLL.Services
 		public async Task<bool> IsShopExistByAddress(long? addressId)
 		{
 			var shops = await GetAll();
-			var shop = shops.Select(s => s.Address.Id);
+			var shop = shops.Select(s => s.AddressId);
 
 			return shop.Any(s => s == addressId);
 		}

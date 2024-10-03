@@ -9,7 +9,7 @@
         // а також дізнатися ціну певного товару за певний період у таблиці DateWarePrice 
         public DateTime OrderDate { get; set; }
         public string Phone { get; set; }
-        public string Comment { get; set; }
+        public string? Comment { get; set; }
         public virtual OrderStatus Status { get; set; }
         public virtual ICollection<OrderItem> OrderItems { get; set; }
         public virtual Customer Customer { get; set; }

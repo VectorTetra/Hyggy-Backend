@@ -1,23 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HyggyBackend.DAL.Entities;
-using HyggyBackend.DAL.Repositories;
-using HyggyBackend.DAL.Entities.Employes;
+﻿using HyggyBackend.DAL.Entities.Employes;
 
 namespace HyggyBackend.DAL.Interfaces
 {
     public interface IUnitOfWork
     {
-       
+
         IWareRepository Wares { get; }
+
+        IWareItemRepository WareItems { get; }
         ICustomerRepository Customers { get; }
-
         IWarePriceHistoryRepository WarePriceHistories { get; }
-
         IShopRepository Shops { get; }
         IProffessionRepository Proffessions { get; }
         IEmployeeRepository<StorageEmployee> StorageEmployees { get; }
@@ -31,7 +23,13 @@ namespace HyggyBackend.DAL.Interfaces
         IOrderItemRepository OrderItems { get; }
         IOrderStatusRepository OrderStatuses { get; }
         IAddressRepository Addresses { get; }
-        IMainStorageRepository MainStorages { get; }
+        IStorageRepository Storages { get; }
+        IBlogRepository Blogs { get; }
+        IBlogCategory1Repository BlogCategories1 { get; }
+        IBlogCategory2Repository BlogCategories2 { get; }
+        IWareReviewRepository WareReviews { get; }
+        IWareTrademarkRepository WareTrademarks { get; }
+        //IMainStorageRepository MainStorages { get; }
         Task Save();
     }
 }

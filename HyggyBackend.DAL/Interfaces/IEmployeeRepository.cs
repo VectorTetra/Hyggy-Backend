@@ -9,7 +9,6 @@ namespace HyggyBackend.DAL.Interfaces
 		Task<IEnumerable<T>> GetEmployeesByProfessionAsync(string professionName);
 		Task<IEnumerable<T>> GetEmployeesByDateOfBirthAsync(DateTime date);
 		Task<IEnumerable<T>> GetBySurnameAsync(string surname);
-
 		Task<T?> GetByIdAsync(string id);
 		Task<T?> GetByEmail(string email);
 		Task<T?> GetByPhoneAsync(string phone);

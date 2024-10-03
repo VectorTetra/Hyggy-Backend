@@ -2,7 +2,7 @@
 {
 	public class StorageEmployeeDTO : EmployeeDTO
 	{
-		public long MainStorageId { get; set; }
+		public long StorageId { get; set; }
 
 	}
 }

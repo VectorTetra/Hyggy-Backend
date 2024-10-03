@@ -10,6 +10,7 @@ namespace HyggyBackend.DAL.Interfaces
         Task<IEnumerable<WareImage>> GetByWareArticle(long wareArticle);
         Task<IEnumerable<WareImage>> GetByPathSubstring(string path);
         Task<IEnumerable<WareImage>> GetByQuery(WareImageQueryDAL queryDAL);
+        IAsyncEnumerable<WareImage> GetByIdsAsync(IEnumerable<long> ids);
         Task Create(WareImage wareImage);
         void Update(WareImage wareImage);
         Task Delete(long id);

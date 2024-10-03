@@ -3,11 +3,6 @@ using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Interfaces;
 using HyggyBackend.DAL.Queries;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HyggyBackend.DAL.Repositories
 {
@@ -66,6 +61,14 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.Wares.Where(x => x.WareCategory3.Name.Contains(category3NameSubstring)).ToListAsync();
         }
+        public async Task<IEnumerable<Ware>> GetByTrademarkId(long trademarkId)
+        {
+            return await _context.Wares.Where(x => x.WareTrademark.Id == trademarkId).ToListAsync();
+        }
+        public async Task<IEnumerable<Ware>> GetByTrademarkNameSubstring(string trademarkNameSubstring)
+        {
+            return await _context.Wares.Where(x => x.WareTrademark.Name.Contains(trademarkNameSubstring)).ToListAsync();
+        }
         public async Task<IEnumerable<Ware>> GetByPriceRange(float minPrice, float maxPrice)
         {
             if (minPrice > maxPrice)
@@ -110,6 +113,39 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.Wares.Where(x => x.Images.Any(y => y.Path.Contains(imagePathSubstring))).ToListAsync();
         }
+
+        public async Task<IEnumerable<Ware>> GetFavoritesByCustomerId(string customerId)
+        {
+            return await _context.Wares.Where(x => x.CustomerFavorites.Any(cu => cu.Id == customerId)).ToListAsync();
+        }
+
+        public async IAsyncEnumerable<Ware> GetByIdsAsync(IEnumerable<long> ids)
+        {
+            foreach (var id in ids)
+            {
+                var ware = await GetById(id);  // Виклик методу репозиторію
+                if (ware != null)
+                {
+                    yield return ware;
+                }
+            }
+        }
+
+        /*
+        public async Task<float> GetAverageRatingByWareIdAsync(long wareId)
+        {
+            // Отримуємо товар за його Id з репозиторію
+            var ware = await _context.Wares.FindAsync(wareId);
+            // Якщо товар не знайдений або немає відгуків, повертаємо 0
+            if (ware == null || ware.Reviews == null || !ware.Reviews.Any())
+            {
+                return 0;
+            }
+            // Обчислюємо середню оцінку
+            return ware.Reviews.Average(review => (float)review.Rating);
+        }
+        */
+
         public async Task<IEnumerable<Ware>> GetByQuery(WareQueryDAL queryDAL)
         {
             var wareCollections = new List<IEnumerable<Ware>>();
@@ -164,6 +200,16 @@ namespace HyggyBackend.DAL.Repositories
                 wareCollections.Add(await GetByCategory3NameSubstring(queryDAL.Category3NameSubstring));
             }
 
+            if (queryDAL.TrademarkId != null)
+            {
+                wareCollections.Add(await GetByTrademarkId(queryDAL.TrademarkId.Value));
+            }
+
+            if (queryDAL.TrademarkNameSubstring != null)
+            {
+                wareCollections.Add(await GetByTrademarkNameSubstring(queryDAL.TrademarkNameSubstring));
+            }
+
             if (queryDAL.MinPrice != null && queryDAL.MaxPrice != null)
             {
                 wareCollections.Add(await GetByPriceRange(queryDAL.MinPrice.Value, queryDAL.MaxPrice.Value));
@@ -199,18 +245,54 @@ namespace HyggyBackend.DAL.Repositories
                 wareCollections.Add(await GetByImagePathSubstring(queryDAL.ImagePath));
             }
 
+            if (queryDAL.CustomerId != null)
+            {
+                wareCollections.Add(await GetFavoritesByCustomerId(queryDAL.CustomerId));
+            }
+
             if (!wareCollections.Any())
             {
                 return new List<Ware>();
             }
 
-            if (queryDAL.PageNumber != null && queryDAL.PageSize!= null)
+            var result = wareCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+
+            // Сортування
+            if (queryDAL.Sorting != null)
             {
-                return wareCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList())
-                    .Skip((queryDAL.PageNumber.Value - 1) * queryDAL.PageSize.Value)
-                    .Take(queryDAL.PageSize.Value);
+                switch (queryDAL.Sorting)
+                {
+                    case "PriceAsc":
+                        result = result.OrderBy(ware => ware.Price * (1 - ware.Discount / 100)).ToList(); // Ціна з урахуванням знижки
+                        break;
+                    case "PriceDesc":
+                        result = result.OrderByDescending(ware => ware.Price * (1 - ware.Discount / 100)).ToList(); // Ціна з урахуванням знижки
+                        break;
+                    case "NameAsc":
+                        result = result.OrderBy(ware => ware.Name).ToList();
+                        break;
+                    case "NameDesc":
+                        result = result.OrderByDescending(ware => ware.Name).ToList();
+                        break;
+                    case "Rating":
+                        result = result.OrderByDescending(ware => ware.Reviews.Average(review => (float)review.Rating)).ToList(); // Сортування за рейтингом
+                        break;
+                    default:
+                        break;
+                }
             }
-            return wareCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+
+            // Пагінація
+            if (queryDAL.PageNumber != null && queryDAL.PageSize != null)
+            {
+                result = result
+                    .Skip((queryDAL.PageNumber.Value - 1) * queryDAL.PageSize.Value)
+                    .Take(queryDAL.PageSize.Value)
+                    .ToList();
+            }
+
+            return result;
+
         }
         public async Task Create(Ware ware)
         {

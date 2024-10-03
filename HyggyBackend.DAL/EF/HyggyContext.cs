@@ -33,18 +33,29 @@ namespace HyggyBackend.DAL.EF
         public DbSet<WareStatus> WareStatuses { get; set; }
         public DbSet<ShopEmployee> ShopEmployees { get; set; }
         public DbSet<StorageEmployee> StorageEmployees { get; set; }
-        public DbSet<MainStorage> MainStorages { get; set; }
+        //public DbSet<MainStorage> MainStorages { get; set; }
+        public DbSet<WareItem> WareItems { get; set; }
+        public DbSet<Blog> Blogs { get; set; }
+        public DbSet<BlogCategory1> BlogCategories1 { get; set; }
+        public DbSet<BlogCategory2> BlogCategories2 { get; set; }
+        public DbSet<WareTrademark> WareTrademarks { get; set; }
+        public DbSet<WareReview> WareReviews { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<Address>().HasData(
-                new Address { Id = 1, State = "Odessa", City = "Odessa", Street = "Shevchenko str.", HouseNumber = "23", PostalCode = "6600", Latitude = 48, Longitude = 38 }
-                );
+            //builder.Entity<Address>().HasData(
+            //    new Address { Id = 1, State = "Odessa", City = "Odessa", Street = "Shevchenko str.", HouseNumber = "23", PostalCode = "6600", Latitude = 48, Longitude = 38 }
+            //    );
 
-            builder.Entity<MainStorage>().HasData(
-                new MainStorage { Id = 1, AddressId = 1 }
-                );
+            //builder.Entity<MainStorage>().HasData(
+            //    new MainStorage { Id = 1, AddressId = 1 }
+            //    );            
+            //builder.Entity<Storage>().HasData(
+            //    new Storage { Id = 1, AddressId = 1 }
+            //    );
 
             builder.Entity<OrderItem>()
                 .HasOne(o => o.Ware)
@@ -75,17 +86,27 @@ namespace HyggyBackend.DAL.EF
                 .WithOne(a => a.Shop)
                 .OnDelete(DeleteBehavior.NoAction);
 
-			builder.Entity<MainStorage>()
-			   .HasOne(s => s.Address)
-			   .WithOne(a => a.MainStorage)
-			   .OnDelete(DeleteBehavior.NoAction);
+            //builder.Entity<MainStorage>()
+            //   .HasOne(s => s.Address)
+            //   .WithOne(a => a.MainStorage)
+            //   .OnDelete(DeleteBehavior.NoAction);
 
-            builder.Entity<MainStorage>()
-                .HasMany(m => m.Shops)
-                .WithOne(s => s.Storage)
-                .OnDelete(DeleteBehavior.SetNull);
+            //         builder.Entity<MainStorage>()
+            //             .HasMany(m => m.Shops)
+            //             .WithOne(s => s.Storage)
+            //             .OnDelete(DeleteBehavior.SetNull);
 
-			List <IdentityRole> roles = new List<IdentityRole>
+            builder.Entity<Storage>()
+               .HasOne(s => s.Address)
+               .WithOne(a => a.Storage)
+               .OnDelete(DeleteBehavior.NoAction);
+
+            //builder.Entity<Storage>()
+            //    .HasOne(m => m.Shop)
+            //    .WithOne(s => s.Storage)
+            //    .OnDelete(DeleteBehavior.SetNull);
+
+            List <IdentityRole> roles = new List<IdentityRole>
 			{
 				new IdentityRole
 				{

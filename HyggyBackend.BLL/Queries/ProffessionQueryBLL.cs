@@ -8,6 +8,7 @@ namespace HyggyBackend.BLL.Queries
 {
     public class ProffessionQueryBLL
     {
+        public long? Id { get; set; }
         public string? Name { get; set; }
     }
 }

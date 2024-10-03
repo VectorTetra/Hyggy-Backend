@@ -16,6 +16,8 @@ namespace HyggyBackend.DAL.Interfaces
         Task<IEnumerable<Ware>> GetByCategory1NameSubstring(string category1NameSubstring);
         Task<IEnumerable<Ware>> GetByCategory2NameSubstring(string category2NameSubstring);
         Task<IEnumerable<Ware>> GetByCategory3NameSubstring(string category3NameSubstring);
+        Task<IEnumerable<Ware>> GetByTrademarkId(long trademarkId);
+        Task<IEnumerable<Ware>> GetByTrademarkNameSubstring(string trademarkNameSubstring);
         Task<IEnumerable<Ware>> GetByPriceRange(float minPrice, float maxPrice);
         Task<IEnumerable<Ware>> GetByDiscountRange(float minDiscount, float maxDiscount);
         Task<IEnumerable<Ware>> GetByIsDeliveryAvailable(bool isDeliveryAvailable);
@@ -23,6 +25,8 @@ namespace HyggyBackend.DAL.Interfaces
         Task<IEnumerable<Ware>> GetByStatusNameSubstring(string statusNameSubstring);
         Task<IEnumerable<Ware>> GetByStatusDescriptionSubstring(string statusDescriptionSubstring);
         Task<IEnumerable<Ware>> GetByImagePathSubstring(string imagePathSubstring);
+        Task<IEnumerable<Ware>> GetFavoritesByCustomerId(string customerId);
+        IAsyncEnumerable<Ware> GetByIdsAsync(IEnumerable<long> ids);
         Task<IEnumerable<Ware>> GetByQuery(WareQueryDAL queryDAL);
         Task Create(Ware ware);
         void Update(Ware ware);

@@ -16,7 +16,7 @@ namespace HyggyBackend.DAL.Repositories.Employes
 		{
 			return await _context.StorageEmployees
 				//.Include(se => se.Proffession)
-				.Include(se => se.MainStorage).ToListAsync();
+				.Include(se => se.Storage).ToListAsync();
 		}
 		public async Task<IEnumerable<StorageEmployee>> GetPaginatedEmployeesAsync(int? page)
 		{
@@ -75,7 +75,7 @@ namespace HyggyBackend.DAL.Repositories.Employes
 			storageEmployee.Email = employee.Email;
 			storageEmployee.PhoneNumber = employee.PhoneNumber;
 			storageEmployee.DateOfBirth = employee.DateOfBirth;
-			storageEmployee.MainStorageId = employee.MainStorageId;
+			storageEmployee.StorageId = employee.StorageId;
 		}
 		public async Task DeleteAsync(string id)
 		{

@@ -16,6 +16,7 @@ namespace HyggyBackend.DAL.Interfaces
         Task<IEnumerable<Customer>> GetBySurnameSubstring(string surnameSubstring);
         Task<IEnumerable<Customer>> GetByEmailSubstring(string emailSubstring);
         Task<IEnumerable<Customer>> GetByPhoneSubstring(string phoneSubstring);
+        IAsyncEnumerable<Customer> GetByIdsAsync(IEnumerable<string> ids);
         Task<Customer?> GetByIdAsync(string id);
         Task<IEnumerable<Customer>> GetByQuery(CustomerQueryDAL query);
 

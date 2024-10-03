@@ -74,6 +74,18 @@ namespace HyggyBackend.DAL.Repositories
             return orderItemCollections.Aggregate((prev, next) => prev.Intersect(next).ToList());
 
         }
+
+        public async IAsyncEnumerable<OrderItem> GetByIdsAsync(IEnumerable<long> ids)
+        {
+            foreach (var id in ids)
+            {
+                var orderItem = await GetById(id);  // Виклик методу репозиторію
+                if (orderItem != null)
+                {
+                    yield return orderItem;
+                }
+            }
+        }
         public async Task Create(OrderItem orderItem)
         {
             await _context.OrderItems.AddAsync(orderItem);
