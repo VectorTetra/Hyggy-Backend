@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Humanizer;
 using HyggyBackend.BLL.DTO;
+using HyggyBackend.BLL.DTO.AccountDtos;
 using HyggyBackend.BLL.Infrastructure;
 using HyggyBackend.BLL.Interfaces;
 using HyggyBackend.BLL.Queries;
@@ -158,29 +159,81 @@ namespace HyggyBackend.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<ActionResult<CustomerDTO>> PostCustomer([FromBody] CustomerDTO customer)
-        {
-            try
-            {
-                if (customer == null)
-                {
-                    throw new ValidationException("CustomerDTO не може бути пустим!", nameof(CustomerDTO));
-                }
-                var result = await _serv.CreateAsync(customer);
-                return Ok(result);
-            }
-            catch (ValidationException ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
+		//[HttpPost]
+		//public async Task<ActionResult<CustomerDTO>> PostCustomer([FromBody] CustomerDTO customer)
+		//{
+		//    try
+		//    {
+		//        if (customer == null)
+		//        {
+		//            throw new ValidationException("CustomerDTO не може бути пустим!", nameof(CustomerDTO));
+		//        }
+		//        var result = await _serv.CreateAsync(customer);
+		//        return Ok(result);
+		//    }
+		//    catch (ValidationException ex)
+		//    {
+		//        return StatusCode(500, ex.Message);
+		//    }
+		//    catch (Exception ex)
+		//    {
+		//        return StatusCode(500, ex.Message);
+		//    }
+		//}
+		[HttpPost("register")]
+		public async Task<IActionResult> Register([FromBody] UserForRegistrationDto registrationDto)
+		{
+			try
+			{
+				if (registrationDto is null)
+					return BadRequest();
 
-        [HttpPut]
+				var response = await _serv.RegisterAsync(registrationDto);
+				if (!response.IsSuccessfullRegistration)
+					return BadRequest(response.Errors);
+
+				return Ok(new { message = "Будь ласка підтвердіть ваш обліковий запис" });
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, ex.Message);
+			}
+		}
+		[HttpPost("authenticate")]
+		public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDto authenticationDto)
+		{
+			try
+			{
+				var response = await _serv.AuthenticateAsync(authenticationDto);
+				if (!response.IsAuthSuccessfull)
+					return StatusCode(500, response.Error);
+
+				return Ok(response);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, ex.Message);
+			}
+		}
+		[HttpGet("emailconfirmation")]
+		public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string token)
+		{
+			try
+			{
+				var result = await _serv.EmailConfirmation(email, token);
+
+				return Ok(result);
+			}
+			catch (ValidationException ex)
+			{
+				return StatusCode(500, ex.Message);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, ex.Message);
+			}
+		}
+		[HttpPut]
         public async Task<ActionResult<CustomerDTO>> PutCustomer([FromBody] CustomerDTO customer)
         {
             try
