@@ -32,7 +32,8 @@ namespace HyggyBackend.BLL.Services
 		}
 
 
-		public async Task<IEnumerable<CustomerDTO>> GetPagedCustomers(int pageNumber, int pageSize)
+
+        public async Task<IEnumerable<CustomerDTO>> GetPagedCustomers(int pageNumber, int pageSize)
         {
             var customers = await Database.Customers.GetPagedCustomers(pageNumber, pageSize);
             return _mapper.Map<IEnumerable<Customer>, IEnumerable<CustomerDTO>>(customers);
