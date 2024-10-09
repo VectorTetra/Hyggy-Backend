@@ -73,7 +73,7 @@ namespace HyggyBackend.DAL.Repositories
         }
         public async Task<IEnumerable<WareItem>> GetByWareStatusId(long statusId)
         {
-            return await _context.WareItems.Where(x => x.Ware.Status.Id == statusId).ToListAsync();
+            return await _context.WareItems.Where(x => x.Ware.Statuses.Any(st => st.Id == statusId) ).ToListAsync();
         }
         public async Task<IEnumerable<WareItem>> GetByWareCategory3Id(long wareCategory3Id)
         {

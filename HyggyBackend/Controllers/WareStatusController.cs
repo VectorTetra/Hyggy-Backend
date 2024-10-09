@@ -44,7 +44,7 @@ namespace HyggyBackend.Controllers
                 switch (query.SearchParameter)
                 {
 
-                    case "GetById":
+                    case "Id":
                         {
                             if (query.Id == null)
                             {
@@ -56,7 +56,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                        case "GetByWareId":
+                    case "WareId":
                         {
                             if (query.WareId == null)
                             {
@@ -68,7 +68,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByWareArticle":
+                    case "WareArticle":
                         {
                             if (query.WareArticle == null)
                             {
@@ -80,7 +80,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                        case "GetPagedWareStatuses":
+                    case "Paged":
                         {
                             if (query.PageNumber == null)
                             {
@@ -93,7 +93,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetPagedWareStatuses(query.PageNumber.Value, query.PageSize.Value);
                         }
                         break;
-                    case "GetByNameSubstring":
+                    case "Name":
                         {
                             if (query.NameSubstring == null)
                             {
@@ -102,7 +102,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByNameSubstring(query.NameSubstring);
                         }
                         break;
-                    case "GetByDescriptionSubstring":
+                    case "Description":
                         {
                             if (query.DescriptionSubstring == null)
                             {
@@ -111,7 +111,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByDescriptionSubstring(query.DescriptionSubstring);
                         }
                         break;
-                    case "GetByQuery":
+                    case "Query":
                         {
                             collection = await _serv.GetByQuery(config.CreateMapper().Map<WareStatusQueryBLL>(query));
                         }
@@ -182,8 +182,8 @@ namespace HyggyBackend.Controllers
             }
         }
 
-        [HttpDelete]
-        public async Task<ActionResult<WareStatusDTO>> DeleteWare([FromBody] long id)
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<WareStatusDTO>> DeleteWare(long id)
         {
             try
             {

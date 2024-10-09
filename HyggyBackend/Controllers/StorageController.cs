@@ -96,7 +96,7 @@ namespace HyggyBackend.Controllers
 
                 switch (query.SearchParameter)
                 {
-                    case "GetById":
+                    case "Id":
                         {
                             if (query.Id == null)
                             {
@@ -108,7 +108,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByAddressId":
+                    case "AddressId":
                         {
                             if (query.AddressId == null)
                             {
@@ -120,7 +120,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByShopId":
+                    case "ShopId":
                         {
                             if (query.ShopId == null)
                             {
@@ -132,7 +132,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByWareItemId":
+                    case "WareItemId":
                         {
                             if (query.WareItemId == null)
                             {
@@ -144,7 +144,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByStorageEmployeeId":
+                    case "StorageEmployeeId":
                         {
                             if (query.StorageEmployeeId == null)
                             {
@@ -156,7 +156,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByShopEmployeeId":
+                    case "ShopEmployeeId":
                         {
                             if (query.ShopEmployeeId == null)
                             {
@@ -178,7 +178,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetNonGlobalStorages();
                         }
                         break;
-                    case "GetByQuery":
+                    case "Query":
                         {
                             var mapper = new Mapper(config);
                             var queryBLL = mapper.Map<StorageQueryBLL>(query);

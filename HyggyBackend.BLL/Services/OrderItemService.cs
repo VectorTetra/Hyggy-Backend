@@ -60,32 +60,56 @@ namespace HyggyBackend.BLL.Services
             {
                 throw new ValidationException($"Такий ID вже зайнято! (Id : {existingId.Id.ToString()})", "");
             }
-            if (orderItemDTO.OrderId != null)
+
+            if (orderItemDTO.OrderId == null)
             {
-                var existingOrderId = await Database.Orders.GetById((long)orderItemDTO.OrderId);
-                if (existingOrderId == null)
-                {
-                    throw new ValidationException($"Такий OrderId не знайдено : {orderItemDTO.OrderId.ToString()})", "");
-                }
-            }
-            if (orderItemDTO.WareId != null)
-            {
-                var existingWareId = await Database.Wares.GetById((long)orderItemDTO.WareId);
-                if (existingWareId == null)
-                {
-                    throw new ValidationException($"Такий WareId не знайдено : {orderItemDTO.WareId.ToString()})", "");
-                }
-            }
-            if (orderItemDTO.PriceHistoryId != null)
-            {
-                var existingPriceHistoryId = await Database.WarePriceHistories.GetById((long)orderItemDTO.PriceHistoryId);
-                if (existingPriceHistoryId == null)
-                {
-                    throw new ValidationException($"Такий PriceHistoryId не знайдено : {orderItemDTO.PriceHistoryId.ToString()})", "");
-                }
+                throw new ValidationException("OrderId не може бути пустим!", "");
             }
 
-            var orderItemDAL = _mapper.Map<OrderItemDTO, OrderItem>(orderItemDTO);
+            var existingOrderId = await Database.Orders.GetById((long)orderItemDTO.OrderId);
+            if (existingOrderId == null)
+            {
+                throw new ValidationException($"Такий OrderId не знайдено : {orderItemDTO.OrderId.ToString()})", "");
+            }
+
+            if (orderItemDTO.WareId == null)
+            {
+                throw new ValidationException("WareId не може бути пустим!", "");
+            }
+            var existingWareId = await Database.Wares.GetById((long)orderItemDTO.WareId);
+            if (existingWareId == null)
+            {
+                throw new ValidationException($"Такий WareId не знайдено : {orderItemDTO.WareId.ToString()})", "");
+            }
+
+            if (orderItemDTO.PriceHistoryId == null)
+            {
+                throw new ValidationException("PriceHistoryId не може бути пустим!", "");
+            }
+
+            var existingPriceHistoryId = await Database.WarePriceHistories.GetById((long)orderItemDTO.PriceHistoryId);
+            if (existingPriceHistoryId == null)
+            {
+                throw new ValidationException($"Такий PriceHistoryId не знайдено : {orderItemDTO.PriceHistoryId.ToString()})", "");
+            }
+
+            if (orderItemDTO.Count == null)
+            {
+                throw new ValidationException("Count не може бути пустим!", "");
+            }
+
+            if (orderItemDTO.Count < 1)
+            {
+                throw new ValidationException("Count не може бути менше 1!", "");
+            }
+
+            var orderItemDAL = new OrderItem
+            {
+                OrderId = orderItemDTO.OrderId.Value,
+                WareId = orderItemDTO.WareId.Value,
+                PriceHistoryId = orderItemDTO.PriceHistoryId.Value,
+                Count = orderItemDTO.Count.Value
+            };
             await Database.OrderItems.Create(orderItemDAL);
             await Database.Save();
             orderItemDTO.Id = orderItemDAL.Id;
@@ -93,38 +117,60 @@ namespace HyggyBackend.BLL.Services
         }
         public async Task<OrderItemDTO> Update(OrderItemDTO orderItemDTO)
         {
-            var existingId = await Database.OrderItems.GetById(orderItemDTO.Id);
-            if (existingId == null)
+            var existingOrderItem = await Database.OrderItems.GetById(orderItemDTO.Id);
+            if (existingOrderItem == null)
             {
                 throw new ValidationException("Такий ID не знайдено!", orderItemDTO.Id.ToString());
             }
-            if (orderItemDTO.OrderId != null)
+
+            if (orderItemDTO.OrderId == null)
             {
-                var existingOrderId = await Database.Orders.GetById((long)orderItemDTO.OrderId);
-                if (existingOrderId == null)
-                {
-                    throw new ValidationException($"Такий OrderId не знайдено : {orderItemDTO.OrderId.ToString()})", "");
-                }
-            }
-            if (orderItemDTO.WareId != null)
-            {
-                var existingWareId = await Database.Orders.GetById((long)orderItemDTO.WareId);
-                if (existingWareId == null)
-                {
-                    throw new ValidationException($"Такий WareId не знайдено : {orderItemDTO.WareId.ToString()})", "");
-                }
-            }
-            if (orderItemDTO.PriceHistoryId != null)
-            {
-                var existingPriceHistoryId = await Database.Orders.GetById((long)orderItemDTO.PriceHistoryId);
-                if (existingPriceHistoryId == null)
-                {
-                    throw new ValidationException($"Такий PriceHistoryId не знайдено : {orderItemDTO.PriceHistoryId.ToString()})", "");
-                }
+                throw new ValidationException("OrderId не може бути пустим!", "");
             }
 
-            var orderItemDAL = _mapper.Map<OrderItemDTO, OrderItem>(orderItemDTO);
-            Database.OrderItems.Update(orderItemDAL);
+            var existingOrderId = await Database.Orders.GetById((long)orderItemDTO.OrderId);
+            if (existingOrderId == null)
+            {
+                throw new ValidationException($"Такий OrderId не знайдено : {orderItemDTO.OrderId.ToString()})", "");
+            }
+
+            if (orderItemDTO.WareId == null)
+            {
+                throw new ValidationException("WareId не може бути пустим!", "");
+            }
+
+            var existingWareId = await Database.Orders.GetById((long)orderItemDTO.WareId);
+            if (existingWareId == null)
+            {
+                throw new ValidationException($"Такий WareId не знайдено : {orderItemDTO.WareId.ToString()})", "");
+            }
+
+            if (orderItemDTO.PriceHistoryId == null)
+            {
+                throw new ValidationException("PriceHistoryId не може бути пустим!", "");
+            }
+
+            var existingPriceHistoryId = await Database.Orders.GetById((long)orderItemDTO.PriceHistoryId);
+            if (existingPriceHistoryId == null)
+            {
+                throw new ValidationException($"Такий PriceHistoryId не знайдено : {orderItemDTO.PriceHistoryId.ToString()})", "");
+            }
+
+            if (orderItemDTO.Count == null)
+            {
+                throw new ValidationException("Count не може бути пустим!", "");
+            }
+
+            if (orderItemDTO.Count < 1)
+            {
+                throw new ValidationException("Count не може бути менше 1!", "");
+            }
+
+            existingOrderItem.OrderId = orderItemDTO.OrderId.Value;
+            existingOrderItem.WareId = orderItemDTO.WareId.Value;
+            existingOrderItem.PriceHistoryId = orderItemDTO.PriceHistoryId.Value;
+            existingOrderItem.Count = orderItemDTO.Count.Value;
+            Database.OrderItems.Update(existingOrderItem);
             await Database.Save();
             return orderItemDTO;
         }

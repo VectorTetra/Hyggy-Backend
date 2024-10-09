@@ -30,10 +30,6 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.WareCategories2.Where(x => x.Name.Contains(nameSubstring)).ToListAsync();
         }
-        public async Task<IEnumerable<WareCategory2>> GetByJSONStructureFilePathSubstring(string JSONStructureFilePathSubstring)
-        {
-            return await _context.WareCategories2.Where(x => x.JSONStructureFilePath.Contains(JSONStructureFilePathSubstring)).ToListAsync();
-        }
         public async Task<IEnumerable<WareCategory2>> GetByWareCategory1Id(long id)
         {
 
@@ -66,11 +62,6 @@ namespace HyggyBackend.DAL.Repositories
             {
                 WareCategories2Collection.Add(await GetByNameSubstring(query.NameSubstring));
             }
-
-            if (query.JSONStructureFilePathSubstring != null)
-            {
-                WareCategories2Collection.Add(await GetByJSONStructureFilePathSubstring(query.JSONStructureFilePathSubstring));
-            }
             if (query.WareCategory1Id != null)
             {
                 WareCategories2Collection.Add(await GetByWareCategory1Id(query.WareCategory1Id.Value));
@@ -100,6 +91,18 @@ namespace HyggyBackend.DAL.Repositories
                    .Take(query.PageSize.Value);
             }
             return WareCategories2Collection.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+        }
+
+        public async IAsyncEnumerable<WareCategory2> GetByIdsAsync(IEnumerable<long> ids)
+        {
+            foreach (var id in ids)
+            {
+                var item = await GetById(id);  // Виклик методу репозиторію
+                if (item != null)
+                {
+                    yield return item;
+                }
+            }
         }
         public async Task Create(WareCategory2 category2)
         {

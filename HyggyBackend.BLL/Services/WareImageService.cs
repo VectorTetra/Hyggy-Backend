@@ -2,11 +2,9 @@
 using HyggyBackend.BLL.DTO;
 using HyggyBackend.BLL.Infrastructure;
 using HyggyBackend.BLL.Interfaces;
-using HyggyBackend.BLL.Queries;
 using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Interfaces;
 using HyggyBackend.DAL.Queries;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace HyggyBackend.BLL.Services
 {
@@ -27,17 +25,17 @@ namespace HyggyBackend.BLL.Services
         }
         public async Task<IEnumerable<WareImageDTO>> GetByWareId(long wareId)
         {
-            
+
             return _mapper.Map<IEnumerable<WareImageDTO>>(await Database.WareImages.GetByWareId(wareId));
         }
         public async Task<IEnumerable<WareImageDTO>> GetByWareArticle(long wareArticle)
         {
-            
+
             return _mapper.Map<IEnumerable<WareImageDTO>>(await Database.WareImages.GetByWareArticle(wareArticle));
         }
         public async Task<IEnumerable<WareImageDTO>> GetByPathSubstring(string path)
         {
-            
+
             return _mapper.Map<IEnumerable<WareImageDTO>>(await Database.WareImages.GetByPathSubstring(path));
         }
         public async Task<IEnumerable<WareImageDTO>> GetByQuery(WareImageQueryDAL queryDAL)
@@ -52,7 +50,7 @@ namespace HyggyBackend.BLL.Services
                 throw new ValidationException("Товару з таким Id не існує!", wareImage.WareId.ToString());
             }
 
-            
+
             var wareImageDAL = _mapper.Map<WareImage>(wareImage);
             await Database.WareImages.Create(wareImageDAL);
             await Database.Save();
@@ -78,7 +76,7 @@ namespace HyggyBackend.BLL.Services
                 throw new ValidationException("Зображення товару з таким Id не існує!", wareImage.Id.ToString());
             }
 
-            
+
             var wareImageDAL = _mapper.Map<WareImage>(wareImage);
             Database.WareImages.Update(wareImageDAL);
             await Database.Save();

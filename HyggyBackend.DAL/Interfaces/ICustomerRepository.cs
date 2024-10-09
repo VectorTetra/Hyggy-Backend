@@ -19,7 +19,6 @@ namespace HyggyBackend.DAL.Interfaces
         IAsyncEnumerable<Customer> GetByIdsAsync(IEnumerable<string> ids);
         Task<Customer?> GetByIdAsync(string id);
         Task<IEnumerable<Customer>> GetByQuery(CustomerQueryDAL query);
-
         Task CreateAsync(Customer item);
         void Update(Customer item);
         Task DeleteAsync(string id);

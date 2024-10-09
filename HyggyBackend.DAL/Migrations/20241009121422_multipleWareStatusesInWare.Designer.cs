@@ -4,6 +4,7 @@ using HyggyBackend.DAL.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HyggyBackend.DAL.Migrations
 {
     [DbContext(typeof(HyggyContext))]
-    partial class HyggyContextModelSnapshot : ModelSnapshot
+    [Migration("20241009121422_multipleWareStatusesInWare")]
+    partial class multipleWareStatusesInWare
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -454,6 +457,10 @@ namespace HyggyBackend.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
+                    b.Property<string>("JSONStructureFilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -470,6 +477,10 @@ namespace HyggyBackend.DAL.Migrations
                         .HasColumnType("bigint");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("JSONStructureFilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -492,6 +503,10 @@ namespace HyggyBackend.DAL.Migrations
                         .HasColumnType("bigint");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("JSONStructureFilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -686,13 +701,13 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "0eff3950-60e8-423f-94a9-526a38529a10",
+                            Id = "0a943e0a-e01e-45c1-939e-5a2164370aaf",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "7257eb1a-220a-421d-b0d4-b43af00e0866",
+                            Id = "d5ededdb-83e6-42f1-8e1d-e130855547d0",
                             Name = "User",
                             NormalizedName = "USER"
                         });

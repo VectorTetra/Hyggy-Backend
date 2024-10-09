@@ -18,18 +18,18 @@ namespace HyggyBackend.BLL.Services
         IUnitOfWork Database;
         IMapper _mapper;
         ITokenService _tokenService;
-		private readonly IEmailSender _emailSender;
-		private readonly UserManager<User> _userManager;
+        private readonly IEmailSender _emailSender;
+        private readonly UserManager<User> _userManager;
 
-		public CustomerService(IUnitOfWork uow, IMapper mapper, ITokenService tokenService, 
-			IEmailSender emailSender, UserManager<User> userManager)
-		{
-			Database = uow;
-			_mapper = mapper;
-			_tokenService = tokenService;
-			_emailSender = emailSender;
-			_userManager = userManager;
-		}
+        public CustomerService(IUnitOfWork uow, IMapper mapper, ITokenService tokenService,
+            IEmailSender emailSender, UserManager<User> userManager)
+        {
+            Database = uow;
+            _mapper = mapper;
+            _tokenService = tokenService;
+            _emailSender = emailSender;
+            _userManager = userManager;
+        }
 
 
 
@@ -38,17 +38,17 @@ namespace HyggyBackend.BLL.Services
             var customers = await Database.Customers.GetPagedCustomers(pageNumber, pageSize);
             return _mapper.Map<IEnumerable<Customer>, IEnumerable<CustomerDTO>>(customers);
         }
-        public async Task<IEnumerable<CustomerDTO>> GetByOrderId(long orderId) 
+        public async Task<IEnumerable<CustomerDTO>> GetByOrderId(long orderId)
         {
             var customers = await Database.Customers.GetByOrderId(orderId);
             return _mapper.Map<IEnumerable<Customer>, IEnumerable<CustomerDTO>>(customers);
         }
-        public async Task<IEnumerable<CustomerDTO>> GetByNameSubstring(string nameSubstring) 
+        public async Task<IEnumerable<CustomerDTO>> GetByNameSubstring(string nameSubstring)
         {
             var customers = await Database.Customers.GetByNameSubstring(nameSubstring);
             return _mapper.Map<IEnumerable<Customer>, IEnumerable<CustomerDTO>>(customers);
         }
-        public async Task<IEnumerable<CustomerDTO>> GetBySurnameSubstring(string surnameSubstring) 
+        public async Task<IEnumerable<CustomerDTO>> GetBySurnameSubstring(string surnameSubstring)
         {
             var customers = await Database.Customers.GetBySurnameSubstring(surnameSubstring);
             return _mapper.Map<IEnumerable<Customer>, IEnumerable<CustomerDTO>>(customers);
@@ -58,13 +58,13 @@ namespace HyggyBackend.BLL.Services
             var customers = await Database.Customers.GetByEmailSubstring(emailSubstring);
             return _mapper.Map<IEnumerable<Customer>, IEnumerable<CustomerDTO>>(customers);
         }
-        public async Task<IEnumerable<CustomerDTO>> GetByPhoneSubstring(string phoneSubstring) 
+        public async Task<IEnumerable<CustomerDTO>> GetByPhoneSubstring(string phoneSubstring)
         {
             var customers = await Database.Customers.GetByPhoneSubstring(phoneSubstring);
             return _mapper.Map<IEnumerable<Customer>, IEnumerable<CustomerDTO>>(customers);
         }
         public async Task<CustomerDTO?> GetByIdAsync(string id)
-        { 
+        {
             var customer = await Database.Customers.GetByIdAsync(id);
             return _mapper.Map<Customer, CustomerDTO>(customer);
         }
@@ -75,91 +75,115 @@ namespace HyggyBackend.BLL.Services
             return _mapper.Map<IEnumerable<Customer>, IEnumerable<CustomerDTO>>(customers);
         }
 
-		//      public async Task<CustomerDTO> CreateAsync(CustomerDTO item) 
-		//     {
+        //      public async Task<CustomerDTO> CreateAsync(CustomerDTO item) 
+        //     {
 
-		//         var customer = _mapper.Map<CustomerDTO, Customer>(item);
-		//         await Database.Customers.CreateAsync(customer);
-		//         await Database.Save();
-		//var token = await _tokenService.CreateToken(customer);
-		//         item.Token = token;
-		//item.Id = customer.Id;
-		//         return item;
-		//     }
+        //         var customer = _mapper.Map<CustomerDTO, Customer>(item);
+        //         await Database.Customers.CreateAsync(customer);
+        //         await Database.Save();
+        //var token = await _tokenService.CreateToken(customer);
+        //         item.Token = token;
+        //item.Id = customer.Id;
+        //         return item;
+        //     }
 
-		public async Task<RegistrationResponseDto> RegisterAsync(UserForRegistrationDto registrationDto)
-		{
-			var user = _mapper.Map<Customer>(registrationDto);
-			var result = await _userManager.CreateAsync(user, registrationDto.Password!);
-			if (!result.Succeeded)
-			{
-				var errors = result.Errors.Select(e => e.Description);
-
-				return new RegistrationResponseDto { IsSuccessfullRegistration = false, Errors = errors };
-			}
-			await _userManager.AddToRoleAsync(user, "User");
-
-			var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-			var param = new Dictionary<string, string?>
-			{
-				{ "token", token },
-				{"email", user.Email }
-			};
-
-			var callback = QueryHelpers.AddQueryString(registrationDto.UserUri, param);
-			var emailTemplate = EmailRegistrationTemplate(user.Name, callback);
-			var message = new Message([user.Email!], "Ласкаво просимо на Hyggy", emailTemplate);
-			_emailSender.SendEmail(message);
-
-			return new RegistrationResponseDto { IsSuccessfullRegistration = true, EmailToken = token };
-		}
-		public async Task<AuthResponseDto> AuthenticateAsync(UserForAuthenticationDto authenticationDto)
-		{
-			var user = await _userManager.FindByNameAsync(authenticationDto.Email!);
-			if (user is null)
-				return new AuthResponseDto { IsAuthSuccessfull = false, Error = "Невірне ім'я" };
-
-			if (!await _userManager.CheckPasswordAsync(user, authenticationDto.Password!))
-				return new AuthResponseDto { IsAuthSuccessfull = false, Error = "Невірний пароль" };
-
-			if (!await _userManager.IsEmailConfirmedAsync(user))
-				return new AuthResponseDto { IsAuthSuccessfull = false, Error = "Активуйте свій обліковий запис" };
-
-			var token = await _tokenService.CreateToken(user);
-
-			return new AuthResponseDto { IsAuthSuccessfull = true, Token = token };
-		}
-		public async Task<string> EmailConfirmation(string email, string token)
-		{
-			var user = await _userManager.FindByEmailAsync(email);
-			if (user is null)
-				throw new ValidationException("Пошту не знайдено", email);
-
-			var confirmResult = await _userManager.ConfirmEmailAsync(user, token);
-			if (!confirmResult.Succeeded)
-				throw new ValidationException("Пошту не підтвержено", email);
-
-
-			return "Обліковий запис підтвержено!";
-		}
-		public async Task<CustomerDTO> Update(CustomerDTO item) 
+        public async Task<RegistrationResponseDto> RegisterAsync(UserForRegistrationDto registrationDto)
         {
-            var customer = _mapper.Map<CustomerDTO, Customer>(item);
+            var user = _mapper.Map<Customer>(registrationDto);
+            var result = await _userManager.CreateAsync(user, registrationDto.Password!);
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description);
+
+                return new RegistrationResponseDto { IsSuccessfullRegistration = false, Errors = errors };
+            }
+            await _userManager.AddToRoleAsync(user, "User");
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var param = new Dictionary<string, string?>
+            {
+                { "token", token },
+                {"email", user.Email }
+            };
+
+            var callback = QueryHelpers.AddQueryString(registrationDto.UserUri, param);
+            var emailTemplate = EmailRegistrationTemplate(user.Name, callback);
+            var message = new Message([user.Email!], "Ласкаво просимо на Hyggy", emailTemplate);
+            _emailSender.SendEmail(message);
+
+            return new RegistrationResponseDto { IsSuccessfullRegistration = true, EmailToken = token };
+        }
+        public async Task<AuthResponseDto> AuthenticateAsync(UserForAuthenticationDto authenticationDto)
+        {
+            var user = await _userManager.FindByNameAsync(authenticationDto.Email!);
+            if (user is null)
+                return new AuthResponseDto { IsAuthSuccessfull = false, Error = "Невірне ім'я" };
+
+            if (!await _userManager.CheckPasswordAsync(user, authenticationDto.Password!))
+                return new AuthResponseDto { IsAuthSuccessfull = false, Error = "Невірний пароль" };
+
+            if (!await _userManager.IsEmailConfirmedAsync(user))
+                return new AuthResponseDto { IsAuthSuccessfull = false, Error = "Активуйте свій обліковий запис" };
+
+            var token = await _tokenService.CreateToken(user);
+
+            return new AuthResponseDto { IsAuthSuccessfull = true, Token = token };
+        }
+        public async Task<string> EmailConfirmation(string email, string token)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user is null)
+                throw new ValidationException("Пошту не знайдено", email);
+
+            var confirmResult = await _userManager.ConfirmEmailAsync(user, token);
+            if (!confirmResult.Succeeded)
+                throw new ValidationException("Пошту не підтвержено", email);
+
+
+            return "Обліковий запис підтвержено!";
+        }
+        public async Task<CustomerDTO> Update(CustomerDTO item)
+        {
+            //var customer = _mapper.Map<CustomerDTO, Customer>(item);
+            if(item.Id == null)
+            {
+                throw new ValidationException("Не вказано Id клієнта для оновлення!", "");
+            }
+            var customer = await Database.Customers.GetByIdAsync(item.Id);
+            if (customer == null)
+            {
+                throw new ValidationException("Клієнт не знайдений!", item.Id);
+            }
+            if (item.Name == null)
+            {
+                throw new ValidationException("Не вказано ім'я клієнта для оновлення!", "");
+            }
+            if (item.Surname == null)
+            {
+                throw new ValidationException("Не вказано прізвище клієнта для оновлення!", "");
+            }
+            if (item.Email == null)
+            {
+                throw new ValidationException("Не вказано email клієнта для оновлення!", "");
+            }
+            customer.Name = item.Name;
+            customer.Surname = item.Surname;
+            customer.Email = item.Email;
             Database.Customers.Update(customer);
             await Database.Save();
 
             var returnedDTO = await GetByIdAsync(customer.Id);
             return returnedDTO;
         }
-        public async Task DeleteAsync(string id) 
+        public async Task DeleteAsync(string id)
         {
             await Database.Customers.DeleteAsync(id);
         }
 
-		private string EmailRegistrationTemplate(string name, string callback)
-		{
+        private string EmailRegistrationTemplate(string name, string callback)
+        {
 
-			var template = $@"
+            var template = $@"
 				<!DOCTYPE html>
 				<html lang='en'>
 				<head>
@@ -288,9 +312,9 @@ namespace HyggyBackend.BLL.Services
 				</body>
 				</html>";
 
-			return template;
+            return template;
 
-		}
+        }
 
-	}
+    }
 }

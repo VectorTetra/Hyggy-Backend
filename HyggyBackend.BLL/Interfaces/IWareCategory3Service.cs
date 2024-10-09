@@ -13,7 +13,6 @@ namespace HyggyBackend.BLL.Interfaces
         Task<WareCategory3DTO?> GetById(long id);
         Task<IEnumerable<WareCategory3DTO>> GetPagedCategories(int pageNumber, int pageSize);
         Task<IEnumerable<WareCategory3DTO>> GetByNameSubstring(string nameSubstring);
-        Task<IEnumerable<WareCategory3DTO>> GetByJSONStructureFilePathSubstring(string JSONStructureFilePathSubstring);
         Task<IEnumerable<WareCategory3DTO>> GetByWareCategory1Id(long id);
         Task<IEnumerable<WareCategory3DTO>> GetByWareCategory1NameSubstring(string WareCategory1NameSubstring);
         Task<IEnumerable<WareCategory3DTO>> GetByWareCategory2Id(long id);

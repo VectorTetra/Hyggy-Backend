@@ -34,7 +34,7 @@ namespace HyggyBackend.Controllers
                 IEnumerable<WareTrademarkDTO> collection = null;
                 switch (query.SearchParameter)
                 {
-                    case "GetById":
+                    case "Id":
                         {
                             if (query.Id == null)
                             {
@@ -46,7 +46,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByName":
+                    case "Name":
                         {
                             if (query.Name == null)
                             {
@@ -58,7 +58,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByWareId":
+                    case "WareId":
                         {
                             if (query.WareId == null)
                             {
@@ -70,7 +70,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetPagedWareTrademarks":
+                    case "Paged":
                         {
                             if (query.PageNumber == null)
                             {
@@ -83,7 +83,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetPagedWareTrademarks(query.PageNumber.Value, query.PageSize.Value);
                         }
                         break;
-                    case "GetByQuery":
+                    case "Query":
                         {
                             var mapper = new Mapper(config);
                             var queryBLL = mapper.Map<WareTrademarkQueryBLL>(query);

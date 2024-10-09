@@ -1,5 +1,6 @@
 ﻿using HyggyBackend.DAL.EF;
 using HyggyBackend.DAL.Entities;
+using HyggyBackend.DAL.Entities.Employes;
 using HyggyBackend.DAL.Interfaces;
 using HyggyBackend.DAL.Queries;
 using Microsoft.EntityFrameworkCore;
@@ -104,6 +105,18 @@ namespace HyggyBackend.DAL.Repositories
         public async Task<IEnumerable<Order>> GetByShopId(long shopId)
         {
             return await _context.Orders.Where(x => x.Shop.Id == shopId).ToListAsync();
+        }
+
+        public async IAsyncEnumerable<Order> GetByIdsAsync(IEnumerable<long> ids)
+        {
+            foreach (var id in ids)
+            {
+                var item = await GetById(id);  // Виклик методу репозиторію
+                if (item != null)
+                {
+                    yield return item;
+                }
+            }
         }
         public async Task<IEnumerable<Order>> GetByQuery(OrderQueryDAL query)
         {

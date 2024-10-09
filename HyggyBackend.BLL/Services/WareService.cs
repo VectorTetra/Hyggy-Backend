@@ -180,14 +180,14 @@ namespace HyggyBackend.BLL.Services
             {
                 throw new ValidationException("Доставка не може бути пустою!", "");
             }
-            if (wareDTO.StatusId == null)
+            var statuses = new List<WareStatus>();
+            await foreach (var wareImage in Database.WareStatuses.GetByIdsAsync(wareDTO.StatusIds))
             {
-                throw new ValidationException("Статус не може бути пустим!", wareDTO.StatusId.ToString());
-            }
-            var existedStatus = await Database.WareStatuses.GetById(wareDTO.StatusId.Value);
-            if (existedStatus == null)
-            {
-                throw new ValidationException("Статусу з таким Id не існує!", wareDTO.StatusId.ToString());
+                if (wareImage == null)
+                {
+                    throw new ValidationException($"Одна з WareImage не знайдена!", "");
+                }
+                statuses.Add(wareImage);
             }
             var existedTrademark = new WareTrademark();
             if (wareDTO.TrademarkId != null)
@@ -210,7 +210,7 @@ namespace HyggyBackend.BLL.Services
                 Price = wareDTO.Price.Value,
                 Discount = wareDTO.Discount != null ? wareDTO.Discount.Value : 0,
                 IsDeliveryAvailable = wareDTO.IsDeliveryAvailable.Value,
-                Status = existedStatus,
+                Statuses = statuses,
                 Images = new List<WareImage>(),
                 PriceHistories = new List<WarePriceHistory>(),
                 WareItems = new List<WareItem>(),
@@ -270,15 +270,11 @@ namespace HyggyBackend.BLL.Services
             {
                 throw new ValidationException("Доставка не може бути пустою!", "");
             }
-            if (wareDTO.StatusId == null)
+            if (wareDTO.StatusIds == null)
             {
-                throw new ValidationException("Статус не може бути пустим!", wareDTO.StatusId.ToString());
+                throw new ValidationException("Статус не може бути пустим!", wareDTO.StatusIds.ToString());
             }
-            var existedStatus = await Database.WareStatuses.GetById(wareDTO.StatusId.Value);
-            if (existedStatus == null)
-            {
-                throw new ValidationException("Статусу з таким Id не існує!", wareDTO.StatusId.ToString());
-            }
+
             var existedTrademark = new WareTrademark();
             if (wareDTO.TrademarkId != null)
             {
@@ -297,7 +293,7 @@ namespace HyggyBackend.BLL.Services
             existedWare.Price = wareDTO.Price.Value;
             existedWare.Discount = wareDTO.Discount != null ? wareDTO.Discount.Value : 0;
             existedWare.IsDeliveryAvailable = wareDTO.IsDeliveryAvailable.Value;
-            existedWare.Status = existedStatus;
+            existedWare.Statuses.Clear();
             existedWare.Images.Clear();
             existedWare.PriceHistories.Clear();
             existedWare.WareItems.Clear();
@@ -357,6 +353,15 @@ namespace HyggyBackend.BLL.Services
                     throw new ValidationException($"Один з Customer не знайдений!", "");
                 }
                 existedWare.CustomerFavorites.Add(customer);
+            }
+
+            await foreach (var status in Database.WareStatuses.GetByIdsAsync(wareDTO.StatusIds))
+            {
+                if (status == null)
+                {
+                    throw new ValidationException($"Один з WareStatus не знайдений!", "");
+                }
+                existedWare.Statuses.Add(status);
             }
 
 

@@ -55,7 +55,7 @@ namespace HyggyBackend.Controllers
                 switch (orderQueryPL.SearchParameter)
                 {
 
-                    case "GetById":
+                    case "Id":
                         {
                             if (orderQueryPL.Id == null)
                             {
@@ -68,7 +68,7 @@ namespace HyggyBackend.Controllers
                         }
                         break;
 
-                    case "GetByAddressId":
+                    case "AddressId":
                         {
                             if (orderQueryPL.AddressId == null)
                             {
@@ -81,7 +81,7 @@ namespace HyggyBackend.Controllers
                         }
                         break;
 
-                    case "GetByStreet":
+                    case "Street":
                         {
                             if (orderQueryPL.Street == null)
                             {
@@ -94,7 +94,7 @@ namespace HyggyBackend.Controllers
                         }
                         break;
 
-                    case "GetByHouseNumber":
+                    case "HouseNumber":
                         {
                             if (orderQueryPL.HouseNumber == null)
                             {
@@ -107,7 +107,7 @@ namespace HyggyBackend.Controllers
                         }
                         break;
 
-                    case "GetByCity":
+                    case "City":
                         {
                             if (orderQueryPL.City == null)
                             {
@@ -120,7 +120,7 @@ namespace HyggyBackend.Controllers
                         }
                         break;
 
-                    case "GetByPostalCode":
+                    case "PostalCode":
                         {
                             if (orderQueryPL.PostalCode == null)
                             {
@@ -133,7 +133,7 @@ namespace HyggyBackend.Controllers
                         }
                         break;
 
-                    case "GetByState":
+                    case "State":
                         {
                             if (orderQueryPL.State == null)
                             {
@@ -146,7 +146,7 @@ namespace HyggyBackend.Controllers
                         }
                         break;
 
-                    case "GetByLatitudeAndLongitude":
+                    case "LatitudeAndLongitude":
                         {
                             if (orderQueryPL.Latitude == null || orderQueryPL.Longitude == null)
                             {
@@ -159,7 +159,7 @@ namespace HyggyBackend.Controllers
                         }
                         break;
 
-                    case "GetByOrderDateRange":
+                    case "OrderDateRange":
                         {
                             if (orderQueryPL.MinOrderDate == null || orderQueryPL.MaxOrderDate == null)
                             {
@@ -172,7 +172,7 @@ namespace HyggyBackend.Controllers
                         }
                         break;
 
-                    case "GetByPhoneSubstring":
+                    case "Phone":
                         {
                             if (orderQueryPL.Phone == null)
                             {
@@ -185,7 +185,7 @@ namespace HyggyBackend.Controllers
                         }
                         break;
 
-                    case "GetByCommentSubstring":
+                    case "Comment":
                         {
                             if (orderQueryPL.Comment == null)
                             {
@@ -198,7 +198,7 @@ namespace HyggyBackend.Controllers
                         }
                         break;
 
-                    case "GetByStatusId":
+                    case "StatusId":
                         {
                             if (orderQueryPL.StatusId == null)
                             {
@@ -211,7 +211,7 @@ namespace HyggyBackend.Controllers
                         }
                         break;
 
-                    case "GetByStatusNameSubstring":
+                    case "StatusName":
                         {
                             if (orderQueryPL.StatusName == null)
                             {
@@ -224,7 +224,7 @@ namespace HyggyBackend.Controllers
                         }
                         break;
 
-                    case "GetByStatusDescriptionSubstring":
+                    case "StatusDescription":
                         {
                             if (orderQueryPL.StatusDescription == null)
                             {
@@ -237,7 +237,7 @@ namespace HyggyBackend.Controllers
                         }
                         break;
 
-                    case "GetByOrderItemId":
+                    case "OrderItemId":
                         {
                             if (orderQueryPL.OrderItemId == null)
                             {
@@ -250,7 +250,7 @@ namespace HyggyBackend.Controllers
                         }
                         break;
 
-                    case "GetByWareId":
+                    case "WareId":
                         {
                             if (orderQueryPL.WareId == null)
                             {
@@ -263,7 +263,7 @@ namespace HyggyBackend.Controllers
                         }
                         break;
 
-                    case "GetByWarePriceHistoryId":
+                    case "WarePriceHistoryId":
                         {
                             if (orderQueryPL.WarePriceHistoryId == null)
                             {
@@ -276,7 +276,7 @@ namespace HyggyBackend.Controllers
                         }
                         break;
 
-                    case "GetByCustomerId":
+                    case "CustomerId":
                         {
                             if (orderQueryPL.CustomerId == null)
                             {
@@ -289,7 +289,7 @@ namespace HyggyBackend.Controllers
                         }
                         break;
 
-                    case "GetByShopId":
+                    case "ShopId":
                         {
                             if (orderQueryPL.ShopId == null)
                             {
@@ -302,7 +302,7 @@ namespace HyggyBackend.Controllers
                         }
                         break;
 
-                    case "GetByQuery":
+                    case "Query":
                         {
                             var mapper = new Mapper(config);
                             var orderQueryBLL = mapper.Map<OrderQueryBLL>(orderQueryPL);
@@ -375,7 +375,7 @@ namespace HyggyBackend.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<ActionResult<OrderDTO>> DeleteOrder(long id)
         {
             try

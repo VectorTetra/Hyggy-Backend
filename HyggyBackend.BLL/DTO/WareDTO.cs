@@ -20,7 +20,7 @@ namespace HyggyBackend.BLL.DTO
         public float? Discount { get; set; }
         public float? AverageRating { get; set; }
         public bool? IsDeliveryAvailable { get; set; }
-        public long? StatusId { get; set; }
+        public ICollection<long>? StatusIds { get; set; }
         public ICollection<long>? ImageIds { get; set; } = new List<long>();
         public ICollection<long>? PriceHistoryIds { get; set; } = new List<long>();
         public ICollection<long>? WareItemIds { get; set; } = new List<long>();

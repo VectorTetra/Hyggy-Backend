@@ -35,7 +35,7 @@ namespace HyggyBackend.Controllers
                 IEnumerable<OrderStatusDTO> collection = null;
                 switch (orderStatusQueryPL.SearchParameter)
                 {
-                    case "GetById":
+                    case "Id":
                         {
                             if (orderStatusQueryPL.Id == null)
                             {
@@ -48,7 +48,7 @@ namespace HyggyBackend.Controllers
                         }
                         break;
 
-                    case "GetByNameSubstring":
+                    case "Name":
                         {
                             if (orderStatusQueryPL.NameSubstring == null)
                             {
@@ -61,7 +61,7 @@ namespace HyggyBackend.Controllers
                         }
                         break;
 
-                    case "GetByDescriptionSubstring":
+                    case "Description":
                         {
                             if (orderStatusQueryPL.DescriptionSubstring == null)
                             {
@@ -74,7 +74,7 @@ namespace HyggyBackend.Controllers
                         }
                         break;
 
-                    case "GetByQuery":
+                    case "Query":
                         {
                             var mapper = new Mapper(config);
                             var orderStatusQueryBLL = mapper.Map<OrderStatusQueryBLL>(orderStatusQueryPL);
@@ -147,7 +147,7 @@ namespace HyggyBackend.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<ActionResult<OrderStatusDTO>> DeleteOrderStatus(long id)
         {
             try

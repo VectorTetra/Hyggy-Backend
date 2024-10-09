@@ -48,6 +48,18 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.WareStatuses.Where(x => x.Description.Contains(descriptionSubstring)).ToListAsync();
         }
+
+        public async IAsyncEnumerable<WareStatus> GetByIdsAsync(IEnumerable<long> ids)
+        {
+            foreach (var id in ids)
+            {
+                var item = await GetById(id);  // Виклик методу репозиторію
+                if (item != null)
+                {
+                    yield return item;
+                }
+            }
+        }
         public async Task<IEnumerable<WareStatus>> GetByQuery(WareStatusQueryDAL queryDAL)
         {
             var wareStatusCollections = new List<IEnumerable<WareStatus>>();

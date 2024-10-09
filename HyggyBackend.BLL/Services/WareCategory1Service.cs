@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HyggyBackend.BLL.DTO;
+using HyggyBackend.BLL.Infrastructure;
 using HyggyBackend.BLL.Interfaces;
 using HyggyBackend.BLL.Queries;
 using HyggyBackend.DAL.Entities;
@@ -21,9 +22,6 @@ namespace HyggyBackend.BLL.Services
         {
             Database = uow;
         }
-
-       
-
         public async Task<WareCategory1DTO?> GetById(long id)
         {
             WareCategory1 wareCategory1 = await Database.Categories1.GetById(id);
@@ -46,12 +44,7 @@ namespace HyggyBackend.BLL.Services
             
             return _mapper.Map<IEnumerable<WareCategory1DTO>>(wareCategory1s);
         }
-        public async Task<IEnumerable<WareCategory1DTO>> GetByJSONStructureFilePathSubstring(string JSONStructureFilePathSubstring)
-        {
-            IEnumerable<WareCategory1> wareCategory1s = await Database.Categories1.GetByJSONStructureFilePathSubstring(JSONStructureFilePathSubstring);
-            
-            return _mapper.Map<IEnumerable<WareCategory1DTO>>(wareCategory1s);
-        }
+        
         public async Task<IEnumerable<WareCategory1DTO>> GetByWareCategory2Id(long id)
         {
             IEnumerable<WareCategory1> wareCategory1s = await Database.Categories1.GetByWareCategory2Id(id);
@@ -84,7 +77,20 @@ namespace HyggyBackend.BLL.Services
         }
         public async Task<WareCategory1DTO> Create(WareCategory1DTO category1DTO)
         {
-            var wareCategory1 = _mapper.Map<WareCategory1DTO, WareCategory1>(category1DTO);
+            if(category1DTO.Name == null)
+            {
+                throw new ValidationException("Не вказано WareCategory1.Name", "");
+            }
+            var existedCategory = await Database.Categories1.GetByNameSubstring(category1DTO.Name);
+            if (existedCategory.Any(x => x.Name == category1DTO.Name))
+            {
+                throw new ValidationException($"Категорія 1 товару з таким іменем ( {category1DTO.Name} ) вже існує", "");
+            }
+            var wareCategory1 = new WareCategory1
+            {
+                Name = category1DTO.Name,
+                WaresCategory2 = new List<WareCategory2>()
+            };
             await Database.Categories1.Create(wareCategory1);
             await Database.Save();
             var returnedCategory = await Database.Categories1.GetById(wareCategory1.Id);
@@ -92,11 +98,34 @@ namespace HyggyBackend.BLL.Services
         }
         public async Task<WareCategory1DTO> Update(WareCategory1DTO category1DTO) 
         {
-            var wareCategory1 = _mapper.Map<WareCategory1DTO, WareCategory1>(category1DTO);
-            Database.Categories1.Update(wareCategory1);
+            var existedCategory1 = await Database.Categories1.GetById(category1DTO.Id);
+            if (existedCategory1 == null)
+            {
+                throw new ValidationException($"WareCategory1 з id={category1DTO.Id} не знайдено!", "");
+            }
+            if (category1DTO.Name == null)
+            {
+                throw new ValidationException("Не вказано WareCategory1.Name", "");
+            }
+            var existedCategoryByName = await Database.Categories1.GetByNameSubstring(category1DTO.Name);
+            if (existedCategoryByName.Any(x => x.Name == category1DTO.Name))
+            {
+                throw new ValidationException($"Категорія 1 товару з таким іменем ( {category1DTO.Name} ) вже існує", "");
+            }
+
+            existedCategory1.WaresCategory2.Clear();
+            await foreach (var category2 in Database.Categories2.GetByIdsAsync(category1DTO.WaresCategory2Ids))
+            {
+                if (category2 == null)
+                {
+                    throw new ValidationException($"Одна з WareCategory2 не знайдена!", "");
+                }
+                existedCategory1.WaresCategory2.Add(category2);
+            }
+            existedCategory1.Name = category1DTO.Name;
+            Database.Categories1.Update(existedCategory1);
             await Database.Save();
-            var returnedCategory = await Database.Categories1.GetById(wareCategory1.Id);
-            return _mapper.Map<WareCategory1, WareCategory1DTO>(returnedCategory);
+            return _mapper.Map<WareCategory1, WareCategory1DTO>(existedCategory1);
         }
         public async Task<WareCategory1DTO> Delete(long id)
         {

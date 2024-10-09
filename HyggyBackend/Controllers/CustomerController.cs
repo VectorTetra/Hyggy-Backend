@@ -45,7 +45,7 @@ namespace HyggyBackend.Controllers
 
                 switch (query.SearchParameter)
                 {
-                    case "GetById":
+                    case "Id":
                         {
                             if (query.Id == null)
                             {
@@ -57,7 +57,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByName":
+                    case "Name":
                         {
                             if (query.Name == null)
                             {
@@ -69,7 +69,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetBySurname":
+                    case "Surname":
                         {
                             if (query.Surname == null)
                             {
@@ -81,7 +81,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByEmail":
+                    case "Email":
                         {
                             if (query.Email == null)
                             {
@@ -93,7 +93,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByPhone":
+                    case "Phone":
                         {
                             if (query.Phone == null)
                             {
@@ -105,7 +105,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByOrderId":
+                    case "OrderId":
                         {
                             if (query.OrderId == null)
                             {
@@ -117,7 +117,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetPaged":
+                    case "Paged":
                         {
                             if (query.PageNumber == null)
                             {
@@ -130,7 +130,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetPagedCustomers(query.PageNumber.Value, query.PageSize.Value);
                         }
                         break;
-                    case "GetByQuery":
+                    case "Query":
                         {
                             var mapper = new Mapper(config);
                             var queryBLL = mapper.Map<CustomerQueryBLL>(query);

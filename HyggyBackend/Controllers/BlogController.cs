@@ -48,7 +48,7 @@ namespace HyggyBackend.Controllers
                 IEnumerable<BlogDTO> collection = null;
                 switch (query.SearchParameter)
                 {
-                    case "GetById":
+                    case "Id":
                         {
                             if (query.Id == null)
                             {
@@ -60,7 +60,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByBlogTitle":
+                    case "BlogTitle":
                         {
                             if (query.BlogTitle == null)
                             {
@@ -72,7 +72,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByKeywords":
+                    case "Keyword":
                         {
                             if (query.Keyword == null)
                             {
@@ -84,7 +84,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByFilePath":
+                    case "FilePath":
                         {
                             if (query.FilePath == null)
                             {
@@ -96,7 +96,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByPreviewImagePath":
+                    case "PreviewImagePath":
                         {
                             if (query.PreviewImagePath == null)
                             {
@@ -108,7 +108,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByBlogCategory2Id":
+                    case "BlogCategory2Id":
                         {
                             if (query.BlogCategory2Id == null)
                             {
@@ -120,7 +120,19 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByBlogCategory2Name":
+                    case "BlogCategory1Id":
+                        {
+                            if (query.BlogCategory1Id == null)
+                            {
+                                throw new ValidationException("Не вказано BlogCategory2Id для пошуку!", "");
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByBlogCategory1Id(query.BlogCategory1Id.Value);
+                            }
+                        }
+                        break;
+                    case "BlogCategory2Name":
                         {
                             if (query.BlogCategory2Name == null)
                             {
@@ -132,7 +144,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByBlogCategory1Name":
+                    case "BlogCategory1Name":
                         {
                             if (query.BlogCategory1Name == null)
                             {
@@ -144,7 +156,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetPagedBlogs":
+                    case "Paged":
                         {
                             if(query.PageNumber == null)
                             {
@@ -157,7 +169,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetPagedBlogs(query.PageNumber.Value, query.PageSize.Value);
                         }
                         break;
-                    case "GetByQuery":
+                    case "Query":
                         {
                             var mapper = new Mapper(config);
                             var queryBLL = mapper.Map<BlogQueryBLL>(query);

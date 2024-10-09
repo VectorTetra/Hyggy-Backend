@@ -12,6 +12,7 @@ namespace HyggyBackend.DAL.Interfaces
         Task<IEnumerable<WareStatus>> GetByNameSubstring(string nameSubstring);
         Task<IEnumerable<WareStatus>> GetByDescriptionSubstring(string descriptionSubstring);
         Task<IEnumerable<WareStatus>> GetByQuery(WareStatusQueryDAL queryDAL);
+        IAsyncEnumerable<WareStatus> GetByIdsAsync(IEnumerable<long> ids);
         Task Create(WareStatus ware);
         void Update(WareStatus ware);
         Task Delete(long id);

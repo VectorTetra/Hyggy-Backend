@@ -57,6 +57,18 @@ namespace HyggyBackend.DAL.Repositories
             return await orderStatuses.ToListAsync();
         }
 
+        public async IAsyncEnumerable<OrderStatus> GetByIdsAsync(IEnumerable<long> ids)
+        {
+            foreach (var id in ids)
+            {
+                var item = await GetById(id);  // Виклик методу репозиторію
+                if (item != null)
+                {
+                    yield return item;
+                }
+            }
+        }
+
         public async Task Create(OrderStatus orderStatus)
         {
             await _context.OrderStatuses.AddAsync(orderStatus);

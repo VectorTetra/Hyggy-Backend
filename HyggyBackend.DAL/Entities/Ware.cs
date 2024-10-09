@@ -16,7 +16,7 @@ namespace HyggyBackend.DAL.Entities
         public float Price { get; set; }
         public float Discount { get; set; }
         public bool IsDeliveryAvailable { get; set; }
-        public virtual WareStatus Status { get; set; }
+        public virtual ICollection<WareStatus> Statuses { get; set; } = new List<WareStatus>();
         public virtual WareTrademark? WareTrademark { get; set; }
         public virtual ICollection<WareImage> Images { get; set; } = new List<WareImage>();
         public virtual ICollection<WareItem> WareItems { get; set; } = new List<WareItem>();

@@ -22,7 +22,7 @@ namespace HyggyBackend.DAL.Interfaces
         Task<Storage?> GetByWareItemId(long WareItemId);
         Task<Storage?> GetByStorageEmployeeId(string storageEmployeeId);
         Task<Storage?> GetByShopEmployeeId(string shopEmployeeId);
-
+        IAsyncEnumerable<Storage> GetByIdsAsync(IEnumerable<long> ids);
         Task Create(Storage storage);
         void Update(Storage storage);
         Task Delete(long id);

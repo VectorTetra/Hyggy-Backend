@@ -112,9 +112,7 @@ namespace HyggyBackend.BLL.Services
 
             await Database.BlogCategories2.AddBlogCategory2(blogCat2);
             await Database.Save();
-
-            var returnedBlogCat = await Database.BlogCategories2.GetById(blogCat2.Id);
-            return _mapper.Map<BlogCategory2DTO>(returnedBlogCat);
+            return _mapper.Map<BlogCategory2DTO>(blogCat2);
         }
 
         public async Task<BlogCategory2DTO> UpdateBlogCategory2(BlogCategory2DTO blogCategory2)

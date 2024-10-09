@@ -25,7 +25,19 @@ namespace HyggyBackend.DAL.Repositories
 		{
 			await _context.Addresses.AddAsync(address);
 		}
-		public void Update(Address updatedAddress)
+
+        public async IAsyncEnumerable<Address> GetByIdsAsync(IEnumerable<long> ids)
+        {
+            foreach (var id in ids)
+            {
+                var address = await GetByIdAsync(id);  // Виклик методу репозиторію
+                if (address != null)
+                {
+                    yield return address;
+                }
+            }
+        }
+        public void Update(Address updatedAddress)
 		{
 			Address? address = _context.Addresses.Where(a => a.Id == updatedAddress.Id).FirstOrDefault();
 			address.Street = updatedAddress.Street;

@@ -99,15 +99,15 @@ namespace HyggyBackend.DAL.Repositories
         }
         public async Task<IEnumerable<Ware>> GetByStatusId(long statusId)
         {
-            return await _context.Wares.Where(x => x.Status.Id == statusId).ToListAsync();
+            return await _context.Wares.Where(x => x.Statuses.Any(st=>st.Id == statusId)).ToListAsync();
         }
         public async Task<IEnumerable<Ware>> GetByStatusNameSubstring(string statusNameSubstring)
         {
-            return await _context.Wares.Where(x => x.Status.Name.Contains(statusNameSubstring)).ToListAsync();
+            return await _context.Wares.Where(x => x.Statuses.Any(s=>s.Name.Contains(statusNameSubstring))).ToListAsync();
         }
         public async Task<IEnumerable<Ware>> GetByStatusDescriptionSubstring(string statusDescriptionSubstring)
         {
-            return await _context.Wares.Where(x => x.Status.Description.Contains(statusDescriptionSubstring)).ToListAsync();
+            return await _context.Wares.Where(x => x.Statuses.Any(s=>s.Description.Contains(statusDescriptionSubstring))).ToListAsync();
         }
         public async Task<IEnumerable<Ware>> GetByImagePathSubstring(string imagePathSubstring)
         {

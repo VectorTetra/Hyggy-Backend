@@ -10,7 +10,6 @@ namespace HyggyBackend.DAL.Entities
     {
         public long Id { get; set; }
         public string Name { get; set; }
-        public string JSONStructureFilePath { get; set; }
         public virtual WareCategory1 WareCategory1 { get; set; }
         public virtual ICollection<WareCategory3> WaresCategory3 { get; set; }
 

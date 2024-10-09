@@ -4,7 +4,6 @@
     {
         public long? Id { get; set; }
         public string? NameSubstring { get; set; }
-        public string? JSONStructureFilePathSubstring { get; set; }
         public long? WareCategory1Id { get; set; }
         public string? WareCategory1NameSubstring { get; set; }
         public long? WareCategory2Id { get; set; }

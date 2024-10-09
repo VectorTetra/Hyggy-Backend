@@ -4,6 +4,7 @@ using HyggyBackend.DAL.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HyggyBackend.DAL.Migrations
 {
     [DbContext(typeof(HyggyContext))]
-    partial class HyggyContextModelSnapshot : ModelSnapshot
+    [Migration("20241008181905_AfterReposCheckAndSqlServer")]
+    partial class AfterReposCheckAndSqlServer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -431,6 +434,9 @@ namespace HyggyBackend.DAL.Migrations
                     b.Property<float>("Price")
                         .HasColumnType("real");
 
+                    b.Property<long>("StatusId")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("WareCategory3Id")
                         .HasColumnType("bigint");
 
@@ -438,6 +444,8 @@ namespace HyggyBackend.DAL.Migrations
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("StatusId");
 
                     b.HasIndex("WareCategory3Id");
 
@@ -453,6 +461,10 @@ namespace HyggyBackend.DAL.Migrations
                         .HasColumnType("bigint");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("JSONStructureFilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -470,6 +482,10 @@ namespace HyggyBackend.DAL.Migrations
                         .HasColumnType("bigint");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("JSONStructureFilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -492,6 +508,10 @@ namespace HyggyBackend.DAL.Migrations
                         .HasColumnType("bigint");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("JSONStructureFilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -686,13 +706,13 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "0eff3950-60e8-423f-94a9-526a38529a10",
+                            Id = "d9142b22-fca0-4367-a731-0099f3b1987b",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "7257eb1a-220a-421d-b0d4-b43af00e0866",
+                            Id = "26fbfc57-d0eb-4515-9eb3-098da151ab41",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -802,21 +822,6 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("WareWareStatus", b =>
-                {
-                    b.Property<long>("StatusesId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("WaresId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("StatusesId", "WaresId");
-
-                    b.HasIndex("WaresId");
-
-                    b.ToTable("WareWareStatus");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Customer", b =>
@@ -983,6 +988,12 @@ namespace HyggyBackend.DAL.Migrations
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Ware", b =>
                 {
+                    b.HasOne("HyggyBackend.DAL.Entities.WareStatus", "Status")
+                        .WithMany("Wares")
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("HyggyBackend.DAL.Entities.WareCategory3", "WareCategory3")
                         .WithMany("Wares")
                         .HasForeignKey("WareCategory3Id")
@@ -992,6 +1003,8 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasOne("HyggyBackend.DAL.Entities.WareTrademark", "WareTrademark")
                         .WithMany("Wares")
                         .HasForeignKey("WareTrademarkId");
+
+                    b.Navigation("Status");
 
                     b.Navigation("WareCategory3");
 
@@ -1123,21 +1136,6 @@ namespace HyggyBackend.DAL.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WareWareStatus", b =>
-                {
-                    b.HasOne("HyggyBackend.DAL.Entities.WareStatus", null)
-                        .WithMany()
-                        .HasForeignKey("StatusesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HyggyBackend.DAL.Entities.Ware", null)
-                        .WithMany()
-                        .HasForeignKey("WaresId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Employes.ShopEmployee", b =>
                 {
                     b.HasOne("HyggyBackend.DAL.Entities.Shop", "Shop")
@@ -1236,6 +1234,11 @@ namespace HyggyBackend.DAL.Migrations
             modelBuilder.Entity("HyggyBackend.DAL.Entities.WarePriceHistory", b =>
                 {
                     b.Navigation("OrderItems");
+                });
+
+            modelBuilder.Entity("HyggyBackend.DAL.Entities.WareStatus", b =>
+                {
+                    b.Navigation("Wares");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.WareTrademark", b =>

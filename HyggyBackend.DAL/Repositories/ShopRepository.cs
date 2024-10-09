@@ -70,7 +70,19 @@ namespace HyggyBackend.DAL.Repositories
 			 
 			return shopCollections.Aggregate((prev, next) => prev.Intersect(next));
 		}
-		public async Task Create(Shop shop)
+
+        public async IAsyncEnumerable<Shop> GetByIdsAsync(IEnumerable<long> ids)
+        {
+            foreach (var id in ids)
+            {
+                var item = await GetById(id);  // Виклик методу репозиторію
+                if (item != null)
+                {
+                    yield return item;
+                }
+            }
+        }
+        public async Task Create(Shop shop)
 		{
 			await _context.Shops.AddAsync(shop);
 		}

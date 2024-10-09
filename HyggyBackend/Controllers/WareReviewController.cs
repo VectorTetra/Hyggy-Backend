@@ -34,7 +34,7 @@ namespace HyggyBackend.Controllers
                 IEnumerable<WareReviewDTO> collection = null;
                 switch (query.SearchParameter)
                 {
-                    case "GetById":
+                    case "Id":
                         {
                             if (query.Id == null)
                             {
@@ -46,7 +46,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByWareId":
+                    case "WareId":
                         {
                             if (query.WareId == null)
                             {
@@ -58,7 +58,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByText":
+                    case "Text":
                         {
                             if (query.Text == null)
                             {
@@ -70,7 +70,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByTheme":
+                    case "Theme":
                         {
                             if (query.Theme == null)
                             {
@@ -82,7 +82,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByCustomerName":
+                    case "CustomerName":
                         {
                             if (query.CustomerName == null)
                             {
@@ -94,7 +94,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByEmail":
+                    case "Email":
                         {
                             if (query.Email == null)
                             {
@@ -106,7 +106,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByRatingRange":
+                    case "RatingRange":
                         {
                             if (query.MinRating == null)
                             {
@@ -119,7 +119,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByRatingRange(query.MinRating.Value, query.MaxRating.Value);
                         }
                         break;
-                    case "GetByDateRange":
+                    case "DateRange":
                         {
                             if (query.MinDate == null)
                             {
@@ -132,7 +132,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByDateRange(query.MinDate.Value, query.MaxDate.Value);
                         }
                         break;
-                    case "GetPagedWareReviews":
+                    case "Paged":
                         {
                             if (query.PageNumber == null)
                             {
@@ -145,7 +145,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetPagedWareReviews(query.PageNumber.Value, query.PageSize.Value);
                         }
                         break;
-                    case "GetByQuery":
+                    case "Query":
                         {
                             var mapper = new Mapper(config);
                             var queryBLL = mapper.Map<WareReviewQueryBLL>(query);

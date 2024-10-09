@@ -19,6 +19,9 @@ namespace HyggyBackend.BLL.Infrastructure
             services.AddScoped<IBlogService, BlogService>();
             services.AddScoped<IBlogCategory1Service, BlogCategory1Service>();
             services.AddScoped<IBlogCategory2Service, BlogCategory2Service>();
+            services.AddScoped<IWareCategory1Service, WareCategory1Service>();
+            services.AddScoped<IWareCategory2Service, WareCategory2Service>();
+            services.AddScoped<IWareCategory3Service, WareCategory3Service>();
             services.AddScoped<IProffessionService, ProffessionService>();
             services.AddScoped<IEmployeeService<ShopEmployeeDTO>, ShopEmployeeDTOService>();
             services.AddScoped<ITokenService, TokenService>();

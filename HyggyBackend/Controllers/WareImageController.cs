@@ -39,7 +39,7 @@ namespace HyggyBackend.Controllers
                 switch (query.SearchParameter)
                 {
 
-                    case "GetById":
+                    case "Id":
                         {
                             if (query.Id == null)
                             {
@@ -51,7 +51,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByWareId":
+                    case "WareId":
                         {
                             if (query.WareId == null)
                             {
@@ -63,7 +63,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByWareArticle":
+                    case "WareArticle":
                         {
                             if (query.WareArticle == null)
                             {
@@ -75,7 +75,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByPath":
+                    case "Path":
                         {
                             if (query.Path == null)
                             {
@@ -141,7 +141,7 @@ namespace HyggyBackend.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<ActionResult<WareImageDTO>> DeleteWare([FromBody] WareImageDTO wareImage)
         {
             try

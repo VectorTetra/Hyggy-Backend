@@ -7,8 +7,8 @@ namespace HyggyBackend.DAL.Interfaces
 	{
 		Task<IEnumerable<Address>> GetAllAsync();
 		Task<Address?> GetByIdAsync(long id);
-
-		Task CreateAsync(Address address);
+        IAsyncEnumerable<Address> GetByIdsAsync(IEnumerable<long> ids);
+        Task CreateAsync(Address address);
 		void Update(Address address);
 		Task DeleteAsync(long id);
 	}

@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Imagekit" Version="5.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
@@ -25,8 +26,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\BlogPageJsonStructures\" />
     <Folder Include="wwwroot\BlogImages\" />
+    <Folder Include="wwwroot\BlogPageJsonStructures\" />
   </ItemGroup>
 
 </Project>

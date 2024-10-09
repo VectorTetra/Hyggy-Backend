@@ -234,28 +234,25 @@ namespace HyggyBackend.BLL.Services
             }
 
             var orderItems = new List<OrderItem>();
-            foreach (var orderItemId in orderDTO.OrderItemIds)
+            await foreach (var orderItemId in Database.OrderItems.GetByIdsAsync(orderDTO.OrderItemIds))
             {
-                var orderItem = await Database.OrderItems.GetById(orderItemId);
-                if (orderItem == null)
+                if (orderItemId == null)
                 {
-                    throw new ValidationException("Товар з таким ID не знайдено!", orderItemId.ToString());
+                    throw new ValidationException($"Одна з BlogCategory2 не знайдена!", "");
                 }
-                orderItems.Add(orderItem);
+                orderItems.Add(orderItemId);
             }
             // Створення нового замовлення
-            var orderDAL = new Order();
-
-            // Присвоєння характеристик замовлення
-            orderDAL.Id = 0;
-            orderDAL.OrderDate = orderDTO.OrderDate.Value;
-            orderDAL.Phone = orderDTO.Phone;
-            orderDAL.Comment = orderDTO.Comment;
-            orderDAL.Status = ExistedStatus;
-            orderDAL.Shop = ExistedShop;
-            orderDAL.Customer = ExistedCustomer;
-            orderDAL.DeliveryAddress = deliveryAddress;
-            orderDAL.OrderItems = orderItems;
+            var orderDAL = new Order {
+                OrderDate = orderDTO.OrderDate.Value,
+                Phone = orderDTO.Phone,
+                Comment = orderDTO.Comment,
+                Status = ExistedStatus,
+                Shop = ExistedShop,
+                Customer = ExistedCustomer,
+                DeliveryAddress = deliveryAddress,
+                OrderItems = orderItems
+            };
 
             // Створення замовлення
             await Database.Orders.Create(orderDAL);
@@ -354,14 +351,13 @@ namespace HyggyBackend.BLL.Services
 
             // Оновлення товарів замовлення
             var orderItems = new List<OrderItem>();
-            foreach (var orderItemId in orderDTO.OrderItemIds)
+            await foreach (var orderItemId in Database.OrderItems.GetByIdsAsync(orderDTO.OrderItemIds))
             {
-                var orderItem = await Database.OrderItems.GetById(orderItemId);
-                if (orderItem == null)
+                if (orderItemId == null)
                 {
-                    throw new ValidationException("Товар з таким ID не знайдено!", orderItemId.ToString());
+                    throw new ValidationException($"Одна з BlogCategory2 не знайдена!", "");
                 }
-                orderItems.Add(orderItem);
+                orderItems.Add(orderItemId);
             }
 
             // Оновлення замовлення з новими значеннями

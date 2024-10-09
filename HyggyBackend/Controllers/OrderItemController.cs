@@ -23,7 +23,7 @@ namespace HyggyBackend.Controllers
                 IEnumerable<OrderItemDTO> collection = null;
                 switch (orderItemQuery.SearchParameter)
                 {
-                    case "GetById":
+                    case "Id":
                         {
                             if (orderItemQuery.Id is null)
                             {
@@ -35,7 +35,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByOrderId":
+                    case "OrderId":
                         {
                             if (orderItemQuery.OrderId is null)
                             {
@@ -44,7 +44,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByOrderId((long)orderItemQuery.OrderId);
                         }
                         break;
-                    case "GetByWareId":
+                    case "WareId":
                         {
                             if (orderItemQuery.WareId is null)
                             {
@@ -53,7 +53,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByWareId((long)orderItemQuery.WareId);
                         }
                         break;
-                    case "GetByCount":
+                    case "Count":
                         {
                             if (orderItemQuery.OrderCount is null)
                             {

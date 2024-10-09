@@ -39,7 +39,7 @@ namespace HyggyBackend.Controllers
 
                 switch (query.SearchParameter)
                 {
-                    case "GetById":
+                    case "Id":
                         {
                             if (query.Id == null)
                             {
@@ -51,7 +51,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByWareId":
+                    case "WareId":
                         {
                             if (query.WareId == null)
                             {
@@ -63,7 +63,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByPriceRange":
+                    case "PriceRange":
                         {
                             if (query.MinPrice == null)
                             {
@@ -79,7 +79,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByDateRange":
+                    case "DateRange":
                         {
                             if (query.StartDate == null)
                             {
@@ -95,7 +95,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByQuery":
+                    case "Query":
                         {
                             var mapper = new Mapper(config);
                             var queryBLL = mapper.Map<WarePriceHistoryQueryBLL>(query);
@@ -168,7 +168,7 @@ namespace HyggyBackend.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<ActionResult<WarePriceHistoryDTO>> DeleteWarePriceHistory(long id)
         {
             try

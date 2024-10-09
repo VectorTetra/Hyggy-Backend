@@ -11,7 +11,6 @@ namespace HyggyBackend.BLL.DTO
     {
         public long Id { get; set; }
         public string? Name { get; set; }
-        public string? JSONStructureFilePath { get; set; }
         public long? WareCategory1Id { get; set; }
         public ICollection<long>? WaresCategory3Ids { get; set; } = new List<long>();
     }

@@ -62,7 +62,7 @@ namespace HyggyBackend.Controllers
 
                 switch (query.SearchParameter)  
                 {
-                    case "GetById":
+                    case "Id":
                         {
                             if (query.Id == null)
                             {
@@ -74,7 +74,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByArticle":
+                    case "Article":
                         {
                             if (query.Article == null)
                             {
@@ -86,7 +86,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByCategory1Id":
+                    case "Category1Id":
                         {
                             if (query.Category1Id == null)
                             {
@@ -98,7 +98,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByCategory2Id":
+                    case "Category2Id":
                         {
                             if (query.Category2Id == null)
                             {
@@ -110,7 +110,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByCategory3Id":
+                    case "Category3Id":
                         {
                             if (query.Category3Id == null)
                             {
@@ -122,7 +122,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByNameSubstring":
+                    case "Name":
                         {
                             if (query.NameSubstring == null)
                             {
@@ -134,7 +134,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByDescriptionSubstring":
+                    case "Description":
                         {
                             if (query.DescriptionSubstring == null)
                             {
@@ -146,7 +146,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByCategory1NameSubstring":
+                    case "Category1Name":
                         {
                             if (query.Category1NameSubstring == null)
                             {
@@ -158,7 +158,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByCategory2NameSubstring":
+                    case "Category2Name":
                         {
                             if (query.Category2NameSubstring == null)
                             {
@@ -170,7 +170,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByCategory3NameSubstring":
+                    case "Category3Name":
                         {
                             if (query.Category3NameSubstring == null)
                             {
@@ -182,7 +182,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByTrademarkId":
+                    case "TrademarkId":
                         {
                             if (query.TrademarkId == null)
                             {
@@ -194,7 +194,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByTrademarkNameSubstring":
+                    case "TrademarkName":
                         {
                             if (query.TrademarkNameSubstring == null)
                             {
@@ -206,7 +206,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByPrice":
+                    case "Price":
                         {
                             if (query.MinPrice == null )
                             {
@@ -220,7 +220,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByPriceRange(query.MinPrice.Value, query.MaxPrice.Value);
                         }
                         break;
-                    case "GetByDiscount":
+                    case "Discount":
                         {
 
                             if (query.MinDiscount == null)
@@ -235,7 +235,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByDiscountRange(query.MinDiscount.Value, query.MaxDiscount.Value);
                         }
                         break;
-                    case "GetByIsDeliveryAvailable":
+                    case "IsDeliveryAvailable":
                         {
                             if (query.IsDeliveryAvailable == null)
                             {
@@ -247,7 +247,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByStatusId":
+                    case "StatusId":
                         {
                             if (query.StatusId == null)
                             {
@@ -259,7 +259,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByStatusName":
+                    case "StatusName":
                         {
                             if (query.StatusName == null)
                             {
@@ -271,7 +271,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByStatusDescription":
+                    case "StatusDescription":
                         {
                             if (query.StatusDescription == null)
                             {
@@ -283,7 +283,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByImagePath":
+                    case "ImagePath":
                         {
                             if (query.ImagePath == null)
                             {
@@ -307,7 +307,20 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByQuery":
+                    case "Paged":
+                        {
+                            if (query.PageNumber == null)
+                            {
+                                throw new ValidationException("Не вказано WareQuery.PageNumber для пошуку!", nameof(WareQueryPL.PageNumber));
+                            }
+                            if (query.PageSize == null)
+                            {
+                                throw new ValidationException("Не вказано WareQuery.PageSize для пошуку!", nameof(WareQueryPL.PageSize));
+                            }
+                            collection = await _serv.GetPagedWares(query.PageNumber.Value, query.PageSize.Value);
+                        }
+                        break;
+                    case "Query":
                         {
                             var mapper = new Mapper(config);
                             var queryBLL = mapper.Map<WareQueryBLL>(query);
@@ -427,6 +440,8 @@ namespace HyggyBackend.Controllers
         public string? StatusDescription { get; set; }
         public string? CustomerId { get; set; }
         public string? ImagePath { get; set; }
+        public int? PageNumber { get; set; }
+        public int? PageSize { get; set; }
         public string? Sorting { get; set; }
     }
 

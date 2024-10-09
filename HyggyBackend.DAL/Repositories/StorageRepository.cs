@@ -59,6 +59,18 @@ namespace HyggyBackend.DAL.Repositories
                 .FirstOrDefaultAsync(x => x.Shop != null && x.Shop.ShopEmployees.Any(sem => sem.Id == shopEmployeeId));
         }
 
+        public async IAsyncEnumerable<Storage> GetByIdsAsync(IEnumerable<long> ids)
+        {
+            foreach (var id in ids)
+            {
+                var item = await GetById(id);  // Виклик методу репозиторію
+                if (item != null)
+                {
+                    yield return item;
+                }
+            }
+        }
+
         public async Task<IEnumerable<Storage>> GetByQuery(StorageQueryDAL query)
         {
             var storageCollections = new List<IEnumerable<Storage>>();

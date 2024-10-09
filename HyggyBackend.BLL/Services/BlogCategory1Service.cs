@@ -91,8 +91,7 @@ namespace HyggyBackend.BLL.Services
 
             await Database.BlogCategories1.AddBlogCategory1(blogCategory1);
             await Database.Save();
-            var returnedBlogCat = await Database.Blogs.GetById(blogCategory1.Id);
-            return _mapper.Map<BlogCategory1DTO>(returnedBlogCat);
+            return _mapper.Map<BlogCategory1DTO>(blogCategory1);
         }
         public async Task<BlogCategory1DTO> UpdateBlogCategory1(BlogCategory1DTO blogCategory1DTO)
         {
@@ -116,9 +115,7 @@ namespace HyggyBackend.BLL.Services
 
             Database.BlogCategories1.UpdateBlogCategory1(exBlCat1);
             await Database.Save();
-
-            var updatedBlogCategory1 = await Database.BlogCategories1.GetById(blogCategory1DTO.Id);
-            return _mapper.Map<BlogCategory1DTO>(updatedBlogCategory1);
+            return _mapper.Map<BlogCategory1DTO>(exBlCat1);
         }
         public async Task<BlogCategory1DTO> DeleteBlogCategory1(long id)
         {

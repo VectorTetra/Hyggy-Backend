@@ -22,7 +22,7 @@ namespace HyggyBackend.BLL.Interfaces
 		Task<bool> IsShopExistByAddress(long? addressId);
 
 		Task<ShopDTO> Create(ShopDTO shopDTO);
-		void Update(ShopDTO shopDTO);
-		Task Delete(long id);
+        Task<ShopDTO> Update(ShopDTO shopDTO);
+		Task<ShopDTO> Delete(long id);
 	}
 }

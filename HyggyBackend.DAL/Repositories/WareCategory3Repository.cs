@@ -29,10 +29,6 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.WareCategories3.Where(x => x.Name.Contains(nameSubstring)).ToListAsync();
         }
-        public async Task<IEnumerable<WareCategory3>> GetByJSONStructureFilePathSubstring(string JSONStructureFilePathSubstring)
-        {
-            return await _context.WareCategories3.Where(x => x.JSONStructureFilePath.Contains(JSONStructureFilePathSubstring)).ToListAsync();
-        }
         public async Task<IEnumerable<WareCategory3>> GetByWareCategory1Id(long id)
         {
             return await _context.WareCategories3.Where(x => x.WareCategory2.WareCategory1.Id == id).ToListAsync();
@@ -65,6 +61,18 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.WareCategories3.Where(x => x.Wares.Any(m => m.Description.Contains(WareDescriptionSubstring))).ToListAsync();
         }
+
+        public async IAsyncEnumerable<WareCategory3> GetByIdsAsync(IEnumerable<long> ids)
+        {
+            foreach (var id in ids)
+            {
+                var item = await GetById(id);  // Виклик методу репозиторію
+                if (item != null)
+                {
+                    yield return item;
+                }
+            }
+        }
         public async Task<IEnumerable<WareCategory3>> GetByQuery(WareCategory3QueryDAL query)
         {
             var WareCategories3Collection = new List<IEnumerable<WareCategory3>>();
@@ -78,11 +86,6 @@ namespace HyggyBackend.DAL.Repositories
             if (query.NameSubstring != null)
             {
                 WareCategories3Collection.Add(await GetByNameSubstring(query.NameSubstring));
-            }
-
-            if (query.JSONStructureFilePathSubstring != null)
-            {
-                WareCategories3Collection.Add(await GetByJSONStructureFilePathSubstring(query.JSONStructureFilePathSubstring));
             }
             if (query.WareCategory1Id != null)
             {

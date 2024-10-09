@@ -31,6 +31,7 @@ namespace HyggyBackend.DAL.Interfaces
         Task<IEnumerable<Order>> GetByCustomerId(string customerId);
         Task<IEnumerable<Order>> GetByShopId(long shopId);
         Task<IEnumerable<Order>> GetByQuery(OrderQueryDAL query);
+        IAsyncEnumerable<Order> GetByIdsAsync(IEnumerable<long> ids);
         Task Create(Order order);
         void Update(Order order);
         Task Delete(long id);

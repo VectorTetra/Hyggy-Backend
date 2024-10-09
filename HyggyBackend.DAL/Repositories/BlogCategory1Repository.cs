@@ -71,6 +71,18 @@ namespace HyggyBackend.DAL.Repositories
              .Take(PageSize)
              .ToListAsync();
         }
+
+        public async IAsyncEnumerable<BlogCategory1> GetByIdsAsync(IEnumerable<long> ids)
+        {
+            foreach (var id in ids)
+            {
+                var item = await GetById(id);  // Виклик методу репозиторію
+                if (item != null)
+                {
+                    yield return item;
+                }
+            }
+        }
         public async Task<IEnumerable<BlogCategory1>> GetByQuery(BlogCategory1QueryDAL queryDAL)
         {
             var categoryCollections = new List<IEnumerable<BlogCategory1>>();

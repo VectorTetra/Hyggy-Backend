@@ -121,7 +121,7 @@ namespace HyggyBackend.Controllers
 
                 switch (query.SearchParameter)
                 {
-                    case "GetById":
+                    case "Id":
                         {
                             if (query.Id == null)
                             {
@@ -133,7 +133,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByArticle":
+                    case "Article":
                         {
                             if (query.Article == null)
                             {
@@ -145,7 +145,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByWareId":
+                    case "WareId":
                         {
                             if (query.WareId == null)
                             {
@@ -157,7 +157,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByWareName":
+                    case "WareName":
                         {
                             if (query.WareName == null)
                             {
@@ -169,7 +169,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByWareDescription":
+                    case "WareDescription":
                         {
                             if (query.WareDescription == null)
                             {
@@ -181,7 +181,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByPriceRange":
+                    case "PriceRange":
                         {
                             if (query.MinPrice == null)
                             {
@@ -194,7 +194,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByWarePriceRange(query.MinPrice.Value, query.MaxPrice.Value);                            
                         }
                         break;
-                    case "GetByDiscountRange":
+                    case "DiscountRange":
                         {
                             if (query.MinDiscount == null)
                             {
@@ -207,7 +207,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByWareDiscountRange(query.MinDiscount.Value, query.MaxDiscount.Value);
                         }
                         break;
-                    case "GetByStatusId":
+                    case "WareStatusId":
                         {
                             if (query.StatusId == null)
                             {
@@ -216,7 +216,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByWareStatusId(query.StatusId.Value);
                         }
                         break;
-                    case "GetByWareCategory3Id":
+                    case "WareCategory3Id":
                         {
                             if (query.WareCategory3Id == null)
                             {
@@ -225,7 +225,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByWareCategory3Id(query.WareCategory3Id.Value);
                         }
                         break;
-                    case "GetByWareCategory2Id":
+                    case "WareCategory2Id":
                         {
                             if (query.WareCategory2Id == null)
                             {
@@ -234,7 +234,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByWareCategory2Id(query.WareCategory2Id.Value);
                         }
                         break;
-                    case "GetByWareCategory1Id":
+                    case "WareCategory1Id":
                         {
                             if (query.WareCategory1Id == null)
                             {
@@ -243,7 +243,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByWareCategory1Id(query.WareCategory1Id.Value);
                         }
                         break;
-                    case "GetByWareImageId":
+                    case "WareImageId":
                         {
                             if (query.WareImageId == null)
                             {
@@ -252,7 +252,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByWareImageId(query.WareImageId.Value);
                         }
                         break;
-                    case "GetByPriceHistoryId":
+                    case "WarePriceHistoryId":
                         {
                             if (query.PriceHistoryId == null)
                             {
@@ -261,7 +261,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByPriceHistoryId(query.PriceHistoryId.Value);
                         }
                         break;
-                    case "GetByOrderItemId":
+                    case "OrderItemId":
                         {
                             if (query.OrderItemId == null)
                             {
@@ -270,7 +270,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByOrderItemId(query.OrderItemId.Value);
                         }
                         break;
-                    case "GetByIsDeliveryAvailable":
+                    case "IsDeliveryAvailable":
                         {
                             if (query.IsDeliveryAvailable == null)
                             {
@@ -279,7 +279,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByIsDeliveryAvailable(query.IsDeliveryAvailable.Value);
                         }
                         break;
-                    case "GetByStorageId":
+                    case "StorageId":
                         {
                             if (query.StorageId == null)
                             {
@@ -288,7 +288,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByStorageId(query.StorageId.Value);
                         }
                         break;
-                    case "GetByShopId":
+                    case "ShopId":
                         {
                             if (query.ShopId == null)
                             {
@@ -297,7 +297,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByShopId(query.ShopId.Value);
                         }
                         break;
-                    case "GetByQuantityRange":
+                    case "QuantityRange":
                         {
                             if (query.MinQuantity == null)
                             {
@@ -310,7 +310,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByQuantityRange(query.MinQuantity.Value, query.MaxQuantity.Value);
                         }
                         break;
-                    case "GetPagedWareItems":
+                    case "Paged":
                         {
                             if (query.PageNumber == null)
                             {
@@ -323,7 +323,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetPagedWareItems(query.PageNumber.Value, query.PageSize.Value);
                         }
                         break;
-                    case "GetByQuery":
+                    case "Query":
                         {
                             var mapper = new Mapper(config);
                             var queryBLL = mapper.Map<WareItemQueryBLL>(query);

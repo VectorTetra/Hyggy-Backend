@@ -31,6 +31,18 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.WareTrademarks.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
         }
+
+        public async IAsyncEnumerable<WareTrademark> GetByIdsAsync(IEnumerable<long> ids)
+        {
+            foreach (var id in ids)
+            {
+                var item = await GetById(id);  // Виклик методу репозиторію
+                if (item != null)
+                {
+                    yield return item;
+                }
+            }
+        }
         public async Task<IEnumerable<WareTrademark>> GetByQuery(WareTrademarkQueryDAL query)
         {
             var wareTrademarkCollections = new List<IEnumerable<WareTrademark>>();
