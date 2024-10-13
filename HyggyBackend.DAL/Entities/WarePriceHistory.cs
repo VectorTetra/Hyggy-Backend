@@ -13,7 +13,7 @@ namespace HyggyBackend.DAL.Entities
         public float Price { get; set; }
         public DateTime EffectiveDate { get; set; } // Дата початку дії ціни
 
-        public virtual ICollection<OrderItem> OrderItems { get; set; }
+        public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
         public override bool Equals(object obj)
         {

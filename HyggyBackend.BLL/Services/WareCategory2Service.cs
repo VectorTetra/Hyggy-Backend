@@ -18,9 +18,10 @@ namespace HyggyBackend.BLL.Services
     {
         IUnitOfWork Database;
         IMapper _mapper;
-        public WareCategory2Service(IUnitOfWork uow)
+        public WareCategory2Service(IUnitOfWork uow,IMapper mapper)
         {
             Database = uow;
+            _mapper = mapper;
         }
 
 

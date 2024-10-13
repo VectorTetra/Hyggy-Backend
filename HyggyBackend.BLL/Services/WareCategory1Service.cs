@@ -9,6 +9,7 @@ using HyggyBackend.DAL.Queries;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,9 +19,10 @@ namespace HyggyBackend.BLL.Services
     {
         IUnitOfWork Database;
         IMapper _mapper;
-        public WareCategory1Service(IUnitOfWork uow)
+        public WareCategory1Service(IUnitOfWork uow, IMapper mapper)
         {
             Database = uow;
+            _mapper = mapper;
         }
         public async Task<WareCategory1DTO?> GetById(long id)
         {
@@ -35,9 +37,10 @@ namespace HyggyBackend.BLL.Services
         public async Task<IEnumerable<WareCategory1DTO>> GetPagedCategories(int pageNumber, int pageSize)
         {
             IEnumerable<WareCategory1> wareCategory1s = await Database.Categories1.GetPagedCategories(pageNumber, pageSize);
-            
+
             return _mapper.Map<IEnumerable<WareCategory1DTO>>(wareCategory1s);
         }
+
         public async Task<IEnumerable<WareCategory1DTO>> GetByNameSubstring(string nameSubstring)
         {
             IEnumerable<WareCategory1> wareCategory1s = await Database.Categories1.GetByNameSubstring(nameSubstring);

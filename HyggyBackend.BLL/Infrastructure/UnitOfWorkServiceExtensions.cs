@@ -44,10 +44,7 @@ namespace HyggyBackend.BLL.Infrastructure
             services.AddScoped<IWareImageService, WareImageService>();
             services.AddScoped<IWareTrademarkService, WareTrademarkService>();
             services.AddScoped<IWareReviewService, WareReviewService>();
-           
-
-
-
+          
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 		}
     }

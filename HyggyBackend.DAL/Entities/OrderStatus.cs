@@ -5,7 +5,7 @@
         public long Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public virtual ICollection<Order> Orders { get; set; }
+        public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
         public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType())

@@ -4,7 +4,7 @@
     {
         public long Id { get; set; }
         public string Name { get; set; }
-        public virtual ICollection<WareCategory2> WaresCategory2 { get; set; }
+        public virtual ICollection<WareCategory2> WaresCategory2 { get; set; } = new List<WareCategory2>();
         public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType())
