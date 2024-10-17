@@ -1,11 +1,5 @@
 ﻿using HyggyBackend.BLL.DTO;
 using HyggyBackend.BLL.Queries;
-using HyggyBackend.DAL.Queries;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HyggyBackend.BLL.Interfaces
 {
@@ -16,7 +10,8 @@ namespace HyggyBackend.BLL.Interfaces
         Task<IEnumerable<StorageDTO>> GetGlobalStorages();
         // Отримати всі склади, які пов'язані з магазинами
         Task<IEnumerable<StorageDTO>> GetNonGlobalStorages();
-
+        Task<IEnumerable<StorageDTO>> GetByStringIds(string stringIds);
+        Task<IEnumerable<StorageDTO>> GetPaged(int pageNumber, int pageSize);
         Task<IEnumerable<StorageDTO>> GetByQuery(StorageQueryBLL query);
         Task<StorageDTO?> GetById(long id);
         Task<StorageDTO?> GetByAddressId(long addressId);

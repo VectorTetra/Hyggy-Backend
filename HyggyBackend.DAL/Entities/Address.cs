@@ -22,14 +22,11 @@ namespace HyggyBackend.DAL.Entities
         public long Id { get; set; }
 
         // Адреса доставки, розділена на компоненти
-        public string Street { get; set; } // Назва вулиці
-        public string HouseNumber { get; set; } // Номер будинку
-        public string City { get; set; } // Місто
-        public string State { get; set; } // Область або штат
-        public string PostalCode { get; set; } // Поштовий індекс
-
-
-
+        public string? Street { get; set; } // Назва вулиці
+        public string? HouseNumber { get; set; } // Номер будинку
+        public string? City { get; set; } // Місто
+        public string? State { get; set; } // Область або штат
+        public string? PostalCode { get; set; } // Поштовий індекс
         // Географічні координати
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }

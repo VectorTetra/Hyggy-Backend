@@ -32,7 +32,11 @@ namespace HyggyBackend.Controllers
              .ForMember(dest => dest.WareItemId, opt => opt.MapFrom(src => src.WareItemId))
              .ForMember(dest => dest.StorageEmployeeId, opt => opt.MapFrom(src => src.StorageEmployeeId))
              .ForMember(dest => dest.ShopEmployeeId, opt => opt.MapFrom(src => src.ShopEmployeeId))
-             .ForMember(dest => dest.IsGlobal, opt => opt.MapFrom(src => src.IsGlobal));
+             .ForMember(dest => dest.IsGlobal, opt => opt.MapFrom(src => src.IsGlobal))
+             .ForMember(dest => dest.StringIds, opt => opt.MapFrom(src => src.StringIds))
+             .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Sorting))
+             .ForMember(dest => dest.PageNumber, opt => opt.MapFrom(src => src.PageNumber))
+             .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize));
         });
 
         [HttpPost]
@@ -178,6 +182,24 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetNonGlobalStorages();
                         }
                         break;
+                    case "Paged":
+                        {
+                            if (query.PageNumber == null || query.PageSize == null)
+                            {
+                                throw new ValidationException("Не вказано PageNumber або PageSize для пошуку!", nameof(StorageQueryPL.PageNumber));
+                            }
+                            collection = await _serv.GetPaged(query.PageNumber.Value, query.PageSize.Value);
+                        }
+                        break;
+                    case "StringIds":
+                        {
+                            if (query.StringIds == null)
+                            {
+                                throw new ValidationException("Не вказано StringIds для пошуку!", nameof(StorageQueryPL.StringIds));
+                            }
+                            collection = await _serv.GetByStringIds(query.StringIds);
+                        }
+                        break;
                     case "Query":
                         {
                             var mapper = new Mapper(config);
@@ -218,5 +240,9 @@ namespace HyggyBackend.Controllers
         public string? StorageEmployeeId { get; set; }
         public string? ShopEmployeeId { get; set; }
         public bool? IsGlobal { get; set; }
+        public string? StringIds { get; set; }
+        public string? Sorting { get; set; }
+        public int? PageNumber { get; set; }
+        public int? PageSize { get; set; }
     }
 }

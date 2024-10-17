@@ -23,6 +23,24 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.OrderItems.FindAsync(id);
         }
+        public async Task<IEnumerable<OrderItem>> GetByStringIds(string stringIds)
+        {
+            // Розділяємо рядок за символом '|' та конвертуємо в список long
+            List<long> ids = stringIds.Split('|').Select(long.Parse).ToList();
+            // Створюємо список для збереження результатів
+            var waress = new List<OrderItem>();
+            // Викликаємо асинхронний метод та збираємо результати
+            await foreach (var ware in GetByIdsAsync(ids))
+            {
+                waress.Add(ware);
+            }
+            return waress;
+        }
+
+        public async Task<IEnumerable<OrderItem>> GetPaged(int pageNumber, int pageSize)
+        {
+            return await _context.OrderItems.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+        }
         public async Task<IEnumerable<OrderItem>> GetByOrderId(long orderId)
         {
             return await _context.OrderItems.Where(x => x.OrderId == orderId).ToListAsync();
@@ -43,35 +61,104 @@ namespace HyggyBackend.DAL.Repositories
 
         public async Task<IEnumerable<OrderItem>> GetByQuery(OrderItemQueryDAL query)
         {
-            var orderItemCollections = new List<IEnumerable<OrderItem>>();
+            var collections = new List<IEnumerable<OrderItem>>();
 
             if (query.Id != null)
             {
-                orderItemCollections.Add(new List<OrderItem> { await GetById(query.Id.Value) });
+                var proto = await GetById(query.Id.Value);
+                if (proto != null)
+                {
+                    collections.Add(new List<OrderItem> { proto });
+                }
             }
             if (query.OrderId != null)
             {
-                orderItemCollections.Add(await GetByOrderId(query.OrderId.Value));
+                collections.Add(await GetByOrderId(query.OrderId.Value));
             }
             if (query.WareId != null)
             {
-                orderItemCollections.Add(await GetByWareId(query.WareId.Value));
+                collections.Add(await GetByWareId(query.WareId.Value));
             }
             if (query.PriceHistoryId != null)
             {
-                orderItemCollections.Add(await GetByWareId(query.PriceHistoryId.Value));
+                collections.Add(await GetByWareId(query.PriceHistoryId.Value));
             }
             if (query.Count != null)
             {
-                orderItemCollections.Add(await GetByCount(query.Count.Value));
+                collections.Add(await GetByCount(query.Count.Value));
+            }
+            if (!string.IsNullOrEmpty(query.StringIds))
+            {
+                collections.Add(await GetByStringIds(query.StringIds));
+            }
+            var result = new List<OrderItem>();
+            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
+            {
+                result = _context.OrderItems
+                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                .Take(query.PageSize.Value)
+                .ToList();
+            }
+            else
+            {
+                result = (List<OrderItem>)collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
             }
 
-            if (!orderItemCollections.Any())
+
+            // Сортування
+            if (query.Sorting != null)
+            {
+                switch (query.Sorting)
+                {
+
+                    case "IdAsc":
+                        result = result.OrderBy(x => x.Id).ToList();
+                        break;
+                    case "IdDesc":
+                        result = result.OrderByDescending(x => x.Id).ToList();
+                        break;
+                    case "OrderIdAsc":
+                        result = result.OrderBy(x => x.OrderId).ToList();
+                        break;
+                    case "OrderIdDesc":
+                        result = result.OrderByDescending(x => x.OrderId).ToList();
+                        break;
+                    case "WareIdAsc":
+                        result = result.OrderBy(x => x.WareId).ToList();
+                        break;
+                    case "WareIdDesc":
+                        result = result.OrderByDescending(x => x.WareId).ToList();
+                        break;
+                    case "PriceHistoryIdAsc":
+                        result = result.OrderBy(x => x.PriceHistoryId).ToList();
+                        break;
+                    case "PriceHistoryIdDesc":
+                        result = result.OrderByDescending(x => x.PriceHistoryId).ToList();
+                        break;
+                    case "CountAsc":
+                        result = result.OrderBy(x => x.Count).ToList();
+                        break;
+                    case "CountDesc":
+                        result = result.OrderByDescending(x => x.Count).ToList();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            // Пагінація
+            if (query.PageNumber != null && query.PageSize != null)
+            {
+                result = result
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToList();
+            }
+            if (!result.Any())
             {
                 return new List<OrderItem>();
             }
-
-            return orderItemCollections.Aggregate((prev, next) => prev.Intersect(next).ToList());
+            return result;
 
         }
 

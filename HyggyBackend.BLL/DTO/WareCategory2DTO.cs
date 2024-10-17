@@ -14,5 +14,6 @@ namespace HyggyBackend.BLL.DTO
         public long? WareCategory1Id { get; set; }
         public ICollection<long>? WaresCategory3Ids { get; set; } = new List<long>();
         public ICollection<WareCategory3DTO>? WaresCategories3 { get; set; } = new List<WareCategory3DTO>();
+        public string? StringIds { get; set; }
     }
 }

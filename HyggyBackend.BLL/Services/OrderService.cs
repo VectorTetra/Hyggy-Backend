@@ -28,6 +28,20 @@ namespace HyggyBackend.BLL.Services
             }
             return _mapper.Map<OrderDTO>(order);
         }
+
+        public async Task<IEnumerable<OrderDTO>> GetByStringIds(string stringIds)
+        {
+            var orders = await Database.Orders.GetByStringIds(stringIds);
+
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
+        }
+
+        public async Task<IEnumerable<OrderDTO>> GetPagedOrders(int pageNumber, int pageSize)
+        {
+            var orders = await Database.Orders.GetPagedOrders(pageNumber, pageSize);
+
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
+        }
         public async Task<IEnumerable<OrderDTO>> GetByAddressId(long addressId)
         {
             var orders = await Database.Orders.GetByAddressId(addressId);

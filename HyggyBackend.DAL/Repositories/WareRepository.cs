@@ -3,6 +3,7 @@ using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Interfaces;
 using HyggyBackend.DAL.Queries;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace HyggyBackend.DAL.Repositories
 {
@@ -29,6 +30,19 @@ namespace HyggyBackend.DAL.Repositories
                 .Take(pageSize)
                 .ToListAsync();
         }
+        public async Task<IEnumerable<Ware>> GetByStringIds(string stringIds)
+        {
+            // Розділяємо рядок за символом '|' та конвертуємо в список long
+            List<long> ids = stringIds.Split('|').Select(long.Parse).ToList();
+            // Створюємо список для збереження результатів
+            var waress = new List<Ware>();
+            // Викликаємо асинхронний метод та збираємо результати
+            await foreach (var ware in GetByIdsAsync(ids))
+            {
+                waress.Add(ware);
+            }
+            return waress;
+        }
         public async Task<IEnumerable<Ware>> GetByCategory1Id(long category1Id)
         {
             return await _context.Wares.Where(x => x.WareCategory3.WareCategory2.WareCategory1.Id == category1Id).ToListAsync();
@@ -44,6 +58,10 @@ namespace HyggyBackend.DAL.Repositories
         public async Task<IEnumerable<Ware>> GetByNameSubstring(string nameSubstring)
         {
             return await _context.Wares.Where(x => x.Name.Contains(nameSubstring)).ToListAsync();
+        }
+        public async Task<IEnumerable<Ware>> GetByStructureFilePathSubstring(string StructureFilePathSubstring)
+        {
+            return await _context.Wares.Where(x => x.StructureFilePath.Contains(StructureFilePathSubstring)).ToListAsync();
         }
         public async Task<IEnumerable<Ware>> GetByDescriptionSubstring(string descriptionSubstring)
         {
@@ -99,26 +117,24 @@ namespace HyggyBackend.DAL.Repositories
         }
         public async Task<IEnumerable<Ware>> GetByStatusId(long statusId)
         {
-            return await _context.Wares.Where(x => x.Statuses.Any(st=>st.Id == statusId)).ToListAsync();
+            return await _context.Wares.Where(x => x.Statuses.Any(st => st.Id == statusId)).ToListAsync();
         }
         public async Task<IEnumerable<Ware>> GetByStatusNameSubstring(string statusNameSubstring)
         {
-            return await _context.Wares.Where(x => x.Statuses.Any(s=>s.Name.Contains(statusNameSubstring))).ToListAsync();
+            return await _context.Wares.Where(x => x.Statuses.Any(s => s.Name.Contains(statusNameSubstring))).ToListAsync();
         }
         public async Task<IEnumerable<Ware>> GetByStatusDescriptionSubstring(string statusDescriptionSubstring)
         {
-            return await _context.Wares.Where(x => x.Statuses.Any(s=>s.Description.Contains(statusDescriptionSubstring))).ToListAsync();
+            return await _context.Wares.Where(x => x.Statuses.Any(s => s.Description.Contains(statusDescriptionSubstring))).ToListAsync();
         }
         public async Task<IEnumerable<Ware>> GetByImagePathSubstring(string imagePathSubstring)
         {
             return await _context.Wares.Where(x => x.Images.Any(y => y.Path.Contains(imagePathSubstring))).ToListAsync();
         }
-
         public async Task<IEnumerable<Ware>> GetFavoritesByCustomerId(string customerId)
         {
             return await _context.Wares.Where(x => x.CustomerFavorites.Any(cu => cu.Id == customerId)).ToListAsync();
         }
-
         public async IAsyncEnumerable<Ware> GetByIdsAsync(IEnumerable<long> ids)
         {
             foreach (var id in ids)
@@ -146,122 +162,146 @@ namespace HyggyBackend.DAL.Repositories
         }
         */
 
-        public async Task<IEnumerable<Ware>> GetByQuery(WareQueryDAL queryDAL)
+        public async Task<IEnumerable<Ware>> GetByQuery(WareQueryDAL query)
         {
-            var wareCollections = new List<IEnumerable<Ware>>();
+            var collections = new List<IEnumerable<Ware>>();
 
-            if (queryDAL.Id != null)
+            if (query.Id != null)
             {
-                wareCollections.Add(new List<Ware> { await GetById(queryDAL.Id.Value) });
+                var res = await GetById(query.Id.Value);
+                if (res != null)
+                {
+                    collections.Add(new List<Ware> { res });
+                }
             }
 
-            if (queryDAL.Article != null)
+            if (query.Article != null)
             {
-                wareCollections.Add(new List<Ware> { await GetByArticle(queryDAL.Article.Value) });
+                var res = await GetByArticle(query.Article.Value);
+                if (res != null)
+                {
+                    collections.Add(new List<Ware> { res });
+                }
             }
 
-            if (queryDAL.Category1Id != null)
+            if (query.Category1Id != null)
             {
-                wareCollections.Add(await GetByCategory1Id(queryDAL.Category1Id.Value));
+                collections.Add(await GetByCategory1Id(query.Category1Id.Value));
             }
 
-            if (queryDAL.Category2Id != null)
+            if (query.Category2Id != null)
             {
-                wareCollections.Add(await GetByCategory2Id(queryDAL.Category2Id.Value));
+                collections.Add(await GetByCategory2Id(query.Category2Id.Value));
             }
 
-            if (queryDAL.Category3Id != null)
+            if (query.Category3Id != null)
             {
-                wareCollections.Add(await GetByCategory3Id(queryDAL.Category3Id.Value));
+                collections.Add(await GetByCategory3Id(query.Category3Id.Value));
             }
 
-            if (queryDAL.NameSubstring != null)
+            if (query.NameSubstring != null)
             {
-                wareCollections.Add(await GetByNameSubstring(queryDAL.NameSubstring));
+                collections.Add(await GetByNameSubstring(query.NameSubstring));
             }
 
-            if (queryDAL.DescriptionSubstring != null)
+            if (query.DescriptionSubstring != null)
             {
-                wareCollections.Add(await GetByDescriptionSubstring(queryDAL.DescriptionSubstring));
+                collections.Add(await GetByDescriptionSubstring(query.DescriptionSubstring));
             }
 
-            if (queryDAL.Category1NameSubstring != null)
+            if (query.Category1NameSubstring != null)
             {
-                wareCollections.Add(await GetByCategory1NameSubstring(queryDAL.Category1NameSubstring));
+                collections.Add(await GetByCategory1NameSubstring(query.Category1NameSubstring));
             }
 
-            if (queryDAL.Category2NameSubstring != null)
+            if (query.Category2NameSubstring != null)
             {
-                wareCollections.Add(await GetByCategory2NameSubstring(queryDAL.Category2NameSubstring));
+                collections.Add(await GetByCategory2NameSubstring(query.Category2NameSubstring));
             }
 
-            if (queryDAL.Category3NameSubstring != null)
+            if (query.Category3NameSubstring != null)
             {
-                wareCollections.Add(await GetByCategory3NameSubstring(queryDAL.Category3NameSubstring));
+                collections.Add(await GetByCategory3NameSubstring(query.Category3NameSubstring));
             }
 
-            if (queryDAL.TrademarkId != null)
+            if (query.TrademarkId != null)
             {
-                wareCollections.Add(await GetByTrademarkId(queryDAL.TrademarkId.Value));
+                collections.Add(await GetByTrademarkId(query.TrademarkId.Value));
             }
 
-            if (queryDAL.TrademarkNameSubstring != null)
+            if (query.TrademarkNameSubstring != null)
             {
-                wareCollections.Add(await GetByTrademarkNameSubstring(queryDAL.TrademarkNameSubstring));
+                collections.Add(await GetByTrademarkNameSubstring(query.TrademarkNameSubstring));
             }
 
-            if (queryDAL.MinPrice != null && queryDAL.MaxPrice != null)
+            if (query.MinPrice != null && query.MaxPrice != null)
             {
-                wareCollections.Add(await GetByPriceRange(queryDAL.MinPrice.Value, queryDAL.MaxPrice.Value));
+                collections.Add(await GetByPriceRange(query.MinPrice.Value, query.MaxPrice.Value));
             }
 
-            if (queryDAL.MinDiscount != null && queryDAL.MaxDiscount != null)
+            if (query.MinDiscount != null && query.MaxDiscount != null)
             {
-                wareCollections.Add(await GetByDiscountRange(queryDAL.MinDiscount.Value, queryDAL.MaxDiscount.Value));
+                collections.Add(await GetByDiscountRange(query.MinDiscount.Value, query.MaxDiscount.Value));
             }
 
-            if (queryDAL.IsDeliveryAvailable != null)
+            if (query.IsDeliveryAvailable != null)
             {
-                wareCollections.Add(await GetByIsDeliveryAvailable(queryDAL.IsDeliveryAvailable.Value));
+                collections.Add(await GetByIsDeliveryAvailable(query.IsDeliveryAvailable.Value));
             }
 
-            if (queryDAL.StatusId != null)
+            if (query.StatusId != null)
             {
-                wareCollections.Add(await GetByStatusId(queryDAL.StatusId.Value));
+                collections.Add(await GetByStatusId(query.StatusId.Value));
             }
 
-            if (queryDAL.StatusName != null)
+            if (query.StatusName != null)
             {
-                wareCollections.Add(await GetByStatusNameSubstring(queryDAL.StatusName));
+                collections.Add(await GetByStatusNameSubstring(query.StatusName));
             }
 
-            if (queryDAL.StatusDescription != null)
+            if (query.StatusDescription != null)
             {
-                wareCollections.Add(await GetByStatusDescriptionSubstring(queryDAL.StatusDescription));
+                collections.Add(await GetByStatusDescriptionSubstring(query.StatusDescription));
             }
 
-            if (queryDAL.ImagePath != null)
+            if (query.ImagePath != null)
             {
-                wareCollections.Add(await GetByImagePathSubstring(queryDAL.ImagePath));
+                collections.Add(await GetByImagePathSubstring(query.ImagePath));
             }
 
-            if (queryDAL.CustomerId != null)
+            if (query.CustomerId != null)
             {
-                wareCollections.Add(await GetFavoritesByCustomerId(queryDAL.CustomerId));
+                collections.Add(await GetFavoritesByCustomerId(query.CustomerId));
+            }
+            if (query.StringIds != null)
+            {
+                collections.Add(await GetByStringIds(query.StringIds));
+            }
+            var result = new List<Ware>();
+            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
+            {
+                result = _context.Wares
+                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                .Take(query.PageSize.Value)
+                .ToList();
+            }
+            else
+            {
+                result = (List<Ware>)collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
             }
 
-            if (!wareCollections.Any())
-            {
-                return new List<Ware>();
-            }
-
-            var result = wareCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
 
             // Сортування
-            if (queryDAL.Sorting != null)
+            if (query.Sorting != null)
             {
-                switch (queryDAL.Sorting)
+                switch (query.Sorting)
                 {
+                    case "IdAsc":
+                        result = result.OrderBy(ware => ware.Id).ToList();
+                        break;
+                    case "IdDesc":
+                        result = result.OrderByDescending(ware => ware.Id).ToList();
+                        break;
                     case "PriceAsc":
                         result = result.OrderBy(ware => ware.Price * (1 - ware.Discount / 100)).ToList(); // Ціна з урахуванням знижки
                         break;
@@ -277,20 +317,74 @@ namespace HyggyBackend.DAL.Repositories
                     case "Rating":
                         result = result.OrderByDescending(ware => ware.Reviews.Average(review => (float)review.Rating)).ToList(); // Сортування за рейтингом
                         break;
+                    case "DiscountAsc":
+                        result = result.OrderBy(ware => ware.Discount).ToList();
+                        break;
+                    case "DiscountDesc":
+                        result = result.OrderByDescending(ware => ware.Discount).ToList();
+                        break;
+                    case "IsDeliveryAvailable":
+                        result = result.OrderByDescending(ware => ware.IsDeliveryAvailable).ToList();
+                        break;
+                    case "ArticleAsc":
+                        result = result.OrderBy(ware => ware.Article).ToList();
+                        break;
+                    case "ArticleDesc":
+                        result = result.OrderByDescending(ware => ware.Article).ToList();
+                        break;
+                    case "StructureFilePathAsc":
+                        result = result.OrderBy(ware => ware.StructureFilePath).ToList();
+                        break;
+                    case "StructureFilePathDesc":
+                        result = result.OrderByDescending(ware => ware.StructureFilePath).ToList();
+                        break;
+                    case "DescriptionAsc":
+                        result = result.OrderBy(ware => ware.Description).ToList();
+                        break;
+                    case "DescriptionDesc":
+                        result = result.OrderByDescending(ware => ware.Description).ToList();
+                        break;
+                    case "Category1NameAsc":
+                        result = result.OrderBy(ware => ware.WareCategory3.WareCategory2.WareCategory1.Name).ToList();
+                        break;
+                    case "Category1NameDesc":
+                        result = result.OrderByDescending(ware => ware.WareCategory3.WareCategory2.WareCategory1.Name).ToList();
+                        break;
+                    case "Category2NameAsc":
+                        result = result.OrderBy(ware => ware.WareCategory3.WareCategory2.Name).ToList();
+                        break;
+                    case "Category2NameDesc":
+                        result = result.OrderByDescending(ware => ware.WareCategory3.WareCategory2.Name).ToList();
+                        break;
+                    case "Category3NameAsc":
+                        result = result.OrderBy(ware => ware.WareCategory3.Name).ToList();
+                        break;
+                    case "Category3NameDesc":
+                        result = result.OrderByDescending(ware => ware.WareCategory3.Name).ToList();
+                        break;
+                    case "TrademarkNameAsc":
+                        result = result.OrderBy(ware => ware.WareTrademark?.Name).ToList();
+                        break;
+                    case "TrademarkNameDesc":
+                        result = result.OrderByDescending(ware => ware.WareTrademark?.Name).ToList();
+                        break;
                     default:
                         break;
                 }
             }
 
             // Пагінація
-            if (queryDAL.PageNumber != null && queryDAL.PageSize != null)
+            if (query.PageNumber != null && query.PageSize != null)
             {
                 result = result
-                    .Skip((queryDAL.PageNumber.Value - 1) * queryDAL.PageSize.Value)
-                    .Take(queryDAL.PageSize.Value)
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
                     .ToList();
             }
-
+            if (!result.Any())
+            {
+                return new List<Ware>();
+            }
             return result;
 
         }

@@ -1,10 +1,5 @@
 ﻿using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Queries;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HyggyBackend.DAL.Interfaces
 {
@@ -16,6 +11,8 @@ namespace HyggyBackend.DAL.Interfaces
         // Отримати всі склади, які пов'язані з магазинами
         Task<IEnumerable<Storage>> GetNonGlobalStorages();
         Task<IEnumerable<Storage>> GetByQuery(StorageQueryDAL query);
+        Task<IEnumerable<Storage>> GetByStringIds(string stringIds);
+        Task<IEnumerable<Storage>> GetPaged(int pageNumber, int pageSize);
         Task<Storage?> GetById(long id);
         Task<Storage?> GetByAddressId(long addressId);
         Task<Storage?> GetByShopId(long ShopId);

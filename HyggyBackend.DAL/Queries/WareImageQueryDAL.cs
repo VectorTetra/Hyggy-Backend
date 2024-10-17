@@ -13,5 +13,7 @@ namespace HyggyBackend.DAL.Queries
         public string? Path { get; set; }
         public long? WareId { get; set; }
         public long? WareArticle { get; set; }
+        public string? StringIds { get; set; }
+        public string? Sorting { get; set; }
     }
 }

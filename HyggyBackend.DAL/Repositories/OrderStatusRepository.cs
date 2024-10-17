@@ -35,26 +35,122 @@ namespace HyggyBackend.DAL.Repositories
             return await _context.OrderStatuses.Where(os => os.Description.Contains(descriptionSubstring)).ToListAsync();
         }
 
+        public async Task<IEnumerable<OrderStatus>> GetByOrderId(long orderId)
+        {
+            return await _context.OrderStatuses.Where(os => os.Orders.Any(o => o.Id == orderId)).ToListAsync();
+        }
+
+        public async Task<IEnumerable<OrderStatus>> GetByStringIds(string stringIds)
+        {
+            // Розділяємо рядок за символом '|' та конвертуємо в список long
+            List<long> ids = stringIds.Split('|').Select(long.Parse).ToList();
+            // Створюємо список для збереження результатів
+            var waress = new List<OrderStatus>();
+            // Викликаємо асинхронний метод та збираємо результати
+            await foreach (var ware in GetByIdsAsync(ids))
+            {
+                waress.Add(ware);
+            }
+            return waress;
+        }
+
+        public async Task<IEnumerable<OrderStatus>> GetPaged(int pageNumber, int pageSize)
+        {
+            return await _context.OrderStatuses
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<OrderStatus>> GetByQuery(OrderStatusQueryDAL query)
         {
-            var orderStatuses = _context.OrderStatuses.AsQueryable();
+            var collections = new List<IEnumerable<OrderStatus>>();
 
-            if (query.Id.HasValue)
+            if (query.Id != null)
             {
-                orderStatuses = orderStatuses.Where(os => os.Id == query.Id.Value);
+                var res = await GetById(query.Id.Value);
+                if (res != null)
+                {
+                    collections.Add(new List<OrderStatus> { res });
+                }
             }
 
-            if (!string.IsNullOrEmpty(query.NameSubstring))
+            if (query.NameSubstring != null)
             {
-                orderStatuses = orderStatuses.Where(os => os.Name.Contains(query.NameSubstring));
+                collections.Add(await GetByNameSubstring(query.NameSubstring));
             }
 
-            if (!string.IsNullOrEmpty(query.DescriptionSubstring))
+            if (query.DescriptionSubstring != null)
             {
-                orderStatuses = orderStatuses.Where(os => os.Description.Contains(query.DescriptionSubstring));
+                collections.Add(await GetByDescriptionSubstring(query.DescriptionSubstring));
             }
 
-            return await orderStatuses.ToListAsync();
+            if (query.OrderId != null)
+            {
+                collections.Add(await GetByOrderId(query.OrderId.Value));
+            }
+
+            if (query.StringIds != null)
+            {
+                collections.Add(await GetByStringIds(query.StringIds));
+            }
+
+
+            var result = new List<OrderStatus>();
+            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
+            {
+                result = _context.OrderStatuses
+                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                .Take(query.PageSize.Value)
+                .ToList();
+            }
+            else
+            {
+                result = (List<OrderStatus>)collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+            }
+
+
+            // Сортування
+            if (query.Sorting != null)
+            {
+                switch (query.Sorting)
+                {
+                    case "IdAsc":
+                        result = result.OrderBy(os => os.Id).ToList();
+                        break;
+                    case "IdDesc":
+                        result = result.OrderByDescending(os => os.Id).ToList();
+                        break;
+                    case "NameAsc":
+                        result = result.OrderBy(os => os.Name).ToList();
+                        break;
+                    case "NameDesc":
+                        result = result.OrderByDescending(os => os.Name).ToList();
+                        break;
+                    case "DescriptionAsc":
+                        result = result.OrderBy(os => os.Description).ToList();
+                        break;
+                    case "DescriptionDesc":
+                        result = result.OrderByDescending(os => os.Description).ToList();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            // Пагінація
+            if (query.PageNumber != null && query.PageSize != null)
+            {
+                result = result
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToList();
+            }
+            if (!result.Any())
+            {
+                return new List<OrderStatus>();
+            }
+            return result;
         }
 
         public async IAsyncEnumerable<OrderStatus> GetByIdsAsync(IEnumerable<long> ids)

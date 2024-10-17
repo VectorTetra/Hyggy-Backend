@@ -26,6 +26,24 @@ namespace HyggyBackend.BLL.Services
             return _mapper.Map<OrderStatusDTO>(orderStatus);
         }
 
+        public async Task<IEnumerable<OrderStatusDTO>> GetByStringIds(string stringIds)
+        {
+            var orderStatuses = await Database.OrderStatuses.GetByStringIds(stringIds);
+            return _mapper.Map<IEnumerable<OrderStatusDTO>>(orderStatuses);
+        }
+
+        public async Task<IEnumerable<OrderStatusDTO>> GetPaged(int pageNumber, int pageSize)
+        {
+            var orderStatuses = await Database.OrderStatuses.GetPaged(pageNumber, pageSize);
+            return _mapper.Map<IEnumerable<OrderStatusDTO>>(orderStatuses);
+        }
+
+        public async Task<IEnumerable<OrderStatusDTO>> GetByOrderId(long orderId)
+        {
+            var orderStatuses = await Database.OrderStatuses.GetByOrderId(orderId);
+            return _mapper.Map<IEnumerable<OrderStatusDTO>>(orderStatuses);
+        }
+
         public async Task<IEnumerable<OrderStatusDTO>> GetByNameSubstring(string nameSubstring)
         {
             var orderStatuses = await Database.OrderStatuses.GetByNameSubstring(nameSubstring);

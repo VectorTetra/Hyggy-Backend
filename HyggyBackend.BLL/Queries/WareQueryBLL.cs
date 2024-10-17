@@ -33,5 +33,6 @@ namespace HyggyBackend.BLL.Queries
         public string? CustomerId { get; set; }
         public string? ImagePath { get; set; }
         public string? Sorting { get; set; }
+        public string? StringIds { get; set; }
     }
 }

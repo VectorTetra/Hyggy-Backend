@@ -14,5 +14,6 @@ namespace HyggyBackend.BLL.Queries
         public int? PageNumber { get; set; }
         public int? PageSize { get; set; }
         public string? Sorting { get; set; }
+        public string? StringIds { get; set; }
     }
 }

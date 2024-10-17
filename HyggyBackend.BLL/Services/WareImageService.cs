@@ -44,7 +44,7 @@ namespace HyggyBackend.BLL.Services
         }
         public async Task<WareImageDTO> Create(WareImageDTO wareImage)
         {
-            var existedWareId = await Database.Wares.GetById(wareImage.WareId.Value);
+            var existedWareId = await Database.Wares.GetById(wareImage.WareId);
             if (existedWareId == null)
             {
                 throw new ValidationException("Товару з таким Id не існує!", wareImage.WareId.ToString());
@@ -64,7 +64,7 @@ namespace HyggyBackend.BLL.Services
         }
         public async Task<WareImageDTO> Update(WareImageDTO wareImage)
         {
-            var existedWareId = await Database.Wares.GetById(wareImage.WareId.Value);
+            var existedWareId = await Database.Wares.GetById(wareImage.WareId);
             if (existedWareId == null)
             {
                 throw new ValidationException("Товару з таким Id не існує!", wareImage.WareId.ToString());

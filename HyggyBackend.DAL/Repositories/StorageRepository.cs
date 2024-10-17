@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace HyggyBackend.DAL.Repositories
 {
-    public class StorageRepository: IStorageRepository
+    public class StorageRepository : IStorageRepository
     {
         private readonly HyggyContext _context;
 
@@ -33,6 +33,25 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.Storages.Where(s => s.Shop.Id != null).ToListAsync();
         }
+
+        public async Task<IEnumerable<Storage>> GetByStringIds(string stringIds)
+        {
+            // Розділяємо рядок за символом '|' та конвертуємо в список long
+            List<long> ids = stringIds.Split('|').Select(long.Parse).ToList();
+            // Створюємо список для збереження результатів
+            var waress = new List<Storage>();
+            // Викликаємо асинхронний метод та збираємо результати
+            await foreach (var ware in GetByIdsAsync(ids))
+            {
+                waress.Add(ware);
+            }
+            return waress;
+        }
+
+        public async Task<IEnumerable<Storage>> GetPaged(int pageNumber, int pageSize)
+        {
+            return await _context.Storages.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+        }
         public async Task<Storage?> GetById(long id)
         {
             return await _context.Storages.FindAsync(id);
@@ -47,11 +66,11 @@ namespace HyggyBackend.DAL.Repositories
         }
         public async Task<Storage?> GetByWareItemId(long WareItemId)
         {
-            return await _context.Storages.FirstOrDefaultAsync(x => x.WareItems.Any(wi=>wi.Id == WareItemId));
+            return await _context.Storages.FirstOrDefaultAsync(x => x.WareItems.Any(wi => wi.Id == WareItemId));
         }
         public async Task<Storage?> GetByStorageEmployeeId(string storageEmployeeId)
         {
-            return await _context.Storages.FirstOrDefaultAsync(x => x.StorageEmployees.Any(sem=>sem.Id == storageEmployeeId) );
+            return await _context.Storages.FirstOrDefaultAsync(x => x.StorageEmployees.Any(sem => sem.Id == storageEmployeeId));
         }
         public async Task<Storage?> GetByShopEmployeeId(string shopEmployeeId)
         {
@@ -73,52 +92,117 @@ namespace HyggyBackend.DAL.Repositories
 
         public async Task<IEnumerable<Storage>> GetByQuery(StorageQueryDAL query)
         {
-            var storageCollections = new List<IEnumerable<Storage>>();
+            var collections = new List<IEnumerable<Storage>>();
 
             if (query.AddressId != null)
             {
-                storageCollections.Add(await _context.Storages.Where(x => x.AddressId == query.AddressId).ToListAsync());
+                collections.Add(await _context.Storages.Where(x => x.AddressId == query.AddressId).ToListAsync());
             }
-            
-            if( query.IsGlobal != null)
+
+            if (query.IsGlobal != null)
             {
                 if (query.IsGlobal == true)
                 {
-                    storageCollections.Add(await GetGlobalStorages());
+                    collections.Add(await GetGlobalStorages());
                 }
                 else
                 {
-                    storageCollections.Add(await GetNonGlobalStorages());
+                    collections.Add(await GetNonGlobalStorages());
                 }
             }
 
             if (query.ShopId != null)
             {
-                storageCollections.Add(await _context.Storages.Where(x => x.Shop.Id == query.ShopId).ToListAsync());
+                collections.Add(await _context.Storages.Where(x => x.Shop.Id == query.ShopId).ToListAsync());
             }
 
             if (query.WareItemId != null)
             {
-                storageCollections.Add(await _context.Storages.Where(x => x.WareItems.Any(wi => wi.Id == query.WareItemId)).ToListAsync());
+                collections.Add(await _context.Storages.Where(x => x.WareItems.Any(wi => wi.Id == query.WareItemId)).ToListAsync());
             }
 
             if (query.StorageEmployeeId != null)
             {
-                storageCollections.Add(await _context.Storages.Where(x => x.StorageEmployees.Any(sem => sem.Id == query.StorageEmployeeId)).ToListAsync());
+                collections.Add(await _context.Storages.Where(x => x.StorageEmployees.Any(sem => sem.Id == query.StorageEmployeeId)).ToListAsync());
             }
 
             if (query.ShopEmployeeId != null)
             {
-                storageCollections.Add(await _context.Storages.Where(x => x.Shop != null && x.Shop.ShopEmployees.Any(sem => sem.Id == query.ShopEmployeeId)).ToListAsync());
+                collections.Add(await _context.Storages.Where(x => x.Shop != null && x.Shop.ShopEmployees.Any(sem => sem.Id == query.ShopEmployeeId)).ToListAsync());
             }
 
-            if(query.Id != null)
+            if (query.Id != null)
             {
-                storageCollections.Add(new List<Storage> { await GetById(query.Id.Value) });
+                collections.Add(new List<Storage> { await GetById(query.Id.Value) });
             }
-            return storageCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
-        }
 
+            if (query.StringIds != null)
+            {
+                collections.Add(await GetByStringIds(query.StringIds));
+            }
+
+            var result = new List<Storage>();
+            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
+            {
+                result = _context.Storages
+                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                .Take(query.PageSize.Value)
+                .ToList();
+            }
+            else
+            {
+                result = (List<Storage>)collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+            }
+
+
+            // Сортування
+            if (query.Sorting != null)
+            {
+                switch (query.Sorting)
+                {
+                    case "IdAsc":
+                        result = result.OrderBy(ware => ware.Id).ToList();
+                        break;
+                    case "IdDesc":
+                        result = result.OrderByDescending(ware => ware.Id).ToList();
+                        break;
+                    case "AddressIdAsc":
+                        result = result.OrderBy(ware => ware.AddressId).ToList();
+                        break;
+                    case "AddressIdDesc":
+                        result = result.OrderByDescending(ware => ware.AddressId).ToList();
+                        break;
+                    case "ShopIdAsc":
+                        result = result.OrderBy(ware => ware.Shop?.Id).ToList();
+                        break;
+                    case "ShopIdDesc":
+                        result = result.OrderByDescending(ware => ware.Shop?.Id).ToList();
+                        break;
+                    case "ShopNameAsc":
+                        result = result.OrderBy(ware => ware.Shop?.Name).ToList();
+                        break;
+                    case "ShopNameDesc":
+                        result = result.OrderByDescending(ware => ware.Shop?.Name).ToList();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            // Пагінація
+            if (query.PageNumber != null && query.PageSize != null)
+            {
+                result = result
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToList();
+            }
+            if (!result.Any())
+            {
+                return new List<Storage>();
+            }
+            return result;
+        }
         public async Task Create(Storage storage)
         {
             await _context.Storages.AddAsync(storage);

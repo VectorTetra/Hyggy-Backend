@@ -33,7 +33,9 @@ namespace HyggyBackend.Controllers
             .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))
             .ForMember(dest => dest.OrderId, opt => opt.MapFrom(src => src.OrderId))
             .ForMember(dest => dest.PageNumber, opt => opt.MapFrom(src => src.PageNumber))
-            .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize));
+            .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize))
+            .ForMember(dest => dest.StringIds, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Id));
         });
 
         [HttpGet]
@@ -115,6 +117,15 @@ namespace HyggyBackend.Controllers
                             {
                                 collection = await _serv.GetByOrderId(query.OrderId.Value);
                             }
+                        }
+                        break;
+                    case "StringIds":
+                        {
+                            if (query.StringIds == null)
+                            {
+                                throw new ValidationException("Не вказано CustomerQuery.StringIds для пошуку!", nameof(CustomerQueryPL.StringIds));
+                            }
+                            collection = await _serv.GetByStringIds(query.StringIds);
                         }
                         break;
                     case "Paged":
@@ -290,5 +301,7 @@ namespace HyggyBackend.Controllers
         public long? OrderId { get; set; }
         public int? PageNumber { get; set; }
         public int? PageSize { get; set; }
+        public string? StringIds { get; set; }
+        public string? Sorting { get; set; }
     }
 }

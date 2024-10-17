@@ -13,7 +13,9 @@ namespace HyggyBackend.BLL.DTO
         public string? Name { get; set; }
         public string? Surname { get; set; }
         public string? Email { get; set; }
+        public string? Phone { get; set; }
         public string? Token { get; set; }
-        public ICollection<long>? OrderIds { get; set; }
+        public ICollection<long>? OrderIds { get; set; } = new List<long>();
+        public string? StringIds { get; set; }
     }
 }

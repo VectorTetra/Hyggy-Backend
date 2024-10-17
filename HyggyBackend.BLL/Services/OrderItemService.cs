@@ -2,8 +2,10 @@
 using HyggyBackend.BLL.DTO;
 using HyggyBackend.BLL.Infrastructure;
 using HyggyBackend.BLL.Interfaces;
+using HyggyBackend.BLL.Queries;
 using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Interfaces;
+using HyggyBackend.DAL.Queries;
 
 namespace HyggyBackend.BLL.Services
 {
@@ -27,6 +29,24 @@ namespace HyggyBackend.BLL.Services
                 return null;
             }
             return _mapper.Map<OrderItem, OrderItemDTO>(orderItem);
+        }
+
+        public async Task<IEnumerable<OrderItemDTO>> GetByStringIds(string stringIds)
+        {
+            return _mapper.Map<IEnumerable<OrderItem>, IEnumerable<OrderItemDTO>>(await Database.OrderItems.GetByStringIds(stringIds));
+        }
+
+        public async Task<IEnumerable<OrderItemDTO>> GetPaged(int pageNumber, int pageSize)
+        {
+
+            var orderItems = await Database.OrderItems.GetPaged(pageNumber, pageSize);
+            return _mapper.Map<IEnumerable<OrderItem>, IEnumerable<OrderItemDTO>>(orderItems);
+        }
+
+        public async Task<IEnumerable<OrderItemDTO>> GetByQuery(OrderItemQueryBLL query)
+        {
+            var orderItems = await Database.OrderItems.GetByQuery(_mapper.Map<OrderItemQueryBLL, OrderItemQueryDAL>(query));
+            return _mapper.Map<IEnumerable<OrderItem>, IEnumerable<OrderItemDTO>>(orderItems);
         }
 
         public async Task<IEnumerable<OrderItemDTO>> GetByOrderId(long orderId)

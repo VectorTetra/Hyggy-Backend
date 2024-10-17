@@ -16,5 +16,6 @@ namespace HyggyBackend.BLL.DTO
         public long StorageId { get; set; }
 
         public long Quantity { get; set; }
+        public string? StringIds { get; set; }
     }
 }

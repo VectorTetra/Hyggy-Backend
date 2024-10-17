@@ -8,6 +8,7 @@ using HyggyBackend.BLL.Queries;
 using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Entities.Employes;
 using HyggyBackend.DAL.Interfaces;
+using HyggyBackend.DAL.Queries;
 
 namespace HyggyBackend.BLL.Services
 {
@@ -28,13 +29,13 @@ namespace HyggyBackend.BLL.Services
 
 			return _mapper.Map<IEnumerable<Shop>, IEnumerable<ShopDTO>>(shops);
 		}
-		public async Task<IEnumerable<ShopDTO>> GetPaginatedShops(int? page)
-		{
-			var paginatedShops = await Database.Shops.GetPaginatedShops(page);
+        public async Task<IEnumerable<ShopDTO>> GetPaginatedShops(int pageNumber, int pageSize)
+        {
+            var shops = await Database.Shops.GetPaginatedShops(pageNumber, pageSize);
 
-			return _mapper.Map<IEnumerable<Shop>, IEnumerable<ShopDTO>>(paginatedShops);
-		}
-		public async Task<ShopDTO?> GetByAddressId(long addressId)
+            return _mapper.Map<IEnumerable<Shop>, IEnumerable<ShopDTO>>(shops);
+        }
+        public async Task<ShopDTO?> GetByAddressId(long addressId)
 		{
 			var shop = await Database.Shops.GetByAddressId(addressId);
 
@@ -69,17 +70,44 @@ namespace HyggyBackend.BLL.Services
 			return _mapper.Map<ShopDTO>(shop);
 		}
 
-		public async Task<IEnumerable<ShopDTO>> GetByPostalCode(string postalCode)
+        public async Task<ShopDTO?> GetByStorageId(long storageId)
+        {
+            var shop = await Database.Shops.GetByStorageId(storageId);
+            return _mapper.Map<ShopDTO>(shop);
+        }
+
+        public async Task<IEnumerable<ShopDTO>> GetByHouseNumber(string houseNumber)
+        {
+            var shop = await Database.Shops.GetByHouseNumber(houseNumber);
+            return _mapper.Map<IEnumerable<Shop>, IEnumerable<ShopDTO>>(shop);
+        }
+
+        public async Task<IEnumerable<ShopDTO>> GetByStreet(string street)
+        {
+            var shop = await Database.Shops.GetByStreet(street);
+            return _mapper.Map<IEnumerable<Shop>, IEnumerable<ShopDTO>>(shop);
+        }
+        public async Task<IEnumerable<ShopDTO>> GetByPostalCode(string postalCode)
 		{
 			var shop = await Database.Shops.GetByPostalCode(postalCode);
 
 			return _mapper.Map<IEnumerable<Shop>, IEnumerable<ShopDTO>>(shop);
 		}
 
-		public Task<IEnumerable<ShopDTO>> GetByQuery(ShopQueryBLL query)
+        public async Task<IEnumerable<ShopDTO>> GetByName(string name)
+        {
+            var shop = await Database.Shops.GetByName(name);
+
+            return _mapper.Map<IEnumerable<Shop>, IEnumerable<ShopDTO>>(shop);
+        }
+
+        public async Task<IEnumerable<ShopDTO>> GetByQuery(ShopQueryBLL query)
 		{
-			throw new NotImplementedException();
-		}
+            var queryDAL = _mapper.Map<ShopQueryDAL>(query);
+            var shop = await Database.Shops.GetByQuery(queryDAL);
+
+            return _mapper.Map<IEnumerable<Shop>, IEnumerable<ShopDTO>>(shop);
+        }
 
 		public async Task<IEnumerable<ShopDTO>> GetByState(string state)
 		{
@@ -87,7 +115,19 @@ namespace HyggyBackend.BLL.Services
 
 			return _mapper.Map<IEnumerable<Shop>, IEnumerable<ShopDTO>>(shop);
 		}
-		public async Task<ShopDTO> Create(ShopDTO shopDTO)
+        public async Task<IEnumerable<ShopDTO>> GetNearestShopsAsync(double latitude, double longitude, int numberOfShops = 5)
+        {
+            var shops = await Database.Shops.GetNearestShopsAsync(latitude, longitude, numberOfShops);
+            return _mapper.Map<IEnumerable<Shop>, IEnumerable<ShopDTO>>(shops);
+        }
+
+        public async Task<IEnumerable<ShopDTO>> GetByStringIds(string stringIds)
+        {
+            var shop = await Database.Shops.GetByStringIds(stringIds);
+
+            return _mapper.Map<IEnumerable<Shop>, IEnumerable<ShopDTO>>(shop);
+        }
+        public async Task<ShopDTO> Create(ShopDTO shopDTO)
 		{
 			if(shopDTO.AddressId == null)
 			{
@@ -102,6 +142,10 @@ namespace HyggyBackend.BLL.Services
             if (existingAddress == null)
             {
                 throw new ValidationException($"Адреса з Id {shopDTO.AddressId} не існує!", "");
+            }
+            if(shopDTO.Name == null)
+            {
+                throw new ValidationException("Не вказано назву магазину!", "");
             }
 			if(shopDTO.WorkHours == null)
 			{
@@ -123,6 +167,7 @@ namespace HyggyBackend.BLL.Services
             var shop = new Shop
 			{
                 Address = existingAddress,
+                Name = shopDTO.Name,
                 Orders = new List<Order>(),
                 WorkHours = shopDTO.WorkHours,
 				PhotoUrl = shopDTO.PhotoUrl,
@@ -160,6 +205,10 @@ namespace HyggyBackend.BLL.Services
             {
                 throw new ValidationException("Не вказано години роботи магазину!", "");
             }
+            if (shopDTO.Name == null)
+            {
+                throw new ValidationException("Не вказано назву магазину!", "");
+            }
             if (shopDTO.PhotoUrl == null)
             {
                 throw new ValidationException("Не вказано фото магазину!", "");
@@ -193,6 +242,7 @@ namespace HyggyBackend.BLL.Services
             }
             existingShop.Address = existingAddress;
             existingShop.WorkHours = shopDTO.WorkHours;
+            existingShop.Name = shopDTO.Name;
             existingShop.PhotoUrl = shopDTO.PhotoUrl;
             existingShop.Storage = existingStorage;
 
@@ -213,20 +263,5 @@ namespace HyggyBackend.BLL.Services
             await Database.Save();
             return _mapper.Map<ShopDTO>(shop);
         }
-
-		public async Task<bool> IsShopExist(long id)
-		{
-			var shops = await Database.Shops.GetAll();
-			
-			return shops.Any(shop => shop.Id == id);
-		}
-
-		public async Task<bool> IsShopExistByAddress(long? addressId)
-		{
-			var shops = await GetAll();
-			var shop = shops.Select(s => s.AddressId);
-
-			return shop.Any(s => s == addressId);
-		}
 	}
 }

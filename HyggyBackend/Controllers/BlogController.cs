@@ -35,6 +35,8 @@ namespace HyggyBackend.Controllers
              .ForMember(dest => dest.BlogCategory1Name, opt => opt.MapFrom(src => src.BlogCategory1Name))
              .ForMember(dest => dest.BlogCategory2Id, opt => opt.MapFrom(src => src.BlogCategory2Id))
              .ForMember(dest => dest.BlogCategory2Name, opt => opt.MapFrom(src => src.BlogCategory2Name))
+             .ForMember(dest => dest.StringIds, opt => opt.MapFrom(src => src.StringIds))
+             .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Sorting))
              .ForMember(dest => dest.PageNumber, opt => opt.MapFrom(src => src.PageNumber))
              .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize));
         });
@@ -153,6 +155,18 @@ namespace HyggyBackend.Controllers
                             else
                             {
                                 collection = await _serv.GetByBlogCategory1NameSubstring(query.BlogCategory1Name);
+                            }
+                        }
+                        break;
+                    case "StringIds":
+                        {
+                            if (query.StringIds == null)
+                            {
+                                throw new ValidationException("Не вказано StringIds для пошуку!", "");
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByStringIds(query.StringIds);
                             }
                         }
                         break;
@@ -471,5 +485,7 @@ namespace HyggyBackend.Controllers
         public string? BlogCategory2Name { get; set; }
         public int? PageNumber { get; set; }
         public int? PageSize { get; set; }
+        public string? StringIds { get; set; }
+        public string? Sorting { get; set; }
     }
 }

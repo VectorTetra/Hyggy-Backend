@@ -72,6 +72,20 @@ namespace HyggyBackend.BLL.Services
             return _mapper.Map<IEnumerable<Storage>, IEnumerable<StorageDTO>>(storages);
         }
 
+        public async Task<IEnumerable<StorageDTO>> GetByStringIds(string stringIds)
+        {
+            var storages = await Database.Storages.GetByStringIds(stringIds);
+
+            return _mapper.Map<IEnumerable<Storage>, IEnumerable<StorageDTO>>(storages);
+        }
+
+        public async Task<IEnumerable<StorageDTO>> GetPaged(int pageNumber, int pageSize)
+        {
+            var storages = await Database.Storages.GetPaged(pageNumber, pageSize);
+
+            return _mapper.Map<IEnumerable<Storage>, IEnumerable<StorageDTO>>(storages);
+        }
+
         public async Task<StorageDTO?> GetById(long id)
         {
             var storage = await Database.Storages.GetById(id);

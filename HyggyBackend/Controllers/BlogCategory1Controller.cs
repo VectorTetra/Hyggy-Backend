@@ -34,8 +34,11 @@ namespace HyggyBackend.Controllers
              .ForMember(dest => dest.BlogCategory1Name, opt => opt.MapFrom(src => src.BlogCategory1Name))
              .ForMember(dest => dest.BlogCategory2Id, opt => opt.MapFrom(src => src.BlogCategory2Id))
              .ForMember(dest => dest.BlogCategory2Name, opt => opt.MapFrom(src => src.BlogCategory2Name))
+             .ForMember(dest => dest.StringIds, opt => opt.MapFrom(src => src.StringIds))
+             .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Sorting))
              .ForMember(dest => dest.PageNumber, opt => opt.MapFrom(src => src.PageNumber))
              .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize));
+
         });
 
         [HttpGet]
@@ -154,6 +157,18 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
+                    case "StringIds":
+                        {
+                            if (query.StringIds == null)
+                            {
+                                throw new ValidationException("Не вказано BlogCategory1.StringIds для пошуку!", "");
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByStringIds(query.StringIds);
+                            }
+                        }
+                        break;
                     case "Paged":
                         {
                             var pNumber = query.PageNumber ?? throw new ValidationException("Не вказано BlogCategory1.PageNumber для пошуку!", "");
@@ -266,7 +281,9 @@ namespace HyggyBackend.Controllers
         public string? BlogCategory1Name { get; set; }
         public long? BlogCategory2Id { get; set; }
         public string? BlogCategory2Name { get; set; }
+        public string? StringIds { get; set; }
         public int? PageNumber { get; set; }
         public int? PageSize { get; set; }
+        public string? Sorting { get; set; }
     }
 }

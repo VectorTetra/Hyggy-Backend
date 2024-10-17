@@ -32,6 +32,12 @@ namespace HyggyBackend.BLL.Services
             return _mapper.Map<BlogCategory2DTO>(blogCategory2);
         }
 
+        public async Task<IEnumerable<BlogCategory2DTO>> GetByStringIds(string stringIds)
+        {
+            var blogCategories2 = await Database.BlogCategories2.GetByStringIds(stringIds);
+            return _mapper.Map<IEnumerable<BlogCategory2DTO>>(blogCategories2);
+        }
+
         public async Task<IEnumerable<BlogCategory2DTO>> GetByBlogCategory1Id(long blogCategory1Id)
         {
             var blogCategories2 = await Database.BlogCategories2.GetByBlogCategory1Id(blogCategory1Id);

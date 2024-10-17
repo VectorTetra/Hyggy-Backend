@@ -9,5 +9,6 @@
         public string? FilePath { get; set; } = string.Empty; // Шлях до файлу із структурою статті блогу (файл повинен знаходитись у папці wwwroot)
         public string? PreviewImagePath { get; set; } = string.Empty; // Шлях до файлу із структурою статті блогу (файл повинен знаходитись у папці wwwroot)
         public long? BlogCategory2Id { get; set; }
+        public string? StringIds { get; set; }
     }
 }

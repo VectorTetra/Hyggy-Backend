@@ -22,7 +22,22 @@ namespace HyggyBackend.Controllers
         }
         MapperConfiguration config = new MapperConfiguration(mc =>
         {
-            mc.CreateMap<WareReviewQueryPL, WareReviewQueryBLL>();
+            mc.CreateMap<WareReviewQueryPL, WareReviewQueryBLL>()
+            .ForMember(dest => dest.MaxDate, opt => opt.MapFrom(src => src.MaxDate))
+            .ForMember(dest => dest.MinDate, opt => opt.MapFrom(src => src.MinDate))
+            .ForMember(dest => dest.MaxRating, opt => opt.MapFrom(src => src.MaxRating))
+            .ForMember(dest => dest.MinRating, opt => opt.MapFrom(src => src.MinRating))
+            .ForMember(dest => dest.PageNumber, opt => opt.MapFrom(src => src.PageNumber))
+            .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize))
+            .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Sorting))
+            .ForMember(dest => dest.StringIds, opt => opt.MapFrom(src => src.StringIds))
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.WareId, opt => opt.MapFrom(src => src.WareId))
+            .ForMember(dest => dest.Text, opt => opt.MapFrom(src => src.Text))
+            .ForMember(dest => dest.Theme, opt => opt.MapFrom(src => src.Theme))
+            .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(src => src.CustomerName))
+            .ForMember(dest => dest.AuthorizedCustomerId, opt => opt.MapFrom(src => src.AuthorizedCustomerId))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email));
         });
 
         [HttpGet]
@@ -94,6 +109,18 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
+                    case "AuthorizedCustomerId":
+                        {
+                            if (query.AuthorizedCustomerId == null)
+                            {
+                                throw new ValidationException("Не вказано AuthorizedCustomerId для пошуку!", nameof(WareReviewQueryPL.AuthorizedCustomerId));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByAuthorizedCustomerId(query.AuthorizedCustomerId);
+                            }
+                        }
+                        break;
                     case "Email":
                         {
                             if (query.Email == null)
@@ -130,6 +157,15 @@ namespace HyggyBackend.Controllers
                                 throw new ValidationException("Не вказано MaxDate для пошуку!", nameof(WareReviewQueryPL.MaxDate));
                             }
                             collection = await _serv.GetByDateRange(query.MinDate.Value, query.MaxDate.Value);
+                        }
+                        break;
+                    case "StringIds":
+                        {
+                            if (query.StringIds == null)
+                            {
+                                throw new ValidationException("Не вказано StringIds для пошуку!", nameof(WareReviewQueryPL.StringIds));
+                            }
+                            collection = await _serv.GetByStringIds(query.StringIds);
                         }
                         break;
                     case "Paged":
@@ -247,6 +283,7 @@ namespace HyggyBackend.Controllers
         public string? Text { get; set; }
         public string? Theme { get; set; }
         public string? CustomerName { get; set; }
+        public string? AuthorizedCustomerId { get; set; }
         public string? Email { get; set; }
         public short? MaxRating { get; set; }
         public short? MinRating { get; set; }
@@ -255,5 +292,6 @@ namespace HyggyBackend.Controllers
         public int? PageNumber { get; set; }
         public int? PageSize { get; set; }
         public string? Sorting { get; set; }
+        public string? StringIds { get; set; }
     }
 }

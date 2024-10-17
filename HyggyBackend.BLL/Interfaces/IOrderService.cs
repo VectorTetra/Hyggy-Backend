@@ -6,6 +6,8 @@ namespace HyggyBackend.BLL.Interfaces
     public interface IOrderService
     {
         Task<OrderDTO?> GetById(long id);
+        Task<IEnumerable<OrderDTO>> GetByStringIds(string stringIds);
+        Task<IEnumerable<OrderDTO>> GetPagedOrders(int pageNumber, int pageSize);
         Task<IEnumerable<OrderDTO>> GetByAddressId(long addressId);
         Task<IEnumerable<OrderDTO>> GetByStreet(string streetSubstring);
         Task<IEnumerable<OrderDTO>> GetByHouseNumber(string houseNumber);

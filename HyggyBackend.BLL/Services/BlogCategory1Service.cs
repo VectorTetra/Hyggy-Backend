@@ -19,7 +19,6 @@ namespace HyggyBackend.BLL.Services
             Database = database;
             _mapper = mapper;
         }
-
         public async Task<BlogCategory1DTO> GetById(long id)
         {
             var blogCategory1 = await Database.BlogCategories1.GetById(id);
@@ -34,6 +33,11 @@ namespace HyggyBackend.BLL.Services
         {
             var blogCategory1 = await Database.BlogCategories1.GetByBlogCategory2Id(blogCategory2Id);
             return _mapper.Map<BlogCategory1DTO>(blogCategory1);
+        }
+        public async Task<IEnumerable<BlogCategory1DTO>> GetByStringIds(string StringIds)
+        {
+            var blogCategories1 = await Database.BlogCategories1.GetByStringIds(StringIds);
+            return _mapper.Map<IEnumerable<BlogCategory1DTO>>(blogCategories1);
         }
         public async Task<IEnumerable<BlogCategory1DTO>> GetByFilePathSubstring(string FilePathSubstring)
         {

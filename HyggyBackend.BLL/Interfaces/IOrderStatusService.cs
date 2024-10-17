@@ -14,6 +14,9 @@ namespace HyggyBackend.BLL.Interfaces
         Task<OrderStatusDTO?> GetById(long id);
         Task<IEnumerable<OrderStatusDTO>> GetByNameSubstring(string nameSubstring);
         Task<IEnumerable<OrderStatusDTO>> GetByDescriptionSubstring(string descriptionSubstring);
+        Task<IEnumerable<OrderStatusDTO>> GetByStringIds(string stringIds);
+        Task<IEnumerable<OrderStatusDTO>> GetPaged(int pageNumber, int pageSize);
+        Task<IEnumerable<OrderStatusDTO>> GetByOrderId(long orderId);
         Task<IEnumerable<OrderStatusDTO>> GetByQuery(OrderStatusQueryBLL query);
         Task<OrderStatusDTO> Create(OrderStatusDTO orderStatusDTO);
         Task<OrderStatusDTO> Update(OrderStatusDTO orderStatusDTO);

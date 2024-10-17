@@ -31,11 +31,14 @@ namespace HyggyBackend.BLL.Services
             _userManager = userManager;
         }
 
-
-
         public async Task<IEnumerable<CustomerDTO>> GetPagedCustomers(int pageNumber, int pageSize)
         {
             var customers = await Database.Customers.GetPagedCustomers(pageNumber, pageSize);
+            return _mapper.Map<IEnumerable<Customer>, IEnumerable<CustomerDTO>>(customers);
+        }
+        public async Task<IEnumerable<CustomerDTO>> GetByStringIds(string StringIds)
+        {
+            var customers = await Database.Customers.GetByStringIds(StringIds);
             return _mapper.Map<IEnumerable<Customer>, IEnumerable<CustomerDTO>>(customers);
         }
         public async Task<IEnumerable<CustomerDTO>> GetByOrderId(long orderId)
@@ -169,6 +172,7 @@ namespace HyggyBackend.BLL.Services
             customer.Name = item.Name;
             customer.Surname = item.Surname;
             customer.Email = item.Email;
+            customer.PhoneNumber = item.Phone;
             Database.Customers.Update(customer);
             await Database.Save();
 

@@ -8,10 +8,12 @@ namespace HyggyBackend.BLL.Interfaces
         Task<WareDTO?> GetById(long id);
         Task<WareDTO?> GetByArticle(long article);
         Task<IEnumerable<WareDTO>> GetPagedWares(int pageNumber, int pageSize);
+        Task<IEnumerable<WareDTO>> GetByStringIds(string stringIds);
         Task<IEnumerable<WareDTO>> GetByCategory1Id(long category1Id);
         Task<IEnumerable<WareDTO>> GetByCategory2Id(long category2Id);
         Task<IEnumerable<WareDTO>> GetByCategory3Id(long category3Id);
         Task<IEnumerable<WareDTO>> GetByNameSubstring(string nameSubstring);
+        Task<IEnumerable<WareDTO>> GetByStructureFilePathSubstring(string StructureFilePathSubstring);
         Task<IEnumerable<WareDTO>> GetByDescriptionSubstring(string descriptionSubstring);
         Task<IEnumerable<WareDTO>> GetByCategory1NameSubstring(string category1NameSubstring);
         Task<IEnumerable<WareDTO>> GetByCategory2NameSubstring(string category2NameSubstring);

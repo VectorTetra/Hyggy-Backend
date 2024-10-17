@@ -49,6 +49,9 @@ namespace HyggyBackend.Controllers
              .ForMember(dest => dest.StatusDescription, opt => opt.MapFrom(src => src.StatusDescription))
              .ForMember(dest => dest.ImagePath, opt => opt.MapFrom(src => src.ImagePath))
              .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Sorting))
+             .ForMember(dest => dest.StringIds, opt => opt.MapFrom(src => src.StringIds))
+             .ForMember(dest => dest.PageNumber, opt => opt.MapFrom(src => src.PageNumber))
+             .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize))
              .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.CustomerId));
 
         });
@@ -307,6 +310,18 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
+                    case "StringIds":
+                        {
+                            if (query.StringIds == null)
+                            {
+                                throw new ValidationException("Не вказано Ware.StringIds для пошуку!", nameof(WareQueryPL.StringIds));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByStringIds(query.StringIds);
+                            }
+                        }
+                        break;
                     case "Paged":
                         {
                             if (query.PageNumber == null)
@@ -418,6 +433,8 @@ namespace HyggyBackend.Controllers
     public class WareQueryPL
     {
         public string? SearchParameter { get; set; }
+        public int? PageNumber { get; set; }
+        public int? PageSize { get; set; }
         public long? Id { get; set; }
         public long? Article { get; set; }
         public long? Category1Id { get; set; }
@@ -440,9 +457,8 @@ namespace HyggyBackend.Controllers
         public string? StatusDescription { get; set; }
         public string? CustomerId { get; set; }
         public string? ImagePath { get; set; }
-        public int? PageNumber { get; set; }
-        public int? PageSize { get; set; }
         public string? Sorting { get; set; }
+        public string? StringIds { get; set; }
     }
 
 }

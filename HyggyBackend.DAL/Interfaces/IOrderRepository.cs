@@ -11,6 +11,7 @@ namespace HyggyBackend.DAL.Interfaces
     public interface IOrderRepository
     {
         Task<Order?> GetById(long id);
+        Task<IEnumerable<Order>> GetByStringIds(string stringIds);
         Task<IEnumerable<Order>> GetByAddressId(long addressId);
         Task<IEnumerable<Order>> GetByStreet(string streetSubstring);
         Task<IEnumerable<Order>> GetByHouseNumber(string houseNumber);

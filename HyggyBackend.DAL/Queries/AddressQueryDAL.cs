@@ -5,13 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HyggyBackend.BLL.DTO
+namespace HyggyBackend.DAL.Queries
 {
-    public class AddressDTO
+    public class AddressQueryDAL
     {
-        public long Id {  get; set; }
-        public long? ShopId {  get; set; }
-        public long? StorageId {  get; set; }
+        public long? Id { get; set; }
 
         // Адреса доставки, розділена на компоненти
         public string? Street { get; set; } // Назва вулиці
@@ -23,9 +21,16 @@ namespace HyggyBackend.BLL.DTO
         // Географічні координати
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
-		public ICollection<long>? OrderIds { get; set; } = new List<long>();	
-		public string? StringIds { get; set; }
 
-		//public virtual StorageDTO? Storage { get; set; }
+        //Адреса магазину
+        public long? ShopId { get; set; }
+        //Адреса складу
+        public long? StorageId { get; set; }
+        public long? OrderId { get; set; }
+
+        public int? PageNumber { get; set; }
+        public int? PageSize { get; set; }
+        public string? StringIds { get; set; }
+        public string? Sorting { get; set; }
     }
 }

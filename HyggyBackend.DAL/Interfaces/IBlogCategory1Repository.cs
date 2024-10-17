@@ -9,6 +9,7 @@ namespace HyggyBackend.DAL.Interfaces
         IAsyncEnumerable<BlogCategory1> GetByIdsAsync(IEnumerable<long> ids);
         Task<BlogCategory1> GetByBlogId(long blogId);
         Task<BlogCategory1> GetByBlogCategory2Id(long blogCategory2Id);
+        Task<IEnumerable<BlogCategory1>> GetByStringIds(string StringIds);
         Task<IEnumerable<BlogCategory1>> GetByFilePathSubstring(string FilePathSubstring);
         Task<IEnumerable<BlogCategory1>> GetByPreviewImagePathSubstring(string PreviewImagePathSubstring);
         Task<IEnumerable<BlogCategory1>> GetByBlogCategory2NameSubstring(string BlogCategory2NameSubstring);

@@ -13,6 +13,7 @@ namespace HyggyBackend.DAL.Queries
         public string? Text { get; set; }
         public string? Theme { get; set; }
         public string? CustomerName { get; set; }
+        public string? AuthorizedCustomerId { get; set; }
         public string? Email { get; set; }
         public short? MaxRating { get; set; }
         public short? MinRating { get; set; }
@@ -21,5 +22,6 @@ namespace HyggyBackend.DAL.Queries
         public int? PageNumber { get; set; }
         public int? PageSize { get; set; }
         public string? Sorting { get; set; }
+        public string? StringIds { get; set; }
     }
 }

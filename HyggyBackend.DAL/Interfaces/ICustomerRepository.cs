@@ -12,6 +12,7 @@ namespace HyggyBackend.DAL.Interfaces
     {
         Task<IEnumerable<Customer>> GetPagedCustomers(int pageNumber, int pageSize);
         Task<IEnumerable<Customer>> GetByOrderId(long orderId);
+        Task<IEnumerable<Customer>> GetByStringIds(string StringIds);
         Task<IEnumerable<Customer>> GetByNameSubstring(string nameSubstring);
         Task<IEnumerable<Customer>> GetBySurnameSubstring(string surnameSubstring);
         Task<IEnumerable<Customer>> GetByEmailSubstring(string emailSubstring);
