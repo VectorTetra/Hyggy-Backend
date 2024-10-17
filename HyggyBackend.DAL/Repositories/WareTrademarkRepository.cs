@@ -25,11 +25,25 @@ namespace HyggyBackend.DAL.Repositories
         }
         public async Task<WareTrademark?> GetByWareId(long id)
         {
-            return await _context.WareTrademarks.FirstOrDefaultAsync(wt => wt.Wares.Any(wa=>wa.Id == id));
+            return await _context.WareTrademarks.FirstOrDefaultAsync(wt => wt.Wares.Any(wa => wa.Id == id));
         }
         public async Task<IEnumerable<WareTrademark>> GetPagedWareTrademarks(int pageNumber, int pageSize)
         {
             return await _context.WareTrademarks.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+        }
+
+        public async Task<IEnumerable<WareTrademark>> GetByStringIds(string stringIds)
+        {
+            // Розділяємо рядок за символом '|' та конвертуємо в список long
+            List<long> ids = stringIds.Split('|').Select(long.Parse).ToList();
+            // Створюємо список для збереження результатів
+            var waress = new List<WareTrademark>();
+            // Викликаємо асинхронний метод та збираємо результати
+            await foreach (var ware in GetByIdsAsync(ids))
+            {
+                waress.Add(ware);
+            }
+            return waress;
         }
 
         public async IAsyncEnumerable<WareTrademark> GetByIdsAsync(IEnumerable<long> ids)
@@ -45,35 +59,61 @@ namespace HyggyBackend.DAL.Repositories
         }
         public async Task<IEnumerable<WareTrademark>> GetByQuery(WareTrademarkQueryDAL query)
         {
-            var wareTrademarkCollections = new List<IEnumerable<WareTrademark>>();
+            var collections = new List<IEnumerable<WareTrademark>>();
 
             if (query.Id != null)
             {
-                wareTrademarkCollections.Add(new List<WareTrademark> { await GetById(query.Id.Value) });
+                var proto = await GetById(query.Id.Value);
+                if (proto != null)
+                {
+                    collections.Add(new List<WareTrademark> { proto });
+                }
             }
 
             if (query.Name != null)
             {
-                wareTrademarkCollections.Add(await GetByName(query.Name) );
+                collections.Add(await GetByName(query.Name));
             }
 
             if (query.WareId != null)
             {
-                wareTrademarkCollections.Add(new List<WareTrademark> { await GetByWareId(query.WareId.Value) });
+                var proto = await GetByWareId(query.WareId.Value);
+                if (proto != null)
+                {
+                    collections.Add(new List<WareTrademark> { proto });
+                }
             }
 
-            if (!wareTrademarkCollections.Any())
+            if (query.StringIds != null)
             {
-                return new List<WareTrademark>();
+                collections.Add(await GetByStringIds(query.StringIds));
             }
 
-            var result = wareTrademarkCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+            var result = new List<WareTrademark>();
+            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
+            {
+                result = _context.WareTrademarks
+                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                .Take(query.PageSize.Value)
+                .ToList();
+            }
+            else
+            {
+                result = (List<WareTrademark>)collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+            }
+
 
             // Сортування
             if (query.Sorting != null)
             {
                 switch (query.Sorting)
                 {
+                    case "IdAsc":
+                        result = result.OrderBy(ware => ware.Id).ToList();
+                        break;
+                    case "IdDesc":
+                        result = result.OrderByDescending(ware => ware.Id).ToList();
+                        break;
                     case "NameAsc":
                         result = result.OrderBy(ware => ware.Name).ToList();
                         break;
@@ -93,7 +133,10 @@ namespace HyggyBackend.DAL.Repositories
                     .Take(query.PageSize.Value)
                     .ToList();
             }
-
+            if (!result.Any())
+            {
+                return new List<WareTrademark>();
+            }
             return result;
 
         }

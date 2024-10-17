@@ -27,7 +27,11 @@ namespace HyggyBackend.Controllers
              .ForMember(dest => dest.MinPrice, opt => opt.MapFrom(src => src.MinPrice))
              .ForMember(dest => dest.MaxPrice, opt => opt.MapFrom(src => src.MaxPrice))
              .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
-             .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate));
+             .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
+             .ForMember(dest => dest.PageNumber, opt => opt.MapFrom(src => src.PageNumber))
+             .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize))
+             .ForMember(dest => dest.StringIds, opt => opt.MapFrom(src => src.StringIds))
+             .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Sorting));
         });
 
         [HttpGet]

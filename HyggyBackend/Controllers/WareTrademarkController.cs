@@ -22,7 +22,14 @@ namespace HyggyBackend.Controllers
         }
         MapperConfiguration config = new MapperConfiguration(mc =>
         {
-            mc.CreateMap<WareTramedarkQueryPL, WareTrademarkQueryBLL>();
+            mc.CreateMap<WareTramedarkQueryPL, WareTrademarkQueryBLL>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+            .ForMember(dest => dest.WareId, opt => opt.MapFrom(src => src.WareId))
+            .ForMember(dest => dest.PageNumber, opt => opt.MapFrom(src => src.PageNumber))
+            .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize))
+            .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Sorting))
+            .ForMember(dest => dest.StringIds, opt => opt.MapFrom(src => src.StringIds));
         });
 
         [HttpGet]
@@ -81,6 +88,18 @@ namespace HyggyBackend.Controllers
                                 throw new ValidationException("Не вказано PageSize для пошуку!", nameof(WareTramedarkQueryPL.PageSize));
                             }
                             collection = await _serv.GetPagedWareTrademarks(query.PageNumber.Value, query.PageSize.Value);
+                        }
+                        break;
+                    case "StringIds":
+                        {
+                            if (query.StringIds == null)
+                            {
+                                throw new ValidationException("Не вказано StringIds для пошуку!", nameof(WareTramedarkQueryPL.StringIds));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByStringIds(query.StringIds);
+                            }
                         }
                         break;
                     case "Query":
@@ -186,5 +205,6 @@ namespace HyggyBackend.Controllers
         public int? PageNumber { get; set; }
         public int? PageSize { get; set; }
         public string? Sorting { get; set; }
+        public string? StringIds { get; set; }
     }
 }

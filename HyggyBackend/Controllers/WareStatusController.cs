@@ -30,8 +30,9 @@ namespace HyggyBackend.Controllers
              .ForMember(dest => dest.NameSubstring, opt => opt.MapFrom(src => src.NameSubstring))
              .ForMember(dest => dest.DescriptionSubstring, opt => opt.MapFrom(src => src.DescriptionSubstring))
              .ForMember(dest => dest.PageNumber, opt => opt.MapFrom(src => src.PageNumber))
-             .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize));
-
+             .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize))
+             .ForMember(dest => dest.StringIds, opt => opt.MapFrom(src => src.StringIds))
+             .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Sorting));
         });
 
         [HttpGet]
@@ -109,6 +110,15 @@ namespace HyggyBackend.Controllers
                                 throw new ValidationException("Не вказано WareStatus.DescriptionSubstring для пошуку!", nameof(WareStatusQueryPL.DescriptionSubstring));
                             }
                             collection = await _serv.GetByDescriptionSubstring(query.DescriptionSubstring);
+                        }
+                        break;
+                    case "StringIds":
+                        {
+                            if (query.StringIds == null)
+                            {
+                                throw new ValidationException("Не вказано WareStatus.StringIds для пошуку!", nameof(WareStatusQueryPL.StringIds));
+                            }
+                            collection = await _serv.GetByStringIds(query.StringIds);
                         }
                         break;
                     case "Query":
@@ -207,6 +217,7 @@ namespace HyggyBackend.Controllers
 
     public class WareStatusQueryPL
     {
+        public string SearchParameter { get; set; }
         public int? PageNumber { get; set; }
         public int? PageSize { get; set; }
         public long? Id { get; set; }
@@ -214,6 +225,7 @@ namespace HyggyBackend.Controllers
         public long? WareArticle { get; set; }
         public string? NameSubstring { get; set; }
         public string? DescriptionSubstring { get; set; }
-        public string SearchParameter { get; set; }
+        public string? StringIds { get; set; }
+        public string? Sorting { get; set; }
     }
 }

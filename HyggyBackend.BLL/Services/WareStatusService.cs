@@ -32,7 +32,6 @@ namespace HyggyBackend.BLL.Services
             {
                 return null;
             }
-
             return _mapper.Map<WareStatusDTO>(ware);
         }
         public async Task<WareStatusDTO?> GetByWareId(long id)
@@ -42,7 +41,6 @@ namespace HyggyBackend.BLL.Services
             {
                 return null;
             }
-
             return _mapper.Map<WareStatusDTO>(ware);
         }
         public async Task<WareStatusDTO?> GetByWareArticle(long article)
@@ -52,25 +50,27 @@ namespace HyggyBackend.BLL.Services
             {
                 return null;
             }
-
             return _mapper.Map<WareStatusDTO>(ware);
         }
         public async Task<IEnumerable<WareStatusDTO>> GetPagedWareStatuses(int pageNumber, int pageSize)
         {
             IEnumerable<WareStatus> wareStatuses = await Database.WareStatuses.GetPagedWareStatuses(pageNumber, pageSize);
+            return _mapper.Map<IEnumerable<WareStatusDTO>>(wareStatuses);
+        }
 
+        public async Task<IEnumerable<WareStatusDTO>> GetByStringIds(string stringIds)
+        {
+            IEnumerable<WareStatus> wareStatuses = await Database.WareStatuses.GetByStringIds(stringIds);
             return _mapper.Map<IEnumerable<WareStatusDTO>>(wareStatuses);
         }
         public async Task<IEnumerable<WareStatusDTO>> GetByNameSubstring(string nameSubstring)
         {
             IEnumerable<WareStatus> wareStatuses = await Database.WareStatuses.GetByNameSubstring(nameSubstring);
-
             return _mapper.Map<IEnumerable<WareStatusDTO>>(wareStatuses);
         }
         public async Task<IEnumerable<WareStatusDTO>> GetByDescriptionSubstring(string descriptionSubstring)
         {
-            IEnumerable<WareStatus> wareStatuses = await Database.WareStatuses.GetByDescriptionSubstring(descriptionSubstring);
-
+            IEnumerable<WareStatus> wareStatuses = await Database.WareStatuses.GetByDescriptionSubstring(descriptionSubstring)
             return _mapper.Map<IEnumerable<WareStatusDTO>>(wareStatuses);
         }
         public async Task<IEnumerable<WareStatusDTO>> GetByQuery(WareStatusQueryBLL queryBLL)
@@ -86,8 +86,6 @@ namespace HyggyBackend.BLL.Services
             {
                 throw new ValidationException("Статус Товару з таким іменем вже існує!", wareStatusDTO.Name);
             }
-
-
             WareStatus wareStatus = new WareStatus
             {
                 Name = wareStatusDTO.Name,
@@ -111,8 +109,6 @@ namespace HyggyBackend.BLL.Services
             {
                 throw new ValidationException("Статус Товару з таким іменем вже існує!", wareStatusDTO.Name);
             }
-
-
             existedWareStatus.Name = wareStatusDTO.Name;
             existedWareStatus.Description = wareStatusDTO.Description ?? "";
             existedWareStatus.Wares.Clear();
@@ -133,7 +129,7 @@ namespace HyggyBackend.BLL.Services
         }
         public async Task<WareStatusDTO?> Delete(long id)
         {
-            WareStatus wareStatus = await Database.WareStatuses.GetById(id);
+            WareStatus? wareStatus = await Database.WareStatuses.GetById(id);
             if (wareStatus == null)
             {
                 throw new ValidationException("Статус Товару з таким id не знадено!", id.ToString());

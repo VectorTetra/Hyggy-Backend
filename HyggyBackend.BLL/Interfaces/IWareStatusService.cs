@@ -16,6 +16,7 @@ namespace HyggyBackend.BLL.Interfaces
         Task<WareStatusDTO?> GetByWareId(long id);
         Task<WareStatusDTO?> GetByWareArticle(long article);
         Task<IEnumerable<WareStatusDTO>> GetPagedWareStatuses(int pageNumber, int pageSize);
+        Task<IEnumerable<WareStatusDTO>> GetByStringIds(string stringIds);
         Task<IEnumerable<WareStatusDTO>> GetByNameSubstring(string nameSubstring);
         Task<IEnumerable<WareStatusDTO>> GetByDescriptionSubstring(string descriptionSubstring);
         Task<IEnumerable<WareStatusDTO>> GetByQuery(WareStatusQueryBLL queryBLL);

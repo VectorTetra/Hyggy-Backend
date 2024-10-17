@@ -1,6 +1,5 @@
 ﻿using HyggyBackend.BLL.DTO;
 using HyggyBackend.BLL.Queries;
-using HyggyBackend.DAL.Entities;
 
 namespace HyggyBackend.BLL.Interfaces
 {

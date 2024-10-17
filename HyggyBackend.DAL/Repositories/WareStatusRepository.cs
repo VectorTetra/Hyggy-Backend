@@ -29,6 +29,19 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.WareStatuses.FirstOrDefaultAsync(x => x.Wares.Any(w => w.Id == id));
         }
+        public async Task<IEnumerable<WareStatus>> GetByStringIds(string stringIds)
+        {
+            // Розділяємо рядок за символом '|' та конвертуємо в список long
+            List<long> ids = stringIds.Split('|').Select(long.Parse).ToList();
+            // Створюємо список для збереження результатів
+            var waress = new List<WareStatus>();
+            // Викликаємо асинхронний метод та збираємо результати
+            await foreach (var ware in GetByIdsAsync(ids))
+            {
+                waress.Add(ware);
+            }
+            return waress;
+        }
         public async Task<WareStatus?> GetByWareArticle(long article)
         {
             return await _context.WareStatuses.FirstOrDefaultAsync(x => x.Wares.Any(w => w.Article == article));
@@ -60,48 +73,94 @@ namespace HyggyBackend.DAL.Repositories
                 }
             }
         }
-        public async Task<IEnumerable<WareStatus>> GetByQuery(WareStatusQueryDAL queryDAL)
+        public async Task<IEnumerable<WareStatus>> GetByQuery(WareStatusQueryDAL query)
         {
-            var wareStatusCollections = new List<IEnumerable<WareStatus>>();
+            var collections = new List<IEnumerable<WareStatus>>();
 
 
-            if (queryDAL.Id != null)
+            if (query.Id != null)
             {
-                wareStatusCollections.Add(await _context.WareStatuses.Where(x => x.Id == queryDAL.Id).ToListAsync());
+                collections.Add(await _context.WareStatuses.Where(x => x.Id == query.Id).ToListAsync());
             }
 
-            if (queryDAL.WareId != null)
+            if (query.WareId != null)
             {
-                wareStatusCollections.Add(await _context.WareStatuses.Where(x => x.Wares.Any(w => w.Id == queryDAL.WareId)).ToListAsync());
+                collections.Add(await _context.WareStatuses.Where(x => x.Wares.Any(w => w.Id == query.WareId)).ToListAsync());
             }
 
-            if (queryDAL.WareArticle != null)
+            if (query.WareArticle != null)
             {
-                wareStatusCollections.Add(await _context.WareStatuses.Where(x => x.Wares.Any(w => w.Article == queryDAL.WareArticle)).ToListAsync());
+                collections.Add(await _context.WareStatuses.Where(x => x.Wares.Any(w => w.Article == query.WareArticle)).ToListAsync());
             }
 
-            if (queryDAL.NameSubstring != null)
+            if (query.NameSubstring != null)
             {
-                wareStatusCollections.Add(await _context.WareStatuses.Where(x => x.Name.Contains(queryDAL.NameSubstring)).ToListAsync());
+                collections.Add(await _context.WareStatuses.Where(x => x.Name.Contains(query.NameSubstring)).ToListAsync());
             }
 
-            if (queryDAL.DescriptionSubstring != null)
+            if (query.DescriptionSubstring != null)
             {
-                wareStatusCollections.Add(await _context.WareStatuses.Where(x => x.Description.Contains(queryDAL.DescriptionSubstring)).ToListAsync());
+                collections.Add(await _context.WareStatuses.Where(x => x.Description.Contains(query.DescriptionSubstring)).ToListAsync());
+            }
+            if (query.StringIds != null)
+            {
+                collections.Add(await GetByStringIds(query.StringIds));
+            }
+            var result = new List<WareStatus>();
+            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
+            {
+                result = _context.WareStatuses
+                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                .Take(query.PageSize.Value)
+                .ToList();
+            }
+            else
+            {
+                result = (List<WareStatus>)collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
             }
 
-            if (!wareStatusCollections.Any())
+
+            // Сортування
+            if (query.Sorting != null)
+            {
+                switch (query.Sorting)
+                {
+                    case "IdAsc":
+                        result = result.OrderBy(ware => ware.Id).ToList();
+                        break;
+                    case "IdDesc":
+                        result = result.OrderByDescending(ware => ware.Id).ToList();
+                        break;
+                    case "NameAsc":
+                        result = result.OrderBy(ware => ware.Name).ToList();
+                        break;
+                    case "NameDesc":
+                        result = result.OrderByDescending(ware => ware.Name).ToList();
+                        break;
+                    case "DescriptionAsc":
+                        result = result.OrderBy(ware => ware.Description).ToList();
+                        break;
+                    case "DescriptionDesc":
+                        result = result.OrderByDescending(ware => ware.Description).ToList();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            // Пагінація
+            if (query.PageNumber != null && query.PageSize != null)
+            {
+                result = result
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToList();
+            }
+            if (!result.Any())
             {
                 return new List<WareStatus>();
             }
-
-            if (queryDAL.PageNumber != null && queryDAL.PageSize != null)
-            {
-                return wareStatusCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList())
-                    .Skip((queryDAL.PageNumber.Value - 1) * queryDAL.PageSize.Value)
-                    .Take(queryDAL.PageSize.Value);
-            }
-            return wareStatusCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+            return result;
         }
         public async Task Create(WareStatus wareStatus)
         {
