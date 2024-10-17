@@ -14,6 +14,7 @@ namespace HyggyBackend.DAL.Interfaces
         Task<IEnumerable<WareItem>> GetByStringIds(string stringIds);
         Task<IEnumerable<WareItem>> GetByArticle(long article);
         Task<IEnumerable<WareItem>> GetByWareId(long wareId);
+        Task<WareItem?> ExistsAsync(long wareId, long storageId);
         Task<IEnumerable<WareItem>> GetByWareName(string wareName);
         Task<IEnumerable<WareItem>> GetByWareDescription(string wareDescription);
         Task<IEnumerable<WareItem>> GetByWarePriceRange(float minPrice, float maxPrice);

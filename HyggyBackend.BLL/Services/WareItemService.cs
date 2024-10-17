@@ -142,6 +142,12 @@ namespace HyggyBackend.BLL.Services
                 throw new ValidationException($"Складу з вказаним Id не існує! Id: {WareItemDTO.StorageId}", "");
             }
 
+            var ExistedWareItem = await Database.WareItems.ExistsAsync(WareItemDTO.WareId, WareItemDTO.StorageId);
+            if (ExistedWareItem != null)
+            {
+                throw new ValidationException($"Запис для товару з Id {WareItemDTO.WareId} на складі з Id {WareItemDTO.StorageId} вже існує.", "");
+            }
+
             var wareItem = new WareItem
             {
                 Id = WareItemDTO.Id,
@@ -153,11 +159,16 @@ namespace HyggyBackend.BLL.Services
             await Database.WareItems.Create(wareItem);
             await Database.Save();
 
-            var returnedDTO = await GetById(wareItem.Id);
-            return returnedDTO;
+            return _mapper.Map<WareItem, WareItemDTO>(wareItem);
         }
         public async Task<WareItemDTO> Update(WareItemDTO WareItemDTO) 
         {
+
+            var isExistedId = await Database.WareItems.GetById(WareItemDTO.Id);
+            if (isExistedId == null)
+            {
+                throw new ValidationException($"Запис для товару з вказаним Id не існує! Id: {WareItemDTO.Id}", "");
+            }
             var ExistedWare = await Database.Wares.GetById(WareItemDTO.WareId);
             if (ExistedWare == null)
             {
@@ -169,20 +180,22 @@ namespace HyggyBackend.BLL.Services
             {
                 throw new ValidationException($"Складу з вказаним Id не існує! Id: {WareItemDTO.StorageId}", "");
             }
-
-            var wareItem = new WareItem
+            var ExistedWareItem = await Database.WareItems.ExistsAsync(WareItemDTO.WareId, WareItemDTO.StorageId);
+            if (ExistedWareItem != null && ExistedWareItem.Id != WareItemDTO.Id)
             {
-                Id = WareItemDTO.Id,
-                Ware = ExistedWare,
-                Storage = ExistedStorage,
-                Quantity = WareItemDTO.Quantity
-            };
+                throw new ValidationException($"Запис для товару з Id {WareItemDTO.WareId} на складі з Id {WareItemDTO.StorageId} вже існує.", "");
+            }
 
-            Database.WareItems.Update(wareItem);
+            isExistedId.Id = WareItemDTO.Id;
+            isExistedId.Ware = ExistedWare;
+            isExistedId.Storage = ExistedStorage;
+            isExistedId.Quantity = WareItemDTO.Quantity;
+           
+
+            Database.WareItems.Update(isExistedId);
             await Database.Save();
 
-            var returnedDTO = await GetById(wareItem.Id);
-            return returnedDTO;
+            return _mapper.Map<WareItem, WareItemDTO>(isExistedId);
         }
         public async Task<WareItemDTO> Delete(long id) 
         {

@@ -23,6 +23,11 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.WareItems.FindAsync(id);
         }
+        public async Task<WareItem?> ExistsAsync(long wareId, long storageId)
+        {
+            return await _context.WareItems
+                .FirstOrDefaultAsync(w => w.Ware.Id == wareId && w.Storage.Id == storageId);
+        }
         public async Task<IEnumerable<WareItem>> GetByStringIds(string stringIds)
         {
             // Розділяємо рядок за символом '|' та конвертуємо в список long
