@@ -36,7 +36,9 @@ namespace HyggyBackend.Controllers
             .ForMember("WareArticle", opt => opt.MapFrom(c => c.WareArticle))
             .ForMember("WareDescriptionSubstring", opt => opt.MapFrom(c => c.WareDescriptionSubstring))
             .ForMember("PageSize", opt => opt.MapFrom(c => c.PageSize))
-            .ForMember("PageNumber", opt => opt.MapFrom(c => c.PageNumber));
+            .ForMember("PageNumber", opt => opt.MapFrom(c => c.PageNumber))
+            .ForMember("StringIds", opt => opt.MapFrom(c => c.StringIds))
+            .ForMember("Sorting", opt => opt.MapFrom(c => c.Sorting));
         });
 
         [HttpGet]
@@ -139,6 +141,15 @@ namespace HyggyBackend.Controllers
                                 throw new ValidationException("Не вказано WareCategory3DTO.WareDescriptionSubstring для пошуку!", nameof(WareCategory3QueryPL.WareDescriptionSubstring));
                             }
                             collection = await _serv.GetByWareDescriptionSubstring(query.WareDescriptionSubstring);
+                        }
+                        break;
+                    case "StringIds":
+                        {
+                            if (query.StringIds == null)
+                            {
+                                throw new ValidationException("Не вказано WareCategory3DTO.StringIds для пошуку!", nameof(WareCategory3QueryPL.StringIds));
+                            }
+                            collection = await _serv.GetByStringIds(query.StringIds);
                         }
                         break;
                     case "Paged":
@@ -260,5 +271,7 @@ namespace HyggyBackend.Controllers
         public string? WareDescriptionSubstring { get; set; }
         public int? PageSize { get; set; }
         public int? PageNumber { get; set; }
+        public string? StringIds { get; set; }
+        public string? Sorting { get; set; }
     }
 }

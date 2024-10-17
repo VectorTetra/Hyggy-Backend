@@ -46,7 +46,9 @@ namespace HyggyBackend.Controllers
              .ForMember(dest => dest.MinQuantity, opt => opt.MapFrom(src => src.MinQuantity))
              .ForMember(dest => dest.MaxQuantity, opt => opt.MapFrom(src => src.MaxQuantity))
              .ForMember(dest => dest.PageNumber, opt => opt.MapFrom(src => src.PageNumber))
-             .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize));
+             .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize))
+             .ForMember(dest => dest.StringIds, opt => opt.MapFrom(src => src.StringIds))
+             .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Sorting));
         });
 
         [HttpPost]
@@ -310,6 +312,15 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByQuantityRange(query.MinQuantity.Value, query.MaxQuantity.Value);
                         }
                         break;
+                    case "StringIds":
+                        {
+                            if (query.StringIds == null)
+                            {
+                                throw new ValidationException("Не вказано Ware.StringIds для пошуку!", nameof(WareItemQueryPL.StringIds));
+                            }
+                            collection = await _serv.GetByStringIds(query.StringIds);
+                        }
+                        break;
                     case "Paged":
                         {
                             if (query.PageNumber == null)
@@ -375,11 +386,11 @@ namespace HyggyBackend.Controllers
         public bool? IsDeliveryAvailable { get; set; }
         public long? StorageId { get; set; }
         public long? ShopId { get; set; }
-
         public long? MinQuantity { get; set; }
         public long? MaxQuantity { get; set; }
-
         public int? PageNumber { get; set; }
         public int? PageSize { get; set; }
+        public string? StringIds { get; set; }
+        public string? Sorting { get; set; }
     }
 }

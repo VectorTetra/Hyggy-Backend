@@ -25,6 +25,27 @@ namespace HyggyBackend.DAL.Repositories
             return await _context.WarePriceHistories.FindAsync(id);
         }
 
+        public async Task<IEnumerable<WarePriceHistory>> GetPaged(int pageNumber, int pageSize)
+        {
+            return await _context.WarePriceHistories
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+        public async Task<IEnumerable<WarePriceHistory>> GetByStringIds(string stringIds)
+        {
+            // Розділяємо рядок за символом '|' та конвертуємо в список long
+            List<long> ids = stringIds.Split('|').Select(long.Parse).ToList();
+            // Створюємо список для збереження результатів
+            var waress = new List<WarePriceHistory>();
+            // Викликаємо асинхронний метод та збираємо результати
+            await foreach (var ware in GetByIdsAsync(ids))
+            {
+                waress.Add(ware);
+            }
+            return waress;
+        }
+
         public async Task<IEnumerable<WarePriceHistory>> GetByWareId(long wareId)
         {
             return await _context.WarePriceHistories.Where(wph => wph.Ware.Id == wareId).ToListAsync();
@@ -42,35 +63,98 @@ namespace HyggyBackend.DAL.Repositories
 
         public async Task<IEnumerable<WarePriceHistory>> GetByQuery(WarePriceHistoryQueryDAL query)
         {
-            var warePriceHistories = _context.WarePriceHistories.AsQueryable();
+            var collections = new List<IEnumerable<WarePriceHistory>>();
 
+            if (query.Id.HasValue)
+            {
+                var proto = await GetById(query.Id.Value);
+                if(proto != null)
+                {
+                    collections.Add(new List<WarePriceHistory> { proto });
+                }
+
+            }
             if (query.WareId.HasValue)
             {
-                warePriceHistories = warePriceHistories.Where(wph => wph.Ware.Id == query.WareId.Value);
+                collections.Add(await GetByWareId(query.WareId.Value));
             }
 
-            if (query.MinPrice.HasValue)
+            if (query.MinPrice.HasValue && query.MaxPrice.HasValue)
             {
-                warePriceHistories = warePriceHistories.Where(wph => wph.Price >= query.MinPrice.Value);
+                collections.Add(await GetByPriceRange(query.MinPrice.Value, query.MaxPrice.Value));
             }
 
-            if (query.MaxPrice.HasValue)
+            if (query.StartDate.HasValue && query.EndDate.HasValue)
             {
-                warePriceHistories = warePriceHistories.Where(wph => wph.Price <= query.MaxPrice.Value);
+                collections.Add(await GetByDateRange(query.StartDate.Value, query.EndDate.Value));
             }
-            
-            if (query.StartDate.HasValue)
+
+            if (!string.IsNullOrEmpty(query.StringIds))
             {
-                warePriceHistories = warePriceHistories.Where(wph => wph.EffectiveDate >= query.StartDate.Value);
-
+                collections.Add(await GetByStringIds(query.StringIds));
             }
 
-            if (query.EndDate.HasValue)
+            var result = new List<WarePriceHistory>();
+            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
             {
-                warePriceHistories = warePriceHistories.Where(wph => wph.EffectiveDate <= query.EndDate.Value);
+                result = _context.WarePriceHistories
+                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                .Take(query.PageSize.Value)
+                .ToList();
+            }
+            else
+            {
+                result = (List<WarePriceHistory>)collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
             }
 
-            return await warePriceHistories.ToListAsync();
+
+            // Сортування
+            if (query.Sorting != null)
+            {
+                switch (query.Sorting)
+                {
+                    case "IdAsc":
+                        result = result.OrderBy(ware => ware.Id).ToList();
+                        break;
+                    case "IdDesc":
+                        result = result.OrderByDescending(ware => ware.Id).ToList();
+                        break;
+                    case "WareIdAsc":
+                        result = result.OrderBy(ware => ware.Ware.Id).ToList();
+                        break;
+                    case "WareIdDesc":
+                        result = result.OrderByDescending(ware => ware.Ware.Id).ToList();
+                        break;
+                    case "PriceAsc":
+                        result = result.OrderBy(ware => ware.Price).ToList();
+                        break;
+                    case "PriceDesc":
+                        result = result.OrderByDescending(ware => ware.Price).ToList();
+                        break;
+                    case "EffectiveDateAsc":
+                        result = result.OrderBy(ware => ware.EffectiveDate).ToList();
+                        break;
+                    case "EffectiveDateDesc":
+                        result = result.OrderByDescending(ware => ware.EffectiveDate).ToList();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            // Пагінація
+            if (query.PageNumber != null && query.PageSize != null)
+            {
+                result = result
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToList();
+            }
+            if (!result.Any())
+            {
+                return new List<WarePriceHistory>();
+            }
+            return result;
         }
 
         public async IAsyncEnumerable<WarePriceHistory> GetByIdsAsync(IEnumerable<long> ids)

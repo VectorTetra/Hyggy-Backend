@@ -6,11 +6,6 @@ using HyggyBackend.BLL.Queries;
 using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Interfaces;
 using HyggyBackend.DAL.Queries;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HyggyBackend.BLL.Services
 {
@@ -26,38 +21,37 @@ namespace HyggyBackend.BLL.Services
 
         public async Task<WareCategory3DTO?> GetById(long id)
         {
-
             var wareCategory3 = await Database.Categories3.GetById(id);
             return _mapper.Map<WareCategory3, WareCategory3DTO>(wareCategory3);
         }
         public async Task<IEnumerable<WareCategory3DTO>> GetPagedCategories(int pageNumber, int pageSize)
         {
-
             var wareCategory3s = await Database.Categories3.GetPagedCategories(pageNumber, pageSize);
+            return _mapper.Map<IEnumerable<WareCategory3>, IEnumerable<WareCategory3DTO>>(wareCategory3s);
+        }
+
+        public async Task<IEnumerable<WareCategory3DTO>> GetByStringIds(string stringIds)
+        {
+            var wareCategory3s = await Database.Categories3.GetByStringIds(stringIds);
             return _mapper.Map<IEnumerable<WareCategory3>, IEnumerable<WareCategory3DTO>>(wareCategory3s);
         }
         public async Task<IEnumerable<WareCategory3DTO>> GetByNameSubstring(string nameSubstring)
         {
-
-
             var wareCategory3s = await Database.Categories3.GetByNameSubstring(nameSubstring);
             return _mapper.Map<IEnumerable<WareCategory3>, IEnumerable<WareCategory3DTO>>(wareCategory3s);
         }
         public async Task<IEnumerable<WareCategory3DTO>> GetByWareCategory1Id(long id)
         {
-
             var wareCategory3s = await Database.Categories3.GetByWareCategory1Id(id);
             return _mapper.Map<IEnumerable<WareCategory3>, IEnumerable<WareCategory3DTO>>(wareCategory3s);
         }
         public async Task<IEnumerable<WareCategory3DTO>> GetByWareCategory1NameSubstring(string WareCategory1NameSubstring)
         {
-
             var wareCategory3s = await Database.Categories3.GetByWareCategory1NameSubstring(WareCategory1NameSubstring);
             return _mapper.Map<IEnumerable<WareCategory3>, IEnumerable<WareCategory3DTO>>(wareCategory3s);
         }
         public async Task<IEnumerable<WareCategory3DTO>> GetByWareCategory2Id(long id)
         {
-
             var wareCategory3s = await Database.Categories3.GetByWareCategory2Id(id);
             return _mapper.Map<IEnumerable<WareCategory3>, IEnumerable<WareCategory3DTO>>(wareCategory3s);
         }
@@ -113,7 +107,7 @@ namespace HyggyBackend.BLL.Services
             var existingCategory2 = await Database.Categories2.GetById(existingCategory2Id)
                 ?? throw new ValidationException("WareCategory2 з таким ідентифікатором не існує", "");
 
-            
+
 
             // Створення нової категорії
             var wareCategory3 = new WareCategory3
@@ -150,7 +144,7 @@ namespace HyggyBackend.BLL.Services
             var existingCategory2 = await Database.Categories2.GetById(existingCategory2Id)
                 ?? throw new ValidationException("WareCategory2 з таким ідентифікатором не існує", "");
 
-           
+
 
             // Оновлення категорії
             existingCategory3.Wares.Clear();

@@ -95,6 +95,31 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
+                    case "StringIds":
+                        {
+                            if (string.IsNullOrEmpty(query.StringIds))
+                            {
+                                throw new ValidationException("Не вказано WarePriceHistory.StringIds для пошуку!", nameof(WarePriceHistoryQueryPL.StringIds));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByStringIds(query.StringIds);
+                            }
+                        }
+                        break;
+                    case "Paged":
+                        {
+                            if(query.PageNumber == null || query.PageSize == null)
+                            {
+
+                                throw new ValidationException("Не вказано WarePriceHistory.PageNumber або WarePriceHistory.PageSize для пошуку!", nameof(WarePriceHistoryQueryPL.PageNumber));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetPaged(query.PageNumber.Value, query.PageSize.Value);
+                            }
+                        }
+                        break;
                     case "Query":
                         {
                             var mapper = new Mapper(config);
@@ -189,12 +214,16 @@ namespace HyggyBackend.Controllers
 
     public class WarePriceHistoryQueryPL
     {
-        public string? SearchParameter { get; set; }
+        public string SearchParameter { get; set; }
         public long? Id { get; set; }
         public long? WareId { get; set; }
         public float? MinPrice { get; set; }
         public float? MaxPrice { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public int? PageNumber { get; set; }
+        public int? PageSize { get; set; }
+        public string? StringIds { get; set; }
+        public string? Sorting { get; set; }
     }
 }

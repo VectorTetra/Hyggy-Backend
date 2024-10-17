@@ -48,6 +48,37 @@ namespace HyggyBackend.BLL.Services
             var wares = await Database.Wares.GetByStringIds(stringIds);
             return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
         }
+
+        public async Task<IEnumerable<WareDTO>> GetByStringTrademarkIds(string stringTrademarkIds)
+        {
+            var wares = await Database.Wares.GetByStringTrademarkIds(stringTrademarkIds);
+            return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
+        }
+
+        public async Task<IEnumerable<WareDTO>> GetByStringStatusIds(string stringStatusIds)
+        {
+            var wares = await Database.Wares.GetByStringStatusIds(stringStatusIds);
+            return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
+        }
+
+        public async Task<IEnumerable<WareDTO>> GetByStringCategory1Ids(string stringCategory1Ids)
+        {
+            var wares = await Database.Wares.GetByStringCategory1Ids(stringCategory1Ids);
+            return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
+        }
+
+        public async Task<IEnumerable<WareDTO>> GetByStringCategory2Ids(string stringCategory2Ids)
+        {
+            var wares = await Database.Wares.GetByStringCategory2Ids(stringCategory2Ids);
+            return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
+        }
+
+        public async Task<IEnumerable<WareDTO>> GetByStringCategory3Ids(string stringCategory3Ids)
+        {
+            var wares = await Database.Wares.GetByStringCategory3Ids(stringCategory3Ids);
+            return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
+        }   
+
         public async Task<IEnumerable<WareDTO>> GetByCategory1Id(long category1Id)
         {
             var wares = await Database.Wares.GetByCategory1Id(category1Id);

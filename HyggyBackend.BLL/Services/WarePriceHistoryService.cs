@@ -26,6 +26,18 @@ namespace HyggyBackend.BLL.Services
             return _mapper.Map<WarePriceHistoryDTO>(warePriceHistory);
         }
 
+        public async Task<IEnumerable<WarePriceHistoryDTO>> GetPaged(int pageNumber, int pageSize)
+        {
+            var warePriceHistories = await _unitOfWork.WarePriceHistories.GetPaged(pageNumber, pageSize);
+            return _mapper.Map<IEnumerable<WarePriceHistoryDTO>>(warePriceHistories);
+        }
+
+        public async Task<IEnumerable<WarePriceHistoryDTO>> GetByStringIds(string stringIds)
+        {
+            var warePriceHistories = await _unitOfWork.WarePriceHistories.GetByStringIds(stringIds);
+            return _mapper.Map<IEnumerable<WarePriceHistoryDTO>>(warePriceHistories);
+        }
+
         public async Task<IEnumerable<WarePriceHistoryDTO>> GetByWareId(long wareId)
         {
             var warePriceHistories = await _unitOfWork.WarePriceHistories.GetByWareId(wareId);

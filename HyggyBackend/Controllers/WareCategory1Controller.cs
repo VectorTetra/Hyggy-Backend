@@ -30,6 +30,8 @@ namespace HyggyBackend.Controllers
             .ForMember("WareCategory2NameSubstring", opt => opt.MapFrom(c => c.WareCategory2NameSubstring))
             .ForMember("WareCategory3Id", opt => opt.MapFrom(c => c.WareCategory3Id))
             .ForMember("WareCategory3NameSubstring", opt => opt.MapFrom(c => c.WareCategory3NameSubstring))
+            .ForMember("StringIds", opt => opt.MapFrom(c => c.StringIds))
+            .ForMember("Sorting", opt => opt.MapFrom(c => c.Sorting))
             .ForMember("PageSize", opt => opt.MapFrom(c => c.PageSize))
             .ForMember("PageNumber", opt => opt.MapFrom(c => c.PageNumber));
         });
@@ -96,6 +98,15 @@ namespace HyggyBackend.Controllers
                                 throw new ValidationException("Не вказано WareCategory2Id для пошуку!", nameof(wareCategory1Query.WareCategory2Id));
                             }
                             collection = await _serv.GetByWareCategory2Id((long)wareCategory1Query.WareCategory2Id);
+                        }
+                        break;
+                    case "StringIds":
+                        {
+                            if (wareCategory1Query.StringIds == null)
+                            {
+                                throw new ValidationException("Не вказано StringIds для пошуку!", nameof(wareCategory1Query.StringIds));
+                            }
+                            collection = await _serv.GetByStringIds(wareCategory1Query.StringIds);
                         }
                         break;
                     case "Paged":
@@ -202,7 +213,7 @@ namespace HyggyBackend.Controllers
 
     public class WareCategory1QueryPL
     {
-        public string SearchParameter{ get; set; }
+        public string SearchParameter { get; set; }
         public long? Id { get; set; }
         public string? NameSubstring { get; set; }
         public long? WareCategory2Id { get; set; }
@@ -211,5 +222,7 @@ namespace HyggyBackend.Controllers
         public string? WareCategory3NameSubstring { get; set; }
         public int? PageSize { get; set; }
         public int? PageNumber { get; set; }
+        public string? StringIds { get; set; }
+        public string? Sorting { get; set; }
     }
 }

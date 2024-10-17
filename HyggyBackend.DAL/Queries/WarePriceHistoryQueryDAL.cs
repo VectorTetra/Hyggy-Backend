@@ -14,6 +14,8 @@ namespace HyggyBackend.DAL.Queries
         public float? MaxPrice { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public int? PageNumber { get; set; }
+        public int? PageSize { get; set; }
         public string? StringIds { get; set; }
         public string? Sorting { get; set; }
     }

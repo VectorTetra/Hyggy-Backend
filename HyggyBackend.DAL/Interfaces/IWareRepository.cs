@@ -9,6 +9,11 @@ namespace HyggyBackend.DAL.Interfaces
         Task<Ware?> GetByArticle(long article);
         Task<IEnumerable<Ware>> GetPagedWares(int pageNumber, int pageSize);
         Task<IEnumerable<Ware>> GetByStringIds(string stringIds);
+        Task<IEnumerable<Ware>> GetByStringTrademarkIds(string stringTrademarkIds);
+        Task<IEnumerable<Ware>> GetByStringStatusIds(string stringStatusIds);
+        Task<IEnumerable<Ware>> GetByStringCategory1Ids(string stringCategory1Ids);
+        Task<IEnumerable<Ware>> GetByStringCategory2Ids(string stringCategory2Ids);
+        Task<IEnumerable<Ware>> GetByStringCategory3Ids(string stringCategory3Ids);
         Task<IEnumerable<Ware>> GetByCategory1Id(long category1Id);
         Task<IEnumerable<Ware>> GetByCategory2Id(long category2Id);
         Task<IEnumerable<Ware>> GetByCategory3Id(long category3Id);

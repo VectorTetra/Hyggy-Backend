@@ -6,6 +6,7 @@ namespace HyggyBackend.BLL.Interfaces
     public interface IWareItemService
     {
         Task<WareItemDTO?> GetById(long id);
+        Task<IEnumerable<WareItemDTO>> GetByStringIds(string stringIds);
         Task<IEnumerable<WareItemDTO>> GetByArticle(long article);
         Task<IEnumerable<WareItemDTO>> GetByWareId(long wareId);
         Task<IEnumerable<WareItemDTO>> GetByWareName(string wareName);

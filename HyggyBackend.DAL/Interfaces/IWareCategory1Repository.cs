@@ -12,6 +12,7 @@ namespace HyggyBackend.DAL.Interfaces
     {
         Task<WareCategory1?> GetById(long id);
         Task<IEnumerable<WareCategory1>> GetPagedCategories(int pageNumber, int pageSize);
+        Task<IEnumerable<WareCategory1>> GetByStringIds(string stringIds);
         Task<IEnumerable<WareCategory1>> GetByNameSubstring(string nameSubstring);
         Task<IEnumerable<WareCategory1>> GetByWareCategory2Id(long id);
         Task<IEnumerable<WareCategory1>> GetByWareCategory2NameSubstring(string WareCategory2NameSubstring);

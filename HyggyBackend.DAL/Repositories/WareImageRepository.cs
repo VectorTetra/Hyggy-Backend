@@ -18,6 +18,20 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.WareImages.FindAsync(id);
         }
+
+        public async Task<IEnumerable<WareImage>> GetByStringIds(string stringIds)
+        {
+            // Розділяємо рядок за символом '|' та конвертуємо в список long
+            List<long> ids = stringIds.Split('|').Select(long.Parse).ToList();
+            // Створюємо список для збереження результатів
+            var waress = new List<WareImage>();
+            // Викликаємо асинхронний метод та збираємо результати
+            await foreach (var ware in GetByIdsAsync(ids))
+            {
+                waress.Add(ware);
+            }
+            return waress;
+        }
         public async Task<IEnumerable<WareImage>> GetByWareId(long wareId) 
         {
             return await _context.WareImages.Where(x => x.Ware.Id == wareId).ToListAsync();
@@ -31,30 +45,89 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.WareImages.Where(x => x.Path.Contains(path)).ToListAsync();
         }
-        public async Task<IEnumerable<WareImage>> GetByQuery(WareImageQueryDAL queryDAL)
+        public async Task<IEnumerable<WareImage>> GetByQuery(WareImageQueryDAL query)
         {
-            var wareImageCollections = new List<IEnumerable<WareImage>>();
+            var collections = new List<IEnumerable<WareImage>>();
 
-            if (queryDAL.Id != null)
+            if (query.Id != null)
             {
-                wareImageCollections.Add(new List<WareImage> { await GetById(queryDAL.Id.Value) });
+                var proto = await GetById(query.Id.Value);
+                if (proto != null)
+                {
+                    collections.Add(new List<WareImage> { proto });
+                }
+            }
+            if (query.WareId != null)
+            {
+                collections.Add(await GetByWareId(query.WareId.Value));
+            }
+            if (query.WareArticle != null)
+            {
+                collections.Add(await GetByWareArticle(query.WareArticle.Value));
+            }
+            if (query.Path != null)
+            {
+                collections.Add(await GetByPathSubstring(query.Path));
+            }
+            if (query.StringIds != null)
+            {
+                collections.Add(await GetByStringIds(query.StringIds));
+            }
+            var result = new List<WareImage>();
+            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
+            {
+                result = _context.WareImages
+                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                .Take(query.PageSize.Value)
+                .ToList();
+            }
+            else
+            {
+                result = (List<WareImage>)collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
             }
 
-            if (queryDAL.WareId != null)
+
+            // Сортування
+            if (query.Sorting != null)
             {
-                wareImageCollections.Add(await GetByWareId(queryDAL.WareId.Value));
+                switch (query.Sorting)
+                {
+                    case "IdAsc":
+                        result = result.OrderBy(ware => ware.Id).ToList();
+                        break;
+                    case "IdDesc":
+                        result = result.OrderByDescending(ware => ware.Id).ToList();
+                        break;
+                    case "WareIdAsc":
+                        result = result.OrderBy(ware => ware.Ware.Id).ToList();
+                        break;
+                    case "WareIdDesc":
+                        result = result.OrderByDescending(ware => ware.Ware.Id).ToList();
+                        break;
+                    case "WareArticleAsc":
+                        result = result.OrderBy(ware => ware.Ware.Article).ToList();
+                        break;
+                    case "WareArticleDesc":
+                        result = result.OrderByDescending(ware => ware.Ware.Article).ToList();
+                        break;
+                    default:
+                        break;
+                }
             }
 
-            if (queryDAL.WareArticle != null)
+            // Пагінація
+            if (query.PageNumber != null && query.PageSize != null)
             {
-                wareImageCollections.Add(await GetByWareArticle(queryDAL.WareArticle.Value));
+                result = result
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToList();
             }
-            
-            if (queryDAL.Path != null)
+            if (!result.Any())
             {
-                wareImageCollections.Add(await GetByPathSubstring(queryDAL.Path));
+                return new List<WareImage>();
             }
-            return wareImageCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+            return result;
 
         }
 

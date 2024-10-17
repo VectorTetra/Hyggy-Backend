@@ -14,11 +14,9 @@ namespace HyggyBackend.BLL.DTO
         public long? WareCategory3Id { get; set; }
         public long? TrademarkId { get; set; }
         public string? Name { get; set; }
-        public string? PreviewImagePath { get; set; }
         public string? Description { get; set; }
         public string? StructureFilePath { get; set; }
         public float? Price { get; set; }
-        public float? FinalPrice { get; set; }
         public float? Discount { get; set; }
         public float? AverageRating { get; set; }
         public bool? IsDeliveryAvailable { get; set; }
@@ -29,6 +27,13 @@ namespace HyggyBackend.BLL.DTO
         public ICollection<long>? OrderItemIds { get; set; } = new List<long>();
         public ICollection<long>? ReviewIds { get; set; } = new List<long>();
         public ICollection<string>? CustomerFavoriteIds { get; set; } = new List<string>();
-        public string? StringIds { get; set; }
+
+        // Отримуєтьмя в результаті запиту
+        public string? WareCategory3Name { get; set; }
+        public string? PreviewImagePath { get; set; }
+        public float? FinalPrice { get; set; }
+        public string? TrademarkName { get; set; }
+        public ICollection<string>? StatusNames { get; set; } = new List<string>();
+        public ICollection<string>? ImagePaths { get; set; } = new List<string>();
     }
 }

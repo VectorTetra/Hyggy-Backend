@@ -11,6 +11,7 @@ namespace HyggyBackend.DAL.Interfaces
     public interface IWareItemRepository
     {
         Task<WareItem?> GetById(long id);
+        Task<IEnumerable<WareItem>> GetByStringIds(string stringIds);
         Task<IEnumerable<WareItem>> GetByArticle(long article);
         Task<IEnumerable<WareItem>> GetByWareId(long wareId);
         Task<IEnumerable<WareItem>> GetByWareName(string wareName);

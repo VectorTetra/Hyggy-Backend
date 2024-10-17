@@ -2,6 +2,7 @@
 using HyggyBackend.BLL.DTO;
 using HyggyBackend.BLL.Infrastructure;
 using HyggyBackend.BLL.Interfaces;
+using HyggyBackend.BLL.Queries;
 using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Interfaces;
 using HyggyBackend.DAL.Queries;
@@ -23,6 +24,10 @@ namespace HyggyBackend.BLL.Services
         {
             return _mapper.Map<WareImageDTO>(await Database.WareImages.GetById(id));
         }
+        public async Task<IEnumerable<WareImageDTO>> GetByStringIds(string stringIds)
+        {
+            return _mapper.Map<IEnumerable<WareImageDTO>>(await Database.WareImages.GetByStringIds(stringIds));
+        }
         public async Task<IEnumerable<WareImageDTO>> GetByWareId(long wareId)
         {
 
@@ -38,9 +43,9 @@ namespace HyggyBackend.BLL.Services
 
             return _mapper.Map<IEnumerable<WareImageDTO>>(await Database.WareImages.GetByPathSubstring(path));
         }
-        public async Task<IEnumerable<WareImageDTO>> GetByQuery(WareImageQueryDAL queryDAL)
+        public async Task<IEnumerable<WareImageDTO>> GetByQuery(WareImageQueryBLL query)
         {
-            return _mapper.Map<IEnumerable<WareImageDTO>>(await Database.WareImages.GetByQuery(queryDAL));
+            return _mapper.Map<IEnumerable<WareImageDTO>>(await Database.WareImages.GetByQuery(_mapper.Map<WareImageQueryDAL>(query)));
         }
         public async Task<WareImageDTO> Create(WareImageDTO wareImage)
         {

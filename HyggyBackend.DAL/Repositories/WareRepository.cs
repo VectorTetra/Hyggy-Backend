@@ -43,6 +43,67 @@ namespace HyggyBackend.DAL.Repositories
             }
             return waress;
         }
+        public async Task<IEnumerable<Ware>> GetByStringTrademarkIds(string stringTrademarkIds)
+        {
+            // Розділяємо рядок за символом '|' та конвертуємо в список long
+            List<long> ids = stringTrademarkIds.Split('|').Select(long.Parse).ToList();
+
+            // Виконуємо запит до контексту для отримання товарів, у яких ідентифікатор торгової марки міститься у списку
+            var waress = await _context.Wares
+                .Where(ware =>  ware.WareTrademark != null && ids.Contains(ware.WareTrademark.Id))
+                .ToListAsync();
+
+            return waress;
+        }
+        public async Task<IEnumerable<Ware>> GetByStringStatusIds(string stringStatusIds)
+        {
+            // Розділяємо рядок за символом '|' та конвертуємо в список long
+            List<long> ids = stringStatusIds.Split('|').Select(long.Parse).ToList();
+
+            // Виконуємо запит до контексту для отримання товарів, у яких ідентифікатор статусу міститься у списку
+            var waress = await _context.Wares
+                .Where(ware => ware.Statuses.Any(status => ids.Contains(status.Id)))
+                .ToListAsync();
+
+            return waress;
+        }
+        public async Task<IEnumerable<Ware>> GetByStringCategory1Ids(string stringCategory1Ids)
+        {
+            // Розділяємо рядок за символом '|' та конвертуємо в список long
+            List<long> ids = stringCategory1Ids.Split('|').Select(long.Parse).ToList();
+
+            // Виконуємо запит до контексту для отримання товарів, у яких ідентифікатор категорії 1 міститься у списку
+            var waress = await _context.Wares
+                .Where(ware => ware.WareCategory3.WareCategory2.WareCategory1 != null && ids.Contains(ware.WareCategory3.WareCategory2.WareCategory1.Id))
+                .ToListAsync();
+
+            return waress;
+        }
+        public async Task<IEnumerable<Ware>> GetByStringCategory2Ids(string stringCategory2Ids)
+        {
+            // Розділяємо рядок за символом '|' та конвертуємо в список long
+            List<long> ids = stringCategory2Ids.Split('|').Select(long.Parse).ToList();
+
+            // Виконуємо запит до контексту для отримання товарів, у яких ідентифікатор категорії 2 міститься у списку
+            var waress = await _context.Wares
+                .Where(ware => ware.WareCategory3.WareCategory2 != null && ids.Contains(ware.WareCategory3.WareCategory2.Id))
+                .ToListAsync();
+
+            return waress;
+        }
+        public async Task<IEnumerable<Ware>> GetByStringCategory3Ids(string stringCategory3Ids)
+        {
+            // Розділяємо рядок за символом '|' та конвертуємо в список long
+            List<long> ids = stringCategory3Ids.Split('|').Select(long.Parse).ToList();
+
+            // Виконуємо запит до контексту для отримання товарів, у яких ідентифікатор категорії 3 міститься у списку
+            var waress = await _context.Wares
+                .Where(ware => ware.WareCategory3 != null && ids.Contains(ware.WareCategory3.Id))
+                .ToListAsync();
+
+            return waress;
+        }
+
         public async Task<IEnumerable<Ware>> GetByCategory1Id(long category1Id)
         {
             return await _context.Wares.Where(x => x.WareCategory3.WareCategory2.WareCategory1.Id == category1Id).ToListAsync();
@@ -174,7 +235,6 @@ namespace HyggyBackend.DAL.Repositories
                     collections.Add(new List<Ware> { res });
                 }
             }
-
             if (query.Article != null)
             {
                 var res = await GetByArticle(query.Article.Value);
@@ -183,92 +243,65 @@ namespace HyggyBackend.DAL.Repositories
                     collections.Add(new List<Ware> { res });
                 }
             }
-
             if (query.Category1Id != null)
             {
                 collections.Add(await GetByCategory1Id(query.Category1Id.Value));
             }
-
             if (query.Category2Id != null)
             {
                 collections.Add(await GetByCategory2Id(query.Category2Id.Value));
             }
-
             if (query.Category3Id != null)
             {
                 collections.Add(await GetByCategory3Id(query.Category3Id.Value));
             }
-
             if (query.NameSubstring != null)
             {
                 collections.Add(await GetByNameSubstring(query.NameSubstring));
             }
-
             if (query.DescriptionSubstring != null)
-            {
-                collections.Add(await GetByDescriptionSubstring(query.DescriptionSubstring));
-            }
-
             if (query.Category1NameSubstring != null)
-            {
-                collections.Add(await GetByCategory1NameSubstring(query.Category1NameSubstring));
-            }
-
             if (query.Category2NameSubstring != null)
-            {
-                collections.Add(await GetByCategory2NameSubstring(query.Category2NameSubstring));
-            }
-
             if (query.Category3NameSubstring != null)
             {
                 collections.Add(await GetByCategory3NameSubstring(query.Category3NameSubstring));
             }
-
             if (query.TrademarkId != null)
             {
                 collections.Add(await GetByTrademarkId(query.TrademarkId.Value));
             }
-
             if (query.TrademarkNameSubstring != null)
             {
                 collections.Add(await GetByTrademarkNameSubstring(query.TrademarkNameSubstring));
             }
-
             if (query.MinPrice != null && query.MaxPrice != null)
             {
                 collections.Add(await GetByPriceRange(query.MinPrice.Value, query.MaxPrice.Value));
             }
-
             if (query.MinDiscount != null && query.MaxDiscount != null)
             {
                 collections.Add(await GetByDiscountRange(query.MinDiscount.Value, query.MaxDiscount.Value));
             }
-
             if (query.IsDeliveryAvailable != null)
             {
                 collections.Add(await GetByIsDeliveryAvailable(query.IsDeliveryAvailable.Value));
             }
-
             if (query.StatusId != null)
             {
                 collections.Add(await GetByStatusId(query.StatusId.Value));
             }
-
             if (query.StatusName != null)
             {
                 collections.Add(await GetByStatusNameSubstring(query.StatusName));
             }
-
             if (query.StatusDescription != null)
             {
                 collections.Add(await GetByStatusDescriptionSubstring(query.StatusDescription));
             }
-
             if (query.ImagePath != null)
             {
                 collections.Add(await GetByImagePathSubstring(query.ImagePath));
             }
-
             if (query.CustomerId != null)
             {
                 collections.Add(await GetFavoritesByCustomerId(query.CustomerId));
@@ -276,6 +309,26 @@ namespace HyggyBackend.DAL.Repositories
             if (query.StringIds != null)
             {
                 collections.Add(await GetByStringIds(query.StringIds));
+            }
+            if (query.StringTrademarkIds != null)
+            {
+                collections.Add(await GetByStringTrademarkIds(query.StringTrademarkIds));
+            }
+            if (query.StringStatusIds != null)
+            {
+                collections.Add(await GetByStringStatusIds(query.StringStatusIds));
+            }
+            if (query.StringCategory1Ids != null)
+            {
+                collections.Add(await GetByStringCategory1Ids(query.StringCategory1Ids));
+            }
+            if (query.StringCategory2Ids != null)
+            {
+                collections.Add(await GetByStringCategory2Ids(query.StringCategory2Ids));
+            }
+            if (query.StringCategory3Ids != null)
+            {
+                collections.Add(await GetByStringCategory3Ids(query.StringCategory3Ids));
             }
             var result = new List<Ware>();
             if (query.PageNumber != null && query.PageSize != null && !collections.Any())

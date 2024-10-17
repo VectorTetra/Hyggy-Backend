@@ -50,6 +50,11 @@ namespace HyggyBackend.Controllers
              .ForMember(dest => dest.ImagePath, opt => opt.MapFrom(src => src.ImagePath))
              .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Sorting))
              .ForMember(dest => dest.StringIds, opt => opt.MapFrom(src => src.StringIds))
+             .ForMember(dest => dest.StringTrademarkIds, opt => opt.MapFrom(src => src.StringTrademarkIds))
+             .ForMember(dest => dest.StringStatusIds, opt => opt.MapFrom(src => src.StringStatusIds))
+             .ForMember(dest => dest.StringCategory1Ids, opt => opt.MapFrom(src => src.StringCategory1Ids))
+             .ForMember(dest => dest.StringCategory2Ids, opt => opt.MapFrom(src => src.StringCategory2Ids))
+             .ForMember(dest => dest.StringCategory3Ids, opt => opt.MapFrom(src => src.StringCategory3Ids))
              .ForMember(dest => dest.PageNumber, opt => opt.MapFrom(src => src.PageNumber))
              .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize))
              .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.CustomerId));
@@ -322,6 +327,66 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
+                    case "StringTrademarkIds":
+                        {
+                            if (query.StringTrademarkIds == null)
+                            {
+                                throw new ValidationException("Не вказано Ware.StringTrademarkIds для пошуку!", nameof(WareQueryPL.StringTrademarkIds));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByStringTrademarkIds(query.StringTrademarkIds);
+                            }
+                        }
+                        break;
+                    case "StringStatusIds":
+                        {
+                            if (query.StringStatusIds == null)
+                            {
+                                throw new ValidationException("Не вказано Ware.StringStatusIds для пошуку!", nameof(WareQueryPL.StringStatusIds));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByStringStatusIds(query.StringStatusIds);
+                            }
+                        }
+                        break;
+                    case "StringCategory1Ids":
+                        {
+                            if (query.StringCategory1Ids == null)
+                            {
+                                throw new ValidationException("Не вказано Ware.StringCategory1Ids для пошуку!", nameof(WareQueryPL.StringCategory1Ids));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByStringCategory1Ids(query.StringCategory1Ids);
+                            }
+                        }
+                        break;
+                    case "StringCategory2Ids":
+                        {
+                            if (query.StringCategory2Ids == null)
+                            {
+                                throw new ValidationException("Не вказано Ware.StringCategory2Ids для пошуку!", nameof(WareQueryPL.StringCategory2Ids));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByStringCategory2Ids(query.StringCategory2Ids);
+                            }
+                        }
+                        break;
+                    case "StringCategory3Ids":
+                        {
+                            if (query.StringCategory3Ids == null)
+                            {
+                                throw new ValidationException("Не вказано Ware.StringCategory3Ids для пошуку!", nameof(WareQueryPL.StringCategory3Ids));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByStringCategory3Ids(query.StringCategory3Ids);
+                            }
+                        }
+                        break;
                     case "Paged":
                         {
                             if (query.PageNumber == null)
@@ -459,6 +524,11 @@ namespace HyggyBackend.Controllers
         public string? ImagePath { get; set; }
         public string? Sorting { get; set; }
         public string? StringIds { get; set; }
+        public string? StringTrademarkIds { get; set; }
+        public string? StringStatusIds { get; set; }
+        public string? StringCategory1Ids { get; set; }
+        public string? StringCategory2Ids { get; set; }
+        public string? StringCategory3Ids { get; set; }
     }
 
 }

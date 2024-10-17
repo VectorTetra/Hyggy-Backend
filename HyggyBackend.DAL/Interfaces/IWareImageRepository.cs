@@ -7,6 +7,7 @@ namespace HyggyBackend.DAL.Interfaces
     {
         Task<WareImage?> GetById(long id);
         Task<IEnumerable<WareImage>> GetByWareId(long wareId);
+        Task<IEnumerable<WareImage>> GetByStringIds(string stringIds);
         Task<IEnumerable<WareImage>> GetByWareArticle(long wareArticle);
         Task<IEnumerable<WareImage>> GetByPathSubstring(string path);
         Task<IEnumerable<WareImage>> GetByQuery(WareImageQueryDAL queryDAL);

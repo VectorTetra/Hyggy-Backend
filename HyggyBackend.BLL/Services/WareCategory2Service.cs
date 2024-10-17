@@ -41,6 +41,12 @@ namespace HyggyBackend.BLL.Services
             var wareCategory2s = await Database.Categories2.GetPagedCategories(pageNumber, pageSize);
             return _mapper.Map<IEnumerable<WareCategory2>, IEnumerable<WareCategory2DTO>>(wareCategory2s);
         }
+
+        public async Task<IEnumerable<WareCategory2DTO>> GetByStringIds(string stringIds)
+        {
+            var wareCategory2s = await Database.Categories2.GetByStringIds(stringIds);
+            return _mapper.Map<IEnumerable<WareCategory2>, IEnumerable<WareCategory2DTO>>(wareCategory2s);
+        }
         public async Task<IEnumerable<WareCategory2DTO>> GetByNameSubstring(string nameSubstring)
         {
             
