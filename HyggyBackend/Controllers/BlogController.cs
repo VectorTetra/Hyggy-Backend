@@ -208,6 +208,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -230,6 +234,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -252,6 +260,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -270,6 +282,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -285,11 +301,17 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
         private async Task<ActionResult<string>> SaveJsonToFile(JToken jsonContent)
         {
+            try
+            {
             // генеруємо новий GUID
             string guid = Guid.NewGuid().ToString();
             string newFileName = $"{guid}.json";
@@ -303,8 +325,17 @@ namespace HyggyBackend.Controllers
                 }
             }
 
-            path = "https://localhost:7288" + path;
+            path = "http://hyggy.somee.com" + path;
             return new ObjectResult(path);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpPut]
@@ -364,6 +395,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -379,37 +414,37 @@ namespace HyggyBackend.Controllers
                 Console.WriteLine(oldFilePath);
                 if (System.IO.File.Exists(oldFilePath))
                 {
-                    // Отримати вміст файлу
-                    string fileContent = await System.IO.File.ReadAllTextAsync(oldFilePath);
+                    //// Отримати вміст файлу
+                    //string fileContent = await System.IO.File.ReadAllTextAsync(oldFilePath);
 
-                    // Парсимо JSON-масив
-                    JArray jsonOldFileObject = JArray.Parse(fileContent);
-                    foreach (var item in jsonOldFileObject)
-                    {
-                        if (item["type"] != null && item["type"].ToString() == "gallery")
-                        {
-                            JArray valueArray = (JArray)item["value"];
-                            foreach (var valueItem in valueArray)
-                            {
-                                if (valueItem["dataUrl"] != null)
-                                {
-                                    string dataUrl = valueItem["dataUrl"].ToString();
+                    //// Парсимо JSON-масив
+                    //JArray jsonOldFileObject = JArray.Parse(fileContent);
+                    //foreach (var item in jsonOldFileObject)
+                    //{
+                    //    if (item["type"] != null && item["type"].ToString() == "gallery")
+                    //    {
+                    //        JArray valueArray = (JArray)item["value"];
+                    //        foreach (var valueItem in valueArray)
+                    //        {
+                    //            if (valueItem["dataUrl"] != null)
+                    //            {
+                    //                string dataUrl = valueItem["dataUrl"].ToString();
 
-                                    var oldFileUri1 = new Uri(dataUrl);
-                                    var oldFilePath1 = Path.Combine(_appEnvironment.WebRootPath, oldFileUri1.AbsolutePath.TrimStart('/'));
-                                    Console.WriteLine(oldFilePath1);
-                                    if (System.IO.File.Exists(oldFilePath1))
-                                    {
-                                        System.IO.File.Delete(oldFilePath1);
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    //                var oldFileUri1 = new Uri(dataUrl);
+                    //                var oldFilePath1 = Path.Combine(_appEnvironment.WebRootPath, oldFileUri1.AbsolutePath.TrimStart('/'));
+                    //                Console.WriteLine(oldFilePath1);
+                    //                if (System.IO.File.Exists(oldFilePath1))
+                    //                {
+                    //                    System.IO.File.Delete(oldFilePath1);
+                    //                }
+                    //            }
+                    //        }
+                    //    }
+                    //}
                     // Видаляємо старий файл конструктора
                     System.IO.File.Delete(oldFilePath);
                 }
-                return new ObjectResult("OK");
+                return new ObjectResult($"Файл {ConstructorFilePath} було успішно видалено!");
             }
             catch (ValidationException ex)
             {
@@ -417,58 +452,66 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
 
-        [HttpPost]
-        [Route("PostBlogImage")]
-        public async Task<ActionResult<ICollection<string>>> PostBlogImage([FromForm] IFormFileCollection FormFiles)
-        {
-            try
-            {
-                if (FormFiles is null || FormFiles.Count == 0)
-                {
-                    throw new ValidationException("Файли не було завантажено!", nameof(FormFiles));
-                }
-                List<string> paths = new List<string>();
-                foreach (var FormFile in FormFiles)
-                {
-                    // получаем имя файла
-                    string fileName = System.IO.Path.GetFileNameWithoutExtension(FormFile.FileName);
-                    fileName = fileName.Replace(" ", "_");
+        //[HttpPost]
+        //[Route("PostBlogImage")]
+        //public async Task<ActionResult<ICollection<string>>> PostBlogImage([FromForm] IFormFileCollection FormFiles)
+        //{
+        //    try
+        //    {
+        //        if (FormFiles is null || FormFiles.Count == 0)
+        //        {
+        //            throw new ValidationException("Файли не було завантажено!", nameof(FormFiles));
+        //        }
+        //        List<string> paths = new List<string>();
+        //        foreach (var FormFile in FormFiles)
+        //        {
+        //            // получаем имя файла
+        //            string fileName = System.IO.Path.GetFileNameWithoutExtension(FormFile.FileName);
+        //            fileName = fileName.Replace(" ", "_");
 
-                    // генерируем новый GUID
-                    string guid = Guid.NewGuid().ToString();
+        //            // генерируем новый GUID
+        //            string guid = Guid.NewGuid().ToString();
 
-                    // добавляем GUID к имени файла
-                    string newFileName = $"{fileName}_{guid}{Path.GetExtension(FormFile.FileName)}";
+        //            // добавляем GUID к имени файла
+        //            string newFileName = $"{fileName}_{guid}{Path.GetExtension(FormFile.FileName)}";
 
-                    // Путь к папке Files
-                    string path = "/BlogImages/" + newFileName; // новое имя файла
+        //            // Путь к папке Files
+        //            string path = "/BlogImages/" + newFileName; // новое имя файла
 
-                    // Сохраняем файл в папку Files в каталоге wwwroot
-                    // Для получения полного пути к каталогу wwwroot
-                    // применяется свойство WebRootPath объекта IWebHostEnvironment
-                    using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
-                    {
-                        await FormFile.CopyToAsync(fileStream); // копируем файл в поток
-                    }
-                    //return new ObjectResult(_appEnvironment.WebRootPath + path);
-                    path = "https://localhost:7288" + path;
-                    paths.Add(path);
-                }
-                return new ObjectResult(paths);
-            }
-            catch (ValidationException ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
+        //            // Сохраняем файл в папку Files в каталоге wwwroot
+        //            // Для получения полного пути к каталогу wwwroot
+        //            // применяется свойство WebRootPath объекта IWebHostEnvironment
+        //            using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
+        //            {
+        //                await FormFile.CopyToAsync(fileStream); // копируем файл в поток
+        //            }
+        //            //return new ObjectResult(_appEnvironment.WebRootPath + path);
+        //            path = "http://hyggy.somee.com" + path;
+        //            paths.Add(path);
+        //        }
+        //        return new ObjectResult(paths);
+        //    }
+        //    catch (ValidationException ex)
+        //    {
+        //        return StatusCode(500, ex.Message);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        if (ex.InnerException != null)
+        //        {
+        //            return StatusCode(500, ex.InnerException.Message);
+        //        }
+        //        return StatusCode(500, ex.Message);
+        //    }
+        //}
     }
 
     public class BlogQueryPL

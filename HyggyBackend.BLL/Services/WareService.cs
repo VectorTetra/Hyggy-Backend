@@ -278,8 +278,7 @@ namespace HyggyBackend.BLL.Services
             await Database.Wares.Create(wareDAL);
             await Database.Save();
 
-            wareDTO.Id = wareDAL.Id;
-            return wareDTO;
+            return _mapper.Map<Ware, WareDTO>(wareDAL);
 
         }
         public async Task<WareDTO> Update(WareDTO wareDTO)
@@ -295,7 +294,7 @@ namespace HyggyBackend.BLL.Services
             }
             //Перевірка на унікальність артикулу та назви
             var existedArticle = await Database.Wares.GetByArticle(wareDTO.Article.Value);
-            if (existedArticle != null)
+            if (existedArticle != null && existedArticle.Id != wareDTO.Id)
             {
                 throw new ValidationException("Товар з таким артикулом вже існує!", wareDTO.Article.ToString());
             }

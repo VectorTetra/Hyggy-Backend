@@ -70,7 +70,7 @@ namespace HyggyBackend.BLL.Services
         }
         public async Task<IEnumerable<WareStatusDTO>> GetByDescriptionSubstring(string descriptionSubstring)
         {
-            IEnumerable<WareStatus> wareStatuses = await Database.WareStatuses.GetByDescriptionSubstring(descriptionSubstring)
+            IEnumerable<WareStatus> wareStatuses = await Database.WareStatuses.GetByDescriptionSubstring(descriptionSubstring);
             return _mapper.Map<IEnumerable<WareStatusDTO>>(wareStatuses);
         }
         public async Task<IEnumerable<WareStatusDTO>> GetByQuery(WareStatusQueryBLL queryBLL)

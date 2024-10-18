@@ -30,11 +30,15 @@ namespace HyggyBackend.Controllers
 
 				return Ok(new { message = "Будь ласка підтвердіть ваш обліковий запис" });
 			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, ex.Message);
-			}
-		}
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
 		[HttpPost("authenticate")]
 		public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDto authenticationDto)
 		{
@@ -46,11 +50,15 @@ namespace HyggyBackend.Controllers
 
 				return Ok(response);
 			}
-			catch(Exception ex)
-			{
-				return StatusCode(500, ex.Message);
-			}
-		}
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
 		[HttpGet("emailconfirmation")]
 		public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string token)
 		{
@@ -64,11 +72,15 @@ namespace HyggyBackend.Controllers
 			{
 				return StatusCode(500, ex.Message);
 			}
-			catch(Exception ex)
-			{
-				return StatusCode(500, ex.Message);
-			}
-		}
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
 		[HttpPost("forgotpassword")]
 		public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPassword)
 		{
@@ -84,11 +96,15 @@ namespace HyggyBackend.Controllers
 			{
 				return StatusCode(500, ex.Message);
 			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, ex.Message);
-			}
-		}
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
 		[HttpPost("resetpassword")]
 		public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPassword)
 		{
@@ -104,11 +120,15 @@ namespace HyggyBackend.Controllers
 			{
 				return StatusCode(500, ex.Message);
 			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, ex.Message);
-			}
-		}
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
 		[HttpPut("editaccount")]
 		public async Task<IActionResult> EditAccount([FromBody] UserForEditDto userDto)
 		{
@@ -122,11 +142,15 @@ namespace HyggyBackend.Controllers
 			{
 				return StatusCode(500, ex.Message);
 			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, ex.Message);
-			}
-		}
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
 		//Закоментував, що було раніше
 
 		//private readonly UserManager<IdentityUser> _userManager;

@@ -166,6 +166,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -205,11 +209,15 @@ namespace HyggyBackend.Controllers
 
 				return Ok(new { message = "Будь ласка підтвердіть ваш обліковий запис" });
 			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, ex.Message);
-			}
-		}
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
 		[HttpPost("authenticate")]
 		public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDto authenticationDto)
 		{
@@ -221,11 +229,15 @@ namespace HyggyBackend.Controllers
 
 				return Ok(response);
 			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, ex.Message);
-			}
-		}
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
 		[HttpGet("emailconfirmation")]
 		public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string token)
 		{
@@ -239,11 +251,15 @@ namespace HyggyBackend.Controllers
 			{
 				return StatusCode(500, ex.Message);
 			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, ex.Message);
-			}
-		}
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
 		[HttpPut]
         public async Task<ActionResult<CustomerDTO>> PutCustomer([FromBody] CustomerDTO customer)
         {
@@ -262,6 +278,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -285,6 +305,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }

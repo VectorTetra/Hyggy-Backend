@@ -105,6 +105,10 @@ namespace HyggyBackend.DAL.EF
             .HasIndex(w => new { w.WareId, w.StorageId })
             .IsUnique();
 
+            builder.Entity<WarePriceHistory>()
+            .HasIndex(w => new { w.WareId, w.Price, w.EffectiveDate })
+            .IsUnique();
+
             //builder.Entity<Storage>()
             //    .HasOne(m => m.Shop)
             //    .WithOne(s => s.Storage)

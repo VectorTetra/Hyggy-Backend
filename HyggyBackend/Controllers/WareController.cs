@@ -7,6 +7,7 @@ using HyggyBackend.BLL.Services;
 using HyggyBackend.DAL.Queries;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
 using System.Linq.Expressions;
 
 namespace HyggyBackend.Controllers
@@ -425,6 +426,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -447,6 +452,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -469,6 +478,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -487,11 +500,183 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
 
+        [HttpPost]
+        [Route("PostJsonConstructorFile")]
+        public async Task<ActionResult<string>> PostJsonConstructorFile([FromForm] string JsonConstructorItems)
+        {
+            try
+            {
+                JToken jsonToken = JToken.Parse(JsonConstructorItems);
+                return await SaveJsonToFile(jsonToken);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
+        private async Task<ActionResult<string>> SaveJsonToFile(JToken jsonContent)
+        {
+            try
+            {
+                // генеруємо новий GUID
+                string guid = Guid.NewGuid().ToString();
+                string newFileName = $"{guid}.json";
+                string path = "/WarePageJsonStructures/" + newFileName;
 
+                using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
+                {
+                    using (var writer = new StreamWriter(fileStream))
+                    {
+                        writer.Write(jsonContent.ToString()); // jsonContent може бути і JObject, і JArray
+                    }
+                }
+
+                path = "http://hyggy.somee.com" + path;
+                return new ObjectResult(path);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("PutJsonConstructorFile")]
+        public async Task<ActionResult<string>> PutJsonConstructorFile([FromForm] string oldConstructorFilePath, [FromForm] string JsonConstructorItems)
+        {
+            try
+            {
+                var oldFileUri = new Uri(oldConstructorFilePath);
+                var oldFilePath = Path.Combine(_appEnvironment.WebRootPath, oldFileUri.AbsolutePath.TrimStart('/'));
+                Console.WriteLine(oldFilePath);
+                if (System.IO.File.Exists(oldFilePath))
+                {
+                    // Отримати вміст файлу
+                    //string fileContent = await System.IO.File.ReadAllTextAsync(oldFilePath);
+
+                    // Парсимо JSON-масив
+                    //JArray jsonOldFileObject = JArray.Parse(fileContent);
+                    //foreach (var item in jsonOldFileObject)
+                    //{
+                    //    if (item["type"] != null && item["type"].ToString() == "gallery")
+                    //    {
+                    //        JArray valueArray = (JArray)item["value"];
+                    //        foreach (var valueItem in valueArray)
+                    //        {
+                    //            if (valueItem["dataUrl"] != null)
+                    //            {
+                    //                string dataUrl = valueItem["dataUrl"].ToString();
+
+                    //                var oldFileUri1 = new Uri(dataUrl);
+                    //                var oldFilePath1 = Path.Combine(_appEnvironment.WebRootPath, oldFileUri1.AbsolutePath.TrimStart('/'));
+                    //                Console.WriteLine(oldFilePath1);
+                    //                if (System.IO.File.Exists(oldFilePath1))
+                    //                {
+                    //                    System.IO.File.Delete(oldFilePath1);
+                    //                }
+                    //            }
+                    //        }
+                    //    }
+                    //}
+
+                    // Записуємо новий контент у старий файл
+                    System.IO.File.WriteAllText(oldFilePath, JsonConstructorItems);
+
+                    // Повертаємо URL до оновленого файлу
+                    string updatedFilePath = oldConstructorFilePath; // Якщо шлях до файлу не змінюється
+                    return new ObjectResult(updatedFilePath);
+                }
+                else
+                {
+                    return StatusCode(404, "Старий файл не знайдено.");
+                }
+            }
+            catch (ValidationException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpDelete]
+        [Route("DeleteJsonConstructorFile")]
+        public async Task<ActionResult<string>> DeleteJsonConstructorFile([FromForm] string ConstructorFilePath)
+        {
+            try
+            {
+                var oldFileUri = new Uri(ConstructorFilePath);
+                var oldFilePath = Path.Combine(_appEnvironment.WebRootPath, oldFileUri.AbsolutePath.TrimStart('/'));
+                Console.WriteLine(oldFilePath);
+                if (System.IO.File.Exists(oldFilePath))
+                {
+                    //// Отримати вміст файлу
+                    //string fileContent = await System.IO.File.ReadAllTextAsync(oldFilePath);
+
+                    //// Парсимо JSON-масив
+                    //JArray jsonOldFileObject = JArray.Parse(fileContent);
+                    //foreach (var item in jsonOldFileObject)
+                    //{
+                    //    if (item["type"] != null && item["type"].ToString() == "gallery")
+                    //    {
+                    //        JArray valueArray = (JArray)item["value"];
+                    //        foreach (var valueItem in valueArray)
+                    //        {
+                    //            if (valueItem["dataUrl"] != null)
+                    //            {
+                    //                string dataUrl = valueItem["dataUrl"].ToString();
+
+                    //                var oldFileUri1 = new Uri(dataUrl);
+                    //                var oldFilePath1 = Path.Combine(_appEnvironment.WebRootPath, oldFileUri1.AbsolutePath.TrimStart('/'));
+                    //                Console.WriteLine(oldFilePath1);
+                    //                if (System.IO.File.Exists(oldFilePath1))
+                    //                {
+                    //                    System.IO.File.Delete(oldFilePath1);
+                    //                }
+                    //            }
+                    //        }
+                    //    }
+                    //}
+                    // Видаляємо старий файл конструктора
+                    System.IO.File.Delete(oldFilePath);
+                }
+                return new ObjectResult($"Файл {ConstructorFilePath} було успішно видалено!");
+            }
+            catch (ValidationException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
 
     }
 

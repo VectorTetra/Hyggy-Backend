@@ -238,8 +238,13 @@ namespace HyggyBackend.BLL.Helper
             #endregion
 
             #region WarePriceHistory Mappings
-            CreateMap<WarePriceHistory, WarePriceHistoryDTO>();
-            CreateMap<WarePriceHistoryDTO, WarePriceHistory>();
+            CreateMap<WarePriceHistory, WarePriceHistoryDTO>()
+                .ForMember(dest => dest.Id, opts => opts.MapFrom(src => src.Id))
+                .ForMember(dest => dest.WareId, opts => opts.MapFrom(src => src.Ware.Id))
+                .ForMember(dest => dest.Price, opts => opts.MapFrom(src => src.Price))
+                .ForMember(dest => dest.EffectiveDate, opts => opts.MapFrom(src => src.EffectiveDate));
+            CreateMap<WarePriceHistoryQueryBLL, WarePriceHistoryQueryDAL>();
+
             #endregion
 
             #region Ware Mappings

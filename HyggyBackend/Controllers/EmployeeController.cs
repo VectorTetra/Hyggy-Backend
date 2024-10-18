@@ -12,128 +12,229 @@ using Org.BouncyCastle.Tsp;
 
 namespace HyggyBackend.Controllers
 {
-	[ApiController]
-	[Route("api/employee")]
-	public class EmployeeController : Controller
-	{
-		private IEmployeeService<ShopEmployeeDTO> _service;
+    [ApiController]
+    [Route("api/employee")]
+    public class EmployeeController : Controller
+    {
+        private IEmployeeService<ShopEmployeeDTO> _service;
 
-		public EmployeeController(IEmployeeService<ShopEmployeeDTO> service)
-		{
-			_service = service;
-		}
-		
-		[HttpPost("register")]
-		public async Task<IActionResult> Register([FromBody] EmployeeForRegistrationDto registerDto)
-		{
-			
-			try
-			{
-				if (registerDto is null)
-					return BadRequest();
+        public EmployeeController(IEmployeeService<ShopEmployeeDTO> service)
+        {
+            _service = service;
+        }
 
-				var response = await _service.CreateAsync(registerDto);
-				if(!response.IsSuccessfullRegistration)
-					return BadRequest(response.Errors);
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] EmployeeForRegistrationDto registerDto)
+        {
 
-				return Ok("Надішлить співробітнику повідомлення про підтверження аккаунту.");
-			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, ex.Message);
-			}
-			
-		}
-		[HttpPost("authenticate")]
-		public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDto authentication)
-		{
-			try
-			{
-				var response = await _service.AuthenticateAsync(authentication);
-				if (!response.IsAuthSuccessfull)
-					return StatusCode(500, response.Error);
+            try
+            {
+                if (registerDto is null)
+                    return BadRequest();
 
-				return Ok(response);
-			}
-			catch(Exception ex)
-			{
-				return StatusCode(500, ex.Message);
+                var response = await _service.CreateAsync(registerDto);
+                if (!response.IsSuccessfullRegistration)
+                    return BadRequest(response.Errors);
 
-			}
-		}
-		[HttpGet("emailconfirmation")]
-		public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string token)
-		{
-			var result = await _service.EmailConfirmation(email, token);
+                return Ok("Надішлить співробітнику повідомлення про підтверження аккаунту.");
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
 
-			return Ok(result);
-		}
-		
-		[HttpGet("shopemployee/{shopId}")]
-		public async Task<IActionResult> GetAllByShopId(long shopId)
-		{
-			var employees = await _service.GetEmployeesByWorkPlaceId(shopId);
-			if (employees is null)
-				return NotFound();
+        }
+        [HttpPost("authenticate")]
+        public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDto authentication)
+        {
+            try
+            {
+                var response = await _service.AuthenticateAsync(authentication);
+                if (!response.IsAuthSuccessfull)
+                    return StatusCode(500, response.Error);
 
-			return Ok(employees);
-		}
-		[HttpGet("shopemployes")]
-		public async Task<IActionResult> GetAll()
-		{
-			var employees = await _service.GetAllAsync();
-			if(employees is null)
-				return NotFound();
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpGet("emailconfirmation")]
+        public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string token)
+        {
+            try
+            {
+                var result = await _service.EmailConfirmation(email, token);
 
-			return Ok(employees);
-		}
-		[HttpGet("shopemployee-email")]
-		public async Task<IActionResult> GetByEmail(string email)
-		{
-			var employee = await _service.GetByEmail(email);
-			if (employee is null)
-				return NotFound();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
 
-			return Ok(employee);
-		}
-		[HttpGet("shopemployee-surname")]
-		public async Task<IActionResult> GetBySurname(string surname)
-		{
-			var employee = await _service.GetBySurnameAsync(surname);
-			if (employee is null)
-				return NotFound();
+        }
 
-			return Ok(employee);
-		}
-		[HttpGet("shopemployee-phone")]
-		public async Task<IActionResult> GetByPhone(string phone)
-		{
-			var employee = await _service.GetByPhoneAsync(phone);
-			if (employee is null)
-				return NotFound();
+        [HttpGet("shopemployee/{shopId}")]
+        public async Task<IActionResult> GetAllByShopId(long shopId)
+        {
+            try
+            {
+                var employees = await _service.GetEmployeesByWorkPlaceId(shopId);
+                if (employees is null)
+                    return NotFound();
 
-			return Ok(employee);
-		}
-		[HttpPut("editemployee")]
-		public async Task<IActionResult> EditEmployee(ShopEmployeeDTO employeeDTO)
-		{
-			var employee = await _service.GetByIdAsync(employeeDTO.Id!);
-			if(employee is null)	
-				return NotFound();
+                return Ok(employees);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpGet("shopemployes")]
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+                var employees = await _service.GetAllAsync();
+                if (employees is null)
+                    return NotFound();
 
-			_service.Update(employeeDTO);
+                return Ok(employees);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpGet("shopemployee-email")]
+        public async Task<IActionResult> GetByEmail(string email)
+        {
+            try
+            {
+                var employee = await _service.GetByEmail(email);
+                if (employee is null)
+                    return NotFound();
 
-			return Ok("Співробітника оновлено.");
-		}
-		[HttpDelete("deleteemployee")]
-		public async Task<IActionResult> DeleteEmployee(string id)
-		{
-			var employee = await _service.GetByIdAsync(id);
-			if(employee is null)
-				return NotFound();
+                return Ok(employee);
 
-			await _service.DeleteAsync(id);
-			return Ok("Співробітника видалено.");
-		}
-	}
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpGet("shopemployee-surname")]
+        public async Task<IActionResult> GetBySurname(string surname)
+        {
+            try
+            {
+                var employee = await _service.GetBySurnameAsync(surname);
+                if (employee is null)
+                    return NotFound();
+
+                return Ok(employee);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+
+        }
+        [HttpGet("shopemployee-phone")]
+        public async Task<IActionResult> GetByPhone(string phone)
+        {
+            try
+            {
+
+                var employee = await _service.GetByPhoneAsync(phone);
+                if (employee is null)
+                    return NotFound();
+
+                return Ok(employee);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpPut("editemployee")]
+        public async Task<IActionResult> EditEmployee(ShopEmployeeDTO employeeDTO)
+        {
+            try
+            {
+
+                var employee = await _service.GetByIdAsync(employeeDTO.Id!);
+                if (employee is null)
+                    return NotFound();
+
+                _service.Update(employeeDTO);
+
+                return Ok("Співробітника оновлено.");
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpDelete("deleteemployee")]
+        public async Task<IActionResult> DeleteEmployee(string id)
+        {
+            try
+            {
+
+                var employee = await _service.GetByIdAsync(id);
+                if (employee is null)
+                    return NotFound();
+
+                await _service.DeleteAsync(id);
+                return Ok("Співробітника видалено.");
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
+    }
 }

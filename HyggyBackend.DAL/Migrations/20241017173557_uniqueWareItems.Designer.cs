@@ -4,6 +4,7 @@ using HyggyBackend.DAL.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HyggyBackend.DAL.Migrations
 {
     [DbContext(typeof(HyggyContext))]
-    partial class HyggyContextModelSnapshot : ModelSnapshot
+    [Migration("20241017173557_uniqueWareItems")]
+    partial class uniqueWareItems
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -578,8 +581,7 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("WareId", "Price", "EffectiveDate")
-                        .IsUnique();
+                    b.HasIndex("WareId");
 
                     b.ToTable("WarePriceHistories");
                 });
@@ -694,13 +696,13 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "3bb5488a-d065-4b1e-96dc-980f8fa511b4",
+                            Id = "cad22e5e-0232-4b19-8345-c49e68729593",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "c1616847-211b-49cc-b9b4-1b4dc28b45cc",
+                            Id = "756375f3-cc60-4061-af14-357cc688cca8",
                             Name = "User",
                             NormalizedName = "USER"
                         });

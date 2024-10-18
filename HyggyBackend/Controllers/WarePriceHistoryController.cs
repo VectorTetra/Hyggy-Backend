@@ -149,6 +149,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if(ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -171,6 +175,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -193,6 +201,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -211,6 +223,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
