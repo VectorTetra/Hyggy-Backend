@@ -37,7 +37,9 @@ namespace HyggyBackend.Controllers
             .ForMember(dest => dest.Theme, opt => opt.MapFrom(src => src.Theme))
             .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(src => src.CustomerName))
             .ForMember(dest => dest.AuthorizedCustomerId, opt => opt.MapFrom(src => src.AuthorizedCustomerId))
-            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email));
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+            .ForMember(dest => dest.QueryAny, opt => opt.MapFrom(src => src.QueryAny));
+
         });
 
         [HttpGet]
@@ -309,5 +311,6 @@ namespace HyggyBackend.Controllers
         public int? PageSize { get; set; }
         public string? Sorting { get; set; }
         public string? StringIds { get; set; }
+        public string? QueryAny { get; set; }
     }
 }

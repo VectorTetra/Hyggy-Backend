@@ -87,157 +87,181 @@ namespace HyggyBackend.DAL.Repositories
         public async Task<IEnumerable<Address>> GetByQuery(AddressQueryDAL query)
         {
             var collections = new List<IEnumerable<Address>>();
-            if (query.Id != null)
+
+            if (query.QueryAny != null)
             {
-                var res = await GetByIdAsync(query.Id.Value);
-                if (res != null)
+                if (long.TryParse(query.QueryAny, out long id))
                 {
-                    collections.Add(new List<Address> { res });
+                    collections.Add(new List<Address> { await GetByIdAsync(id) });
                 }
+                collections.Add(await GetByHouseNumber(query.QueryAny));
+                collections.Add(await GetByStreet(query.QueryAny));
+                collections.Add(await GetByCity(query.QueryAny));
+                collections.Add(await GetByState(query.QueryAny));
+                collections.Add(await GetByPostalCode(query.QueryAny));
             }
-            if (query.HouseNumber != null)
+            else
             {
-                collections.Add(await GetByHouseNumber(query.HouseNumber));
-            }
-            if (query.Street != null)
-            {
-                collections.Add(await GetByStreet(query.Street));
-            }
-            if (query.City != null)
-            {
-                collections.Add(await GetByCity(query.City));
-            }
-            if (query.State != null)
-            {
-                collections.Add(await GetByState(query.State));
-            }
-            if (query.PostalCode != null)
-            {
-                collections.Add(await GetByPostalCode(query.PostalCode));
-            }
-            if (query.Latitude != null && query.Longitude != null)
-            {
-                collections.Add(await GetByLatitudeAndLongitude(query.Latitude.Value, query.Longitude.Value));
-            }
-            if (query.ShopId != null)
-            {
-                var res = await GetByShopId(query.ShopId.Value);
-                if (res != null)
+                if (query.Id != null)
                 {
-                    collections.Add(new List<Address> { res });
+                    var res = await GetByIdAsync(query.Id.Value);
+                    if (res != null)
+                    {
+                        collections.Add(new List<Address> { res });
+                    }
                 }
-            }
-            if (query.StorageId != null)
-            {
-                var res = await GetByStorageId(query.StorageId.Value);
-                if (res != null)
+                if (query.HouseNumber != null)
                 {
-                    collections.Add(new List<Address> { res });
+                    collections.Add(await GetByHouseNumber(query.HouseNumber));
                 }
-            }
-            if (query.OrderId != null)
-            {
-                var res = await GetByOrderId(query.OrderId.Value);
-                if (res != null)
+                if (query.Street != null)
                 {
-                    collections.Add(new List<Address> { res });
+                    collections.Add(await GetByStreet(query.Street));
+                }
+                if (query.City != null)
+                {
+                    collections.Add(await GetByCity(query.City));
+                }
+                if (query.State != null)
+                {
+                    collections.Add(await GetByState(query.State));
+                }
+                if (query.PostalCode != null)
+                {
+                    collections.Add(await GetByPostalCode(query.PostalCode));
+                }
+                if (query.Latitude != null && query.Longitude != null)
+                {
+                    collections.Add(await GetByLatitudeAndLongitude(query.Latitude.Value, query.Longitude.Value));
+                }
+                if (query.ShopId != null)
+                {
+                    var res = await GetByShopId(query.ShopId.Value);
+                    if (res != null)
+                    {
+                        collections.Add(new List<Address> { res });
+                    }
+                }
+                if (query.StorageId != null)
+                {
+                    var res = await GetByStorageId(query.StorageId.Value);
+                    if (res != null)
+                    {
+                        collections.Add(new List<Address> { res });
+                    }
+                }
+                if (query.OrderId != null)
+                {
+                    var res = await GetByOrderId(query.OrderId.Value);
+                    if (res != null)
+                    {
+                        collections.Add(new List<Address> { res });
+                    }
                 }
             }
 
             var result = new List<Address>();
+
             if (query.PageNumber != null && query.PageSize != null && !collections.Any())
             {
                 result = _context.Addresses
-                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
-                .Take(query.PageSize.Value)
-                .ToList();
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToList();
+            }
+            else if (query.QueryAny != null && collections.Any())
+            {
+                // Використовуємо Union для об'єднання результатів
+                result = collections.SelectMany(x => x).Distinct().ToList();
             }
             else
             {
-                result = (List<Address>)collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+                // Використовуємо Intersect для знаходження записів, які задовольняють всі умови
+                result = collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList)).ToList();
+
             }
+
             if (query.Sorting != null)
             {
+                // Сортування за вказаними критеріями
                 switch (query.Sorting)
                 {
                     case "CityAsc":
-                        result = result.OrderBy(ware => ware.City).ToList(); // Ціна з урахуванням знижки
+                        result = result.OrderBy(ware => ware.City).ToList();
                         break;
                     case "CityDesc":
-                        result = result.OrderByDescending(ware => ware.City).ToList(); // Ціна з урахуванням знижки
+                        result = result.OrderByDescending(ware => ware.City).ToList();
                         break;
-
                     case "StateAsc":
-                        result = result.OrderBy(ware => ware.State).ToList(); // Ціна з урахуванням знижки
+                        result = result.OrderBy(ware => ware.State).ToList();
                         break;
                     case "StateDesc":
-                        result = result.OrderByDescending(ware => ware.State).ToList(); // Ціна з урахуванням знижки
+                        result = result.OrderByDescending(ware => ware.State).ToList();
                         break;
                     case "PostalCodeAsc":
-                        result = result.OrderBy(ware => ware.PostalCode).ToList(); // Ціна з урахуванням знижки
+                        result = result.OrderBy(ware => ware.PostalCode).ToList();
                         break;
                     case "PostalCodeDesc":
-                        result = result.OrderByDescending(ware => ware.PostalCode).ToList(); // Ціна з урахуванням знижки
+                        result = result.OrderByDescending(ware => ware.PostalCode).ToList();
                         break;
                     case "LatitudeAsc":
-                        result = result.OrderBy(ware => ware.Latitude).ToList(); // Ціна з урахуванням знижки
+                        result = result.OrderBy(ware => ware.Latitude).ToList();
                         break;
                     case "LatitudeDesc":
-                        result = result.OrderByDescending(ware => ware.Latitude).ToList(); // Ціна з урахуванням знижки
+                        result = result.OrderByDescending(ware => ware.Latitude).ToList();
                         break;
                     case "LongitudeAsc":
-                        result = result.OrderBy(ware => ware.Longitude).ToList(); // Ціна з урахуванням знижки
+                        result = result.OrderBy(ware => ware.Longitude).ToList();
                         break;
                     case "LongitudeDesc":
-                        result = result.OrderByDescending(ware => ware.Longitude).ToList(); // Ціна з урахуванням знижки
+                        result = result.OrderByDescending(ware => ware.Longitude).ToList();
                         break;
                     case "IdAsc":
-                        result = result.OrderBy(ware => ware.Id).ToList(); // Ціна з урахуванням знижки
+                        result = result.OrderBy(ware => ware.Id).ToList();
                         break;
                     case "IdDesc":
-                        result = result.OrderByDescending(ware => ware.Id).ToList(); // Ціна з урахуванням знижки
+                        result = result.OrderByDescending(ware => ware.Id).ToList();
                         break;
                     case "HouseNumberAsc":
-                        result = result.OrderBy(ware => ware.HouseNumber).ToList(); // Ціна з урахуванням знижки
+                        result = result.OrderBy(ware => ware.HouseNumber).ToList();
                         break;
                     case "HouseNumberDesc":
-                        result = result.OrderByDescending(ware => ware.HouseNumber).ToList(); // Ціна з урахуванням знижки
+                        result = result.OrderByDescending(ware => ware.HouseNumber).ToList();
                         break;
                     case "StreetAsc":
-                        result = result.OrderBy(ware => ware.Street).ToList(); // Ціна з урахуванням знижки
+                        result = result.OrderBy(ware => ware.Street).ToList();
                         break;
                     case "StreetDesc":
-                        result = result.OrderByDescending(ware => ware.Street).ToList(); // Ціна з урахуванням знижки
+                        result = result.OrderByDescending(ware => ware.Street).ToList();
                         break;
                     case "ShopIdAsc":
-                        result = result.OrderBy(ware => ware.Shop?.Id).ToList(); // Ціна з урахуванням знижки
+                        result = result.OrderBy(ware => ware.Shop?.Id).ToList();
                         break;
                     case "ShopIdDesc":
-                        result = result.OrderByDescending(ware => ware.Shop?.Id).ToList(); // Ціна з урахуванням знижки
+                        result = result.OrderByDescending(ware => ware.Shop?.Id).ToList();
                         break;
                     case "StorageIdAsc":
-                        result = result.OrderBy(ware => ware.Storage?.Id).ToList(); // Ціна з урахуванням знижки
+                        result = result.OrderBy(ware => ware.Storage?.Id).ToList();
                         break;
                     case "StorageIdDesc":
-                        result = result.OrderByDescending(ware => ware.Storage?.Id).ToList(); // Ціна з урахуванням знижки
+                        result = result.OrderByDescending(ware => ware.Storage?.Id).ToList();
                         break;
                     default:
                         break;
                 }
             }
+
             if (query.PageNumber != null && query.PageSize != null && result.Any())
             {
                 result = result
-                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
-                .Take(query.PageSize.Value)
-                .ToList();
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToList();
             }
-            if (!result.Any())
-            {
-                return new List<Address>();
-            }
-            return result;
+
+            return result.Any() ? result : new List<Address>();
         }
+
 
         public async Task<Address?> GetByShopId(long shopId)
         {

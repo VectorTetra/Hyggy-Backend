@@ -88,77 +88,94 @@ namespace HyggyBackend.DAL.Repositories
         public async Task<IEnumerable<Shop>> GetByQuery(ShopQueryDAL query)
         {
             var collections = new List<IEnumerable<Shop>>();
-            if (query.Id != null)
+
+            // Якщо вказано QueryAny, виконуємо запити за різними критеріями
+            if (query.QueryAny != null)
             {
-                var res = await GetById(query.Id.Value);
-                if (res != null)
+                if (long.TryParse(query.QueryAny, out long id))
                 {
-                    collections.Add(new List<Shop> { res });
+                    collections.Add(new List<Shop> { await GetById(id) });
                 }
-            }
-            if (query.City != null)
-                collections.Add(await GetByCity(query.City));
-
-            if (query.PostalCode != null)
-                collections.Add(await GetByPostalCode(query.PostalCode));
-
-            if (query.State != null)
-                collections.Add(await GetByState(query.State));
-
-            if (query.Street != null)
-                collections.Add(await GetByStreet(query.Street));
-
-            if (query.HouseNumber != null)
-                collections.Add(await GetByHouseNumber(query.HouseNumber));
-
-            if (query.Latitude != null && query.Longitude != null)
-            {
-                var res = await GetByLatitudeAndLongitude(query.Latitude.Value, query.Longitude.Value);
-                if (res != null)
-                {
-                    collections.Add(new List<Shop> { res });
-                }
-            }
-
-            if (query.Name != null)
-                collections.Add(await GetByName(query.Name));
-
-            if (query.OrderId != null)
-            {
-                var res = await GetByOrderId(query.OrderId.Value);
-                if (res != null)
-                {
-                    collections.Add(new List<Shop> { res });
-                }
-            }
-
-            if (query.StorageId != null)
-            {
-                var res = await GetByStorageId(query.StorageId.Value);
-                if (res != null)
-                {
-                    collections.Add(new List<Shop> { res });
-                }
-            }
-
-            if (query.StringIds != null)
-            {
-                collections.Add(await GetByStringIds(query.StringIds));
-            }
-
-           
-            var result = new List<Shop>();
-            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
-            {
-                result = _context.Shops
-                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
-                .Take(query.PageSize.Value)
-                .ToList();
+                collections.Add(await GetByCity(query.QueryAny));
+                collections.Add(await GetByPostalCode(query.QueryAny));
+                collections.Add(await GetByState(query.QueryAny));
+                collections.Add(await GetByStreet(query.QueryAny));
+                collections.Add(await GetByHouseNumber(query.QueryAny));
+                collections.Add(await GetByName(query.QueryAny));
             }
             else
             {
-                result = (List<Shop>)collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+                if (query.Id != null)
+                {
+                    var res = await GetById(query.Id.Value);
+                    if (res != null)
+                    {
+                        collections.Add(new List<Shop> { res });
+                    }
+                }
+                if (query.City != null)
+                    collections.Add(await GetByCity(query.City));
+                if (query.PostalCode != null)
+                    collections.Add(await GetByPostalCode(query.PostalCode));
+                if (query.State != null)
+                    collections.Add(await GetByState(query.State));
+                if (query.Street != null)
+                    collections.Add(await GetByStreet(query.Street));
+                if (query.HouseNumber != null)
+                    collections.Add(await GetByHouseNumber(query.HouseNumber));
+                if (query.Latitude != null && query.Longitude != null)
+                {
+                    var res = await GetByLatitudeAndLongitude(query.Latitude.Value, query.Longitude.Value);
+                    if (res != null)
+                    {
+                        collections.Add(new List<Shop> { res });
+                    }
+                }
+                if (query.Name != null)
+                    collections.Add(await GetByName(query.Name));
+                if (query.OrderId != null)
+                {
+                    var res = await GetByOrderId(query.OrderId.Value);
+                    if (res != null)
+                    {
+                        collections.Add(new List<Shop> { res });
+                    }
+                }
+                if (query.StorageId != null)
+                {
+                    var res = await GetByStorageId(query.StorageId.Value);
+                    if (res != null)
+                    {
+                        collections.Add(new List<Shop> { res });
+                    }
+                }
+                if (query.StringIds != null)
+                {
+                    collections.Add(await GetByStringIds(query.StringIds));
+                }
             }
+
+            var result = new List<Shop>();
+
+            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
+            {
+                result = _context.Shops
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToList();
+            }
+            else if (query.QueryAny != null && collections.Any())
+            {
+                // Використовуємо Union для об'єднання результатів
+                result = collections.SelectMany(x => x).Distinct().ToList();
+            }
+            else
+            {
+                // Використовуємо Intersect для знаходження записів, які задовольняють всі умови
+                result = collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList)).ToList();
+            }
+
+            // Сортування
             if (query.Sorting != null)
             {
                 switch (query.Sorting)
@@ -169,7 +186,6 @@ namespace HyggyBackend.DAL.Repositories
                     case "CityDesc":
                         result = result.OrderByDescending(ware => ware.Address.City).ToList();
                         break;
-
                     case "StateAsc":
                         result = result.OrderBy(ware => ware.Address.State).ToList();
                         break;
@@ -234,19 +250,19 @@ namespace HyggyBackend.DAL.Repositories
                         break;
                 }
             }
+
+            // Пагінація
             if (query.PageNumber != null && query.PageSize != null && result.Any())
             {
-                    result = result
+                result = result
                     .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
                     .Take(query.PageSize.Value)
                     .ToList();
             }
-            if (!result.Any())
-            {
-                return new List<Shop>();
-            }
-            return result;
+
+            return result.Any() ? result : new List<Shop>();
         }
+
         public async Task<IEnumerable<Shop>> GetNearestShopsAsync(double latitude, double longitude, int numberOfShops = 5)
         {
             // Константа для переведення градусів в радіани

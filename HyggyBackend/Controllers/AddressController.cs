@@ -39,7 +39,9 @@ namespace HyggyBackend.Controllers
             .ForMember("PageNumber", opt => opt.MapFrom(src => src.PageNumber))
             .ForMember("PageSize", opt => opt.MapFrom(src => src.PageSize))
             .ForMember("StringIds", opt => opt.MapFrom(src => src.StringIds))
-            .ForMember("Sorting", opt => opt.MapFrom(src => src.Sorting));
+            .ForMember("Sorting", opt => opt.MapFrom(src => src.Sorting))
+            .ForMember("QueryAny", opt => opt.MapFrom(src => src.QueryAny));
+
         });
         [HttpGet]
 		public async Task<ActionResult<IEnumerable<AddressDTO>>> Get([FromQuery] AddressQueryPL query)
@@ -320,5 +322,6 @@ namespace HyggyBackend.Controllers
         public int? PageSize { get; set; }
         public string? StringIds { get; set; }
         public string? Sorting { get; set; }
+        public string? QueryAny { get; set; }
     }
 }

@@ -74,54 +74,76 @@ namespace HyggyBackend.DAL.Repositories
         {
             var collections = new List<IEnumerable<Customer>>();
 
-            if (query.Id != null)
+            if (query.QueryAny != null)
             {
-                collections.Add(await _context.Customers.Where(x => x.Id == query.Id).ToListAsync());
-            }
-            if (query.Name != null)
-            {
-                collections.Add(await _context.Customers.Where(x => x.Name.Contains(query.Name)).ToListAsync());
-            }
-            if (query.Surname != null)
-            {
-                collections.Add(await _context.Customers.Where(x => x.Surname.Contains(query.Surname)).ToListAsync());
-            }
-            if (query.Email != null)
-            {
-                collections.Add(await _context.Customers.Where(x => x.Email.Contains(query.Email)).ToListAsync());
-            }
-            if (query.Phone != null)
-            {
-                collections.Add(await _context.Customers.Where(x => x.PhoneNumber.Contains(query.Phone)).ToListAsync());
-            }
-            if (query.OrderId != null)
-            {
-                collections.Add(await GetByOrderId(query.OrderId.Value));
-            }
-            if (query.StringIds != null)
-            {
-                collections.Add(await GetByStringIds(query.StringIds));
-            }
-
-            var result = new List<Customer>();
-            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
-            {
-                result = _context.Customers
-                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
-                .Take(query.PageSize.Value)
-                .ToList();
+                collections.Add(await GetByNameSubstring(query.QueryAny));
+                collections.Add(await GetBySurnameSubstring(query.QueryAny));
+                collections.Add(await GetByEmailSubstring(query.QueryAny));
+                collections.Add(await GetByPhoneSubstring(query.QueryAny));
+                collections.Add(new List<Customer> { await GetByIdAsync(query.QueryAny) });
             }
             else
             {
-                result = (List<Customer>)collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+                if (query.Id != null)
+                {
+                    var res = await GetByIdAsync(query.Id);
+                    if (res != null)
+                    {
+                        collections.Add(new List<Customer> { res });
+                    }
+                }
+                if (query.Name != null)
+                {
+                    collections.Add(await GetByNameSubstring(query.Name));
+                }
+                if (query.Surname != null)
+                {
+                    collections.Add(await GetBySurnameSubstring(query.Surname));
+                }
+                if (query.Email != null)
+                {
+                    collections.Add(await GetByEmailSubstring(query.Email));
+                }
+                if (query.Phone != null)
+                {
+                    collections.Add(await GetByPhoneSubstring(query.Phone));
+                }
+                if (query.OrderId != null)
+                {
+                    var res = await GetByOrderId(query.OrderId.Value);
+                    if (res != null)
+                    {
+                        collections.Add( res );
+                    }
+                }
+                if (query.StringIds != null)
+                {
+                    collections.Add(await GetByStringIds(query.StringIds));
+                }
             }
 
-            // Сортування
+            var result = new List<Customer>();
+
+            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
+            {
+                result = _context.Customers
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToList();
+            }
+            else if (query.QueryAny != null && collections.Any())
+            {
+                result = collections.SelectMany(x => x).Distinct().ToList();
+            }
+            else
+            {
+                result = collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList)).ToList();
+            }
+
             if (query.Sorting != null)
             {
                 switch (query.Sorting)
                 {
-
                     case "NameAsc":
                         result = result.OrderBy(x => x.Name).ToList();
                         break;
@@ -157,20 +179,17 @@ namespace HyggyBackend.DAL.Repositories
                 }
             }
 
-            // Пагінація
-            if (query.PageNumber != null && query.PageSize != null)
+            if (query.PageNumber != null && query.PageSize != null && result.Any())
             {
                 result = result
                     .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
                     .Take(query.PageSize.Value)
                     .ToList();
             }
-            if (!result.Any())
-            {
-                return new List<Customer>();
-            }
-            return result;
+
+            return result.Any() ? result : new List<Customer>();
         }
+
 
         public async IAsyncEnumerable<Customer> GetByIdsAsync(IEnumerable<string> ids)
         {

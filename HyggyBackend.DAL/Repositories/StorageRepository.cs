@@ -77,6 +77,31 @@ namespace HyggyBackend.DAL.Repositories
             return await _context.Storages
                 .FirstOrDefaultAsync(x => x.Shop != null && x.Shop.ShopEmployees.Any(sem => sem.Id == shopEmployeeId));
         }
+        public async Task<IEnumerable<Storage>> GetByCity(string city)
+        {
+            return await _context.Storages.Where(s => s.Address.City != null && s.Address.City.Contains(city)).ToListAsync();
+        }
+        public async Task<IEnumerable<Storage>> GetByShopName(string shopName)
+        {
+            return await _context.Storages.Where(s => s.Shop != null && s.Shop.Name.Contains(shopName)).ToListAsync();
+        }
+        
+        public async Task<IEnumerable<Storage>> GetByStreet(string Street)
+        {
+            return await _context.Storages.Where(s => s.Address.Street != null && s.Address.Street.Contains(Street)).ToListAsync();
+        }
+        public async Task<IEnumerable<Storage>> GetByPostalCode(string postalCode)
+        {
+            return await _context.Storages.Where(s => s.Address.PostalCode == postalCode).ToListAsync();
+        }
+        public async Task<IEnumerable<Storage>> GetByState(string state)
+        {
+            return await _context.Storages.Where(s => s.Address.State != null && s.Address.State.Contains(state)).ToListAsync();
+        }
+        public async Task<IEnumerable<Storage>> GetByHouseNumber(string HouseNumber)
+        {
+            return await _context.Storages.Where(s => s.Address.HouseNumber != null && s.Address.HouseNumber.Contains(HouseNumber)).ToListAsync();
+        }
 
         public async IAsyncEnumerable<Storage> GetByIdsAsync(IEnumerable<long> ids)
         {
@@ -94,66 +119,94 @@ namespace HyggyBackend.DAL.Repositories
         {
             var collections = new List<IEnumerable<Storage>>();
 
-            if (query.AddressId != null)
+            // Якщо є запит на будь-який критерій
+            if (query.QueryAny != null)
             {
-                collections.Add(await _context.Storages.Where(x => x.AddressId == query.AddressId).ToListAsync());
-            }
-
-            if (query.IsGlobal != null)
-            {
-                if (query.IsGlobal == true)
+                if (long.TryParse(query.QueryAny, out long id))
                 {
-                    collections.Add(await GetGlobalStorages());
+                    collections.Add(new List<Storage> { await GetById(id) });
                 }
-                else
-                {
-                    collections.Add(await GetNonGlobalStorages());
-                }
-            }
-
-            if (query.ShopId != null)
-            {
-                collections.Add(await _context.Storages.Where(x => x.Shop.Id == query.ShopId).ToListAsync());
-            }
-
-            if (query.WareItemId != null)
-            {
-                collections.Add(await _context.Storages.Where(x => x.WareItems.Any(wi => wi.Id == query.WareItemId)).ToListAsync());
-            }
-
-            if (query.StorageEmployeeId != null)
-            {
-                collections.Add(await _context.Storages.Where(x => x.StorageEmployees.Any(sem => sem.Id == query.StorageEmployeeId)).ToListAsync());
-            }
-
-            if (query.ShopEmployeeId != null)
-            {
-                collections.Add(await _context.Storages.Where(x => x.Shop != null && x.Shop.ShopEmployees.Any(sem => sem.Id == query.ShopEmployeeId)).ToListAsync());
-            }
-
-            if (query.Id != null)
-            {
-                collections.Add(new List<Storage> { await GetById(query.Id.Value) });
-            }
-
-            if (query.StringIds != null)
-            {
-                collections.Add(await GetByStringIds(query.StringIds));
-            }
-
-            var result = new List<Storage>();
-            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
-            {
-                result = _context.Storages
-                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
-                .Take(query.PageSize.Value)
-                .ToList();
+                collections.Add(await GetByCity(query.QueryAny));
+                collections.Add(await GetByStreet(query.QueryAny));
+                collections.Add(await GetByPostalCode(query.QueryAny));
+                collections.Add(await GetByState(query.QueryAny));
+                collections.Add(await GetByHouseNumber(query.QueryAny));                
+                collections.Add(await GetByShopName(query.QueryAny));                
             }
             else
             {
-                result = (List<Storage>)collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+                if (query.AddressId != null)
+                {
+                    collections.Add(await _context.Storages.Where(x => x.AddressId == query.AddressId).ToListAsync());
+                }
+
+                if (query.IsGlobal != null)
+                {
+                    if (query.IsGlobal == true)
+                    {
+                        collections.Add(await GetGlobalStorages());
+                    }
+                    else
+                    {
+                        collections.Add(await GetNonGlobalStorages());
+                    }
+                }
+
+                if (query.ShopId != null)
+                {
+                    collections.Add(await _context.Storages.Where(x => x.Shop.Id == query.ShopId).ToListAsync());
+                }
+
+                if (query.WareItemId != null)
+                {
+                    collections.Add(await _context.Storages.Where(x => x.WareItems.Any(wi => wi.Id == query.WareItemId)).ToListAsync());
+                }
+
+                if (query.StorageEmployeeId != null)
+                {
+                    collections.Add(await _context.Storages.Where(x => x.StorageEmployees.Any(sem => sem.Id == query.StorageEmployeeId)).ToListAsync());
+                }
+
+                if (query.ShopEmployeeId != null)
+                {
+                    collections.Add(await _context.Storages.Where(x => x.Shop != null && x.Shop.ShopEmployees.Any(sem => sem.Id == query.ShopEmployeeId)).ToListAsync());
+                }
+
+                if (query.Id != null)
+                {
+                    var res = await GetById(query.Id.Value);
+                    if (res != null)
+                    {
+                        collections.Add(new List<Storage> { res });
+                    }
+                }
+
+                if (query.StringIds != null)
+                {
+                    collections.Add(await GetByStringIds(query.StringIds));
+                }
             }
 
+            var result = new List<Storage>();
+
+            // Обробка результатів
+            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
+            {
+                result = await _context.Storages
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToListAsync();
+            }
+            else if (query.QueryAny != null && collections.Any())
+            {
+                // Об'єднання результатів
+                result = collections.SelectMany(x => x).Distinct().ToList();
+            }
+            else
+            {
+                // Знаходження перетинів
+                result = collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList)).ToList();
+            }
 
             // Сортування
             if (query.Sorting != null)
@@ -197,11 +250,8 @@ namespace HyggyBackend.DAL.Repositories
                     .Take(query.PageSize.Value)
                     .ToList();
             }
-            if (!result.Any())
-            {
-                return new List<Storage>();
-            }
-            return result;
+
+            return result.Any() ? result : new List<Storage>();
         }
         public async Task Create(Storage storage)
         {

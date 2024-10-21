@@ -61,47 +61,75 @@ namespace HyggyBackend.DAL.Repositories
         {
             var collections = new List<IEnumerable<WareTrademark>>();
 
-            if (query.Id != null)
+            // Перевірка наявності QueryAny
+            if (query.QueryAny != null)
             {
-                var proto = await GetById(query.Id.Value);
-                if (proto != null)
+                if (long.TryParse(query.QueryAny, out long id))
                 {
-                    collections.Add(new List<WareTrademark> { proto });
+                    // Якщо це можливий ID
+                    var proto = await GetById(id);
+                    if (proto != null)
+                    {
+                        collections.Add(new List<WareTrademark> { proto });
+                    }
                 }
-            }
 
-            if (query.Name != null)
-            {
-                collections.Add(await GetByName(query.Name));
-            }
-
-            if (query.WareId != null)
-            {
-                var proto = await GetByWareId(query.WareId.Value);
-                if (proto != null)
-                {
-                    collections.Add(new List<WareTrademark> { proto });
-                }
-            }
-
-            if (query.StringIds != null)
-            {
-                collections.Add(await GetByStringIds(query.StringIds));
-            }
-
-            var result = new List<WareTrademark>();
-            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
-            {
-                result = _context.WareTrademarks
-                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
-                .Take(query.PageSize.Value)
-                .ToList();
+                // Пошук за рядками
+                collections.Add(await GetByName(query.QueryAny));
+                // Додайте інші можливі методи для отримання
             }
             else
             {
-                result = (List<WareTrademark>)collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+                // Ваша логіка для інших полів, що не включають QueryAny
+                if (query.Id != null)
+                {
+                    var proto = await GetById(query.Id.Value);
+                    if (proto != null)
+                    {
+                        collections.Add(new List<WareTrademark> { proto });
+                    }
+                }
+
+                if (query.Name != null)
+                {
+                    collections.Add(await GetByName(query.Name));
+                }
+
+                if (query.WareId != null)
+                {
+                    var proto = await GetByWareId(query.WareId.Value);
+                    if (proto != null)
+                    {
+                        collections.Add(new List<WareTrademark> { proto });
+                    }
+                }
+
+                if (query.StringIds != null)
+                {
+                    collections.Add(await GetByStringIds(query.StringIds));
+                }
             }
 
+            var result = new List<WareTrademark>();
+
+            // Пагінація за замовчуванням, якщо не знайдено колекцій
+            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
+            {
+                result = _context.WareTrademarks
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToList();
+            }
+            else if (query.QueryAny != null && collections.Any())
+            {
+                // Об'єднання результатів з QueryAny
+                result = collections.SelectMany(x => x).Distinct().ToList();
+            }
+            else
+            {
+                // Знаходження перетину результатів
+                result = collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList)).ToList();
+            }
 
             // Сортування
             if (query.Sorting != null)
@@ -133,13 +161,10 @@ namespace HyggyBackend.DAL.Repositories
                     .Take(query.PageSize.Value)
                     .ToList();
             }
-            if (!result.Any())
-            {
-                return new List<WareTrademark>();
-            }
-            return result;
 
+            return result.Any() ? result : new List<WareTrademark>();
         }
+
         public async Task Add(WareTrademark wareTrademark)
         {
             await _context.WareTrademarks.AddAsync(wareTrademark);

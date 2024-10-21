@@ -66,49 +66,68 @@ namespace HyggyBackend.DAL.Repositories
         {
             var collections = new List<IEnumerable<OrderStatus>>();
 
-            if (query.Id != null)
+            if (query.QueryAny != null)
             {
-                var res = await GetById(query.Id.Value);
-                if (res != null)
+                if (long.TryParse(query.QueryAny, out long id))
                 {
-                    collections.Add(new List<OrderStatus> { res });
+                    collections.Add(await GetByOrderId(id));
+                    collections.Add(new List<OrderStatus> { await GetById(id) });
+
                 }
-            }
-
-            if (query.NameSubstring != null)
-            {
-                collections.Add(await GetByNameSubstring(query.NameSubstring));
-            }
-
-            if (query.DescriptionSubstring != null)
-            {
-                collections.Add(await GetByDescriptionSubstring(query.DescriptionSubstring));
-            }
-
-            if (query.OrderId != null)
-            {
-                collections.Add(await GetByOrderId(query.OrderId.Value));
-            }
-
-            if (query.StringIds != null)
-            {
-                collections.Add(await GetByStringIds(query.StringIds));
-            }
-
-
-            var result = new List<OrderStatus>();
-            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
-            {
-                result = _context.OrderStatuses
-                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
-                .Take(query.PageSize.Value)
-                .ToList();
+                collections.Add(await GetByNameSubstring(query.QueryAny));
+                collections.Add(await GetByDescriptionSubstring(query.QueryAny));
             }
             else
             {
-                result = (List<OrderStatus>)collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+                if (query.Id != null)
+                {
+                    var res = await GetById(query.Id.Value);
+                    if (res != null)
+                    {
+                        collections.Add(new List<OrderStatus> { res });
+                    }
+                }
+
+                if (query.NameSubstring != null)
+                {
+                    collections.Add(await GetByNameSubstring(query.NameSubstring));
+                }
+
+                if (query.DescriptionSubstring != null)
+                {
+                    collections.Add(await GetByDescriptionSubstring(query.DescriptionSubstring));
+                }
+
+                if (query.OrderId != null)
+                {
+                    collections.Add(await GetByOrderId(query.OrderId.Value));
+                }
+
+                if (query.StringIds != null)
+                {
+                    collections.Add(await GetByStringIds(query.StringIds));
+                }
             }
 
+            var result = new List<OrderStatus>();
+
+            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
+            {
+                result = _context.OrderStatuses
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToList();
+            }
+            else if (query.QueryAny != null && collections.Any())
+            {
+                // Використовуємо Union для об'єднання результатів
+                result = collections.SelectMany(x => x).Distinct().ToList();
+            }
+            else
+            {
+                // Використовуємо Intersect для знаходження записів, які задовольняють всі умови
+                result = collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList)).ToList();
+            }
 
             // Сортування
             if (query.Sorting != null)
@@ -139,19 +158,17 @@ namespace HyggyBackend.DAL.Repositories
             }
 
             // Пагінація
-            if (query.PageNumber != null && query.PageSize != null)
+            if (query.PageNumber != null && query.PageSize != null && result.Any())
             {
                 result = result
                     .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
                     .Take(query.PageSize.Value)
                     .ToList();
             }
-            if (!result.Any())
-            {
-                return new List<OrderStatus>();
-            }
-            return result;
+
+            return result.Any() ? result : new List<OrderStatus>();
         }
+
 
         public async IAsyncEnumerable<OrderStatus> GetByIdsAsync(IEnumerable<long> ids)
         {

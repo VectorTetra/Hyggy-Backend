@@ -16,6 +16,9 @@ namespace HyggyBackend.BLL.DTO
         public string? Phone { get; set; }
         public string? Token { get; set; }
         public ICollection<long>? OrderIds { get; set; } = new List<long>();
-        public string? StringIds { get; set; }
+        public ICollection<long>? FavoriteWareIds { get; set; } = new List<long>();
+
+        public double? ExecutedOrdersSum { get; set; }
+        public double? ExecutedOrdersAvg { get; set; }
     }
 }

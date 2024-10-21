@@ -12,7 +12,6 @@ namespace HyggyBackend.BLL.DTO
         public long Id { get; set; }
         public long? ShopId { get; set; }
         public long? AddressId { get; set; }
-        public string? StringIds { get; set; }
 
         // Для результатів Get-запитів
         public string? ShopName { get; set; } // Назва вулиці
@@ -23,5 +22,6 @@ namespace HyggyBackend.BLL.DTO
         public string? PostalCode { get; set; } // Поштовий індекс
         public double? Latitude { get; set; } // Географічна широта
         public double? Longitude { get; set; } // Географічна довгота
+        public double? StoredWaresSum { get; set; } // Географічна довгота
     }
 }

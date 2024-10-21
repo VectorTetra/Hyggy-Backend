@@ -14,7 +14,7 @@ namespace HyggyBackend.DAL.Repositories
         {
             _context = context;
         }
-        public async Task<WareImage?> GetById(long id) 
+        public async Task<WareImage?> GetById(long id)
         {
             return await _context.WareImages.FindAsync(id);
         }
@@ -32,7 +32,7 @@ namespace HyggyBackend.DAL.Repositories
             }
             return waress;
         }
-        public async Task<IEnumerable<WareImage>> GetByWareId(long wareId) 
+        public async Task<IEnumerable<WareImage>> GetByWareId(long wareId)
         {
             return await _context.WareImages.Where(x => x.Ware.Id == wareId).ToListAsync();
         }
@@ -41,7 +41,7 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.WareImages.Where(x => x.Ware.Article == wareArticle).ToListAsync();
         }
-        public async Task<IEnumerable<WareImage>> GetByPathSubstring(string path) 
+        public async Task<IEnumerable<WareImage>> GetByPathSubstring(string path)
         {
             return await _context.WareImages.Where(x => x.Path.Contains(path)).ToListAsync();
         }
@@ -49,43 +49,64 @@ namespace HyggyBackend.DAL.Repositories
         {
             var collections = new List<IEnumerable<WareImage>>();
 
-            if (query.Id != null)
+            // Пошук за QueryAny
+            if (query.QueryAny != null)
             {
-                var proto = await GetById(query.Id.Value);
-                if (proto != null)
+                if (long.TryParse(query.QueryAny, out long id))
                 {
-                    collections.Add(new List<WareImage> { proto });
+                    collections.Add(new List<WareImage> { await GetById(id) });
+                    collections.Add(await GetByWareArticle(id));
+                    collections.Add(await GetByWareId(id));
                 }
-            }
-            if (query.WareId != null)
-            {
-                collections.Add(await GetByWareId(query.WareId.Value));
-            }
-            if (query.WareArticle != null)
-            {
-                collections.Add(await GetByWareArticle(query.WareArticle.Value));
-            }
-            if (query.Path != null)
-            {
-                collections.Add(await GetByPathSubstring(query.Path));
-            }
-            if (query.StringIds != null)
-            {
-                collections.Add(await GetByStringIds(query.StringIds));
-            }
-            var result = new List<WareImage>();
-            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
-            {
-                result = _context.WareImages
-                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
-                .Take(query.PageSize.Value)
-                .ToList();
+                collections.Add(await GetByPathSubstring(query.QueryAny));
             }
             else
             {
-                result = (List<WareImage>)collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+                if (query.Id != null)
+                {
+                    var proto = await GetById(query.Id.Value);
+                    if (proto != null)
+                    {
+                        collections.Add(new List<WareImage> { proto });
+                    }
+                }
+                if (query.WareId != null)
+                {
+                    collections.Add(await GetByWareId(query.WareId.Value));
+                }
+                if (query.WareArticle != null)
+                {
+                    collections.Add(await GetByWareArticle(query.WareArticle.Value));
+                }
+                if (query.Path != null)
+                {
+                    collections.Add(await GetByPathSubstring(query.Path));
+                }
+                if (query.StringIds != null)
+                {
+                    collections.Add(await GetByStringIds(query.StringIds));
+                }
             }
 
+            var result = new List<WareImage>();
+
+            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
+            {
+                result = await _context.WareImages
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToListAsync();
+            }
+            else if (query.QueryAny != null && collections.Any())
+            {
+                // Використовуємо Union для об'єднання результатів
+                result = collections.SelectMany(x => x).Distinct().ToList();
+            }
+            else
+            {
+                // Використовуємо Intersect для знаходження записів, які задовольняють всі умови
+                result = collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList)).ToList();
+            }
 
             // Сортування
             if (query.Sorting != null)
@@ -123,13 +144,10 @@ namespace HyggyBackend.DAL.Repositories
                     .Take(query.PageSize.Value)
                     .ToList();
             }
-            if (!result.Any())
-            {
-                return new List<WareImage>();
-            }
-            return result;
 
+            return result.Any() ? result : new List<WareImage>();
         }
+
 
         public async IAsyncEnumerable<WareImage> GetByIdsAsync(IEnumerable<long> ids)
         {
@@ -142,15 +160,15 @@ namespace HyggyBackend.DAL.Repositories
                 }
             }
         }
-        public async Task Create(WareImage wareImage) 
+        public async Task Create(WareImage wareImage)
         {
             await _context.WareImages.AddAsync(wareImage);
         }
-        public void Update(WareImage wareImage) 
+        public void Update(WareImage wareImage)
         {
             _context.Entry(wareImage).State = EntityState.Modified;
         }
-        public async Task Delete(long id) 
+        public async Task Delete(long id)
         {
             var wareImage = await _context.WareImages.FindAsync(id);
             if (wareImage != null) { _context.WareImages.Remove(wareImage); }

@@ -48,7 +48,8 @@ namespace HyggyBackend.Controllers
              .ForMember(dest => dest.PageNumber, opt => opt.MapFrom(src => src.PageNumber))
              .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize))
              .ForMember(dest => dest.StringIds, opt => opt.MapFrom(src => src.StringIds))
-             .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Sorting));
+             .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Sorting))
+             .ForMember(dest => dest.QueryAny, opt => opt.MapFrom(src => src.QueryAny));
         });
 
         [HttpPost]
@@ -408,5 +409,6 @@ namespace HyggyBackend.Controllers
         public int? PageSize { get; set; }
         public string? StringIds { get; set; }
         public string? Sorting { get; set; }
+        public string? QueryAny { get; set; }
     }
 }

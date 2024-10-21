@@ -83,54 +83,73 @@ namespace HyggyBackend.DAL.Repositories
         {
             var collections = new List<IEnumerable<WareCategory1>>();
 
-            if (query.Id != null)
+            // Пошук по QueryAny
+            if (query.QueryAny != null)
             {
-                collections.Add(await _context.WareCategories1.Where(x => x.Id == query.Id).ToListAsync());
+                if (long.TryParse(query.QueryAny, out long id))
+                {
+                    collections.Add(new List<WareCategory1> { await GetById(id) });
+                }
+                collections.Add(await GetByNameSubstring(query.QueryAny));
+                collections.Add(await GetByWareCategory2NameSubstring(query.QueryAny));
+                collections.Add(await GetByWareCategory3NameSubstring(query.QueryAny));
             }
-
-            if (query.NameSubstring != null)
+            else
             {
-                collections.Add(await GetByNameSubstring(query.NameSubstring));
-            }
+                if (query.Id != null)
+                {
+                    collections.Add(await _context.WareCategories1.Where(x => x.Id == query.Id).ToListAsync());
+                }
 
-            if (query.WareCategory2Id != null)
-            {
-                collections.Add(await GetByWareCategory2Id(query.WareCategory2Id.Value));
-            }
+                if (query.NameSubstring != null)
+                {
+                    collections.Add(await GetByNameSubstring(query.NameSubstring));
+                }
 
-            if (query.WareCategory2NameSubstring != null)
-            {
-                collections.Add(await GetByWareCategory2NameSubstring(query.WareCategory2NameSubstring));
-            }
+                if (query.WareCategory2Id != null)
+                {
+                    collections.Add(await GetByWareCategory2Id(query.WareCategory2Id.Value));
+                }
 
-            if (query.WareCategory3Id != null)
-            {
-                collections.Add(await GetByWareCategory3Id(query.WareCategory3Id.Value));
-            }
+                if (query.WareCategory2NameSubstring != null)
+                {
+                    collections.Add(await GetByWareCategory2NameSubstring(query.WareCategory2NameSubstring));
+                }
 
-            if (query.WareCategory3NameSubstring != null)
-            {
-                collections.Add(await GetByWareCategory3NameSubstring(query.WareCategory3NameSubstring));
-            }
+                if (query.WareCategory3Id != null)
+                {
+                    collections.Add(await GetByWareCategory3Id(query.WareCategory3Id.Value));
+                }
 
-            if (query.StringIds != null)
-            {
-                collections.Add(await GetByStringIds(query.StringIds));
+                if (query.WareCategory3NameSubstring != null)
+                {
+                    collections.Add(await GetByWareCategory3NameSubstring(query.WareCategory3NameSubstring));
+                }
+
+                if (query.StringIds != null)
+                {
+                    collections.Add(await GetByStringIds(query.StringIds));
+                }
             }
 
             var result = new List<WareCategory1>();
             if (query.PageNumber != null && query.PageSize != null && !collections.Any())
             {
-                result = _context.WareCategories1
-                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
-                .Take(query.PageSize.Value)
-                .ToList();
+                result = await _context.WareCategories1
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToListAsync();
+            }
+            else if (query.QueryAny != null && collections.Any())
+            {
+                // Об'єднання результатів
+                result = collections.SelectMany(x => x).Distinct().ToList();
             }
             else
             {
-                result = (List<WareCategory1>)collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+                // Використовуємо Intersect для знаходження записів, які задовольняють всі умови
+                result = collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList)).ToList();
             }
-
 
             // Сортування
             if (query.Sorting != null)
@@ -186,12 +205,10 @@ namespace HyggyBackend.DAL.Repositories
                     .Take(query.PageSize.Value)
                     .ToList();
             }
-            if (!result.Any())
-            {
-                return new List<WareCategory1>();
-            }
-            return result;
+
+            return result.Any() ? result : new List<WareCategory1>();
         }
+
 
         public async Task Create(WareCategory1 wareCategory1)
         {

@@ -77,48 +77,72 @@ namespace HyggyBackend.DAL.Repositories
         {
             var collections = new List<IEnumerable<WareStatus>>();
 
+            // Перевірка наявності QueryAny
+            if (query.QueryAny != null)
+            {
+                if (long.TryParse(query.QueryAny, out long id))
+                {
+                    collections.Add(new List<WareStatus> { await GetById(id) }); // Можливий ID
+                    collections.Add(await _context.WareStatuses.Where(x => x.Wares.Any(w => w.Id == id)).ToListAsync()); // За WareId
+                    collections.Add(await _context.WareStatuses.Where(x => x.Wares.Any(w => w.Article == id)).ToListAsync()); // За WareArticle
+                }
 
-            if (query.Id != null)
+                // Пошук за рядками
+                collections.Add(await _context.WareStatuses.Where(x => x.Name.Contains(query.QueryAny)).ToListAsync());
+                collections.Add(await _context.WareStatuses.Where(x => x.Description.Contains(query.QueryAny)).ToListAsync());
+            }
+            else
             {
-                collections.Add(await _context.WareStatuses.Where(x => x.Id == query.Id).ToListAsync());
+                // Інші параметри запиту
+                if (query.Id != null)
+                {
+                    collections.Add(await _context.WareStatuses.Where(x => x.Id == query.Id).ToListAsync());
+                }
+
+                if (query.WareId != null)
+                {
+                    collections.Add(await _context.WareStatuses.Where(x => x.Wares.Any(w => w.Id == query.WareId)).ToListAsync());
+                }
+
+                if (query.WareArticle != null)
+                {
+                    collections.Add(await _context.WareStatuses.Where(x => x.Wares.Any(w => w.Article == query.WareArticle)).ToListAsync());
+                }
+
+                if (query.NameSubstring != null)
+                {
+                    collections.Add(await _context.WareStatuses.Where(x => x.Name.Contains(query.NameSubstring)).ToListAsync());
+                }
+
+                if (query.DescriptionSubstring != null)
+                {
+                    collections.Add(await _context.WareStatuses.Where(x => x.Description.Contains(query.DescriptionSubstring)).ToListAsync());
+                }
+
+                if (query.StringIds != null)
+                {
+                    collections.Add(await GetByStringIds(query.StringIds));
+                }
             }
 
-            if (query.WareId != null)
-            {
-                collections.Add(await _context.WareStatuses.Where(x => x.Wares.Any(w => w.Id == query.WareId)).ToListAsync());
-            }
-
-            if (query.WareArticle != null)
-            {
-                collections.Add(await _context.WareStatuses.Where(x => x.Wares.Any(w => w.Article == query.WareArticle)).ToListAsync());
-            }
-
-            if (query.NameSubstring != null)
-            {
-                collections.Add(await _context.WareStatuses.Where(x => x.Name.Contains(query.NameSubstring)).ToListAsync());
-            }
-
-            if (query.DescriptionSubstring != null)
-            {
-                collections.Add(await _context.WareStatuses.Where(x => x.Description.Contains(query.DescriptionSubstring)).ToListAsync());
-            }
-            if (query.StringIds != null)
-            {
-                collections.Add(await GetByStringIds(query.StringIds));
-            }
             var result = new List<WareStatus>();
             if (query.PageNumber != null && query.PageSize != null && !collections.Any())
             {
                 result = _context.WareStatuses
-                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
-                .Take(query.PageSize.Value)
-                .ToList();
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToList();
+            }
+            else if (query.QueryAny != null && collections.Any())
+            {
+                // Об'єднання результатів з QueryAny
+                result = collections.SelectMany(x => x).Distinct().ToList();
             }
             else
             {
-                result = (List<WareStatus>)collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+                // Знаходження перетину результатів
+                result = collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList)).ToList();
             }
-
 
             // Сортування
             if (query.Sorting != null)
@@ -156,12 +180,10 @@ namespace HyggyBackend.DAL.Repositories
                     .Take(query.PageSize.Value)
                     .ToList();
             }
-            if (!result.Any())
-            {
-                return new List<WareStatus>();
-            }
-            return result;
+
+            return result.Any() ? result : new List<WareStatus>();
         }
+
         public async Task Create(WareStatus wareStatus)
         {
             await _context.WareStatuses.AddAsync(wareStatus);

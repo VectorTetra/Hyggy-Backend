@@ -60,11 +60,29 @@ namespace HyggyBackend.BLL.Helper
 
             #region Customer Mappings
             CreateMap<Customer, CustomerDTO>()
-                .ForPath(dst => dst.OrderIds, opt => opt.MapFrom(src => src.Orders.Select(o => o.Id)))
-                .ForPath(dst => dst.Name, opt => opt.MapFrom(src => src.Name))
-                .ForPath(dst => dst.Surname, opt => opt.MapFrom(src => src.Surname))
-                .ForPath(dst => dst.Phone, opt => opt.MapFrom(src => src.PhoneNumber))
-                .ForPath(dst => dst.Email, opt => opt.MapFrom(src => src.Email));
+            .ForPath(dst => dst.OrderIds, opt => opt.MapFrom(src => src.Orders.Select(o => o.Id)))
+            .ForPath(dst => dst.Name, opt => opt.MapFrom(src => src.Name))
+            .ForPath(dst => dst.Surname, opt => opt.MapFrom(src => src.Surname))
+            .ForPath(dst => dst.Phone, opt => opt.MapFrom(src => src.PhoneNumber))
+            .ForPath(dst => dst.Email, opt => opt.MapFrom(src => src.Email))
+            .ForPath(dst => dst.FavoriteWareIds, opt => opt.MapFrom(src => src.FavoriteWares.Select(w => w.Id)))
+            .ForPath(dst => dst.ExecutedOrdersSum, opt => opt.MapFrom(src =>
+                src.Orders
+                    .Where(o => o.Status.Id == 3)
+                    .SelectMany(o => o.OrderItems)
+                    .Sum(oi => oi.Count * (oi.Ware.Price - (oi.Ware.Price * oi.Ware.Discount / 100)))
+            ))
+            .ForPath(dst => dst.ExecutedOrdersAvg, opt => opt.MapFrom(src =>
+                src.Orders.Where(o => o.Status.Id == 3)
+                           .SelectMany(o => o.OrderItems)
+                           .Select(oi => oi.Count * (oi.Ware.Price - (oi.Ware.Price * oi.Ware.Discount / 100)))
+                           .DefaultIfEmpty(0) // Якщо немає замовлень, повертаємо 0
+                           .Average() // Обчислюємо середнє значення
+            ));
+
+
+
+
             //CreateMap<CustomerDTO, Customer>()
             //    .ForPath(dst => dst.Orders, opt => opt.MapFrom(src => src.OrderIds.Select(id => new Order { Id = id })))
             //    .ForPath(dst => dst.Name, opt => opt.MapFrom(src => src.Name))
@@ -139,6 +157,12 @@ namespace HyggyBackend.BLL.Helper
                 .ForMember(dest => dest.Longitude, opts => opts.MapFrom(src => src.Address.Longitude))
                 .ForMember(dest => dest.AddressId, opts => opts.MapFrom(src => src.Address.Id))
                 .ForMember(dest => dest.StorageId, opts => opts.MapFrom(src => src.Storage.Id))
+                .ForMember(dest => dest.ExecutedOrdersSum, opts => opts.MapFrom(src =>
+                    src.Orders
+                        .Where(o => o.Status.Id == 3) // Фільтруємо замовлення за статусом
+                        .SelectMany(o => o.OrderItems)
+                        .Sum(oi => oi.Count * (oi.Ware.Price - (oi.Ware.Price * oi.Ware.Discount / 100)))
+                ))
                 .ForMember(dest => dest.OrderIds, opts => opts.MapFrom(src => src.Orders.Select(ord => ord.Id)));
             CreateMap<ShopQueryBLL, ShopQueryDAL>();
             #endregion
@@ -155,7 +179,8 @@ namespace HyggyBackend.BLL.Helper
                 .ForMember(dest => dest.Longitude, opts => opts.MapFrom(src => src.Address != null ? src.Address.Longitude : (long?)null))
                 .ForMember(dst => dst.ShopId, opts => opts.MapFrom(src => src.Shop != null ? src.Shop.Id : (long?)null))
                 .ForMember(dst => dst.ShopName, opts => opts.MapFrom(src => src.Shop != null ? src.Shop.Name : null))
-                .ForMember(dst => dst.AddressId, opt => opt.MapFrom(src => src.Address != null ? src.Address.Id : (long?)null));
+                .ForMember(dst => dst.AddressId, opt => opt.MapFrom(src => src.Address != null ? src.Address.Id : (long?)null))
+                .ForMember(dst => dst.StoredWaresSum, opt => opt.MapFrom(src => src.WareItems != null ? src.WareItems.Sum(wi => wi.Quantity * (wi.Ware.Price * wi.Ware.Discount / 100)) : 0));
             CreateMap<StorageQueryBLL, StorageQueryDAL>();
             #endregion
 
@@ -215,7 +240,7 @@ namespace HyggyBackend.BLL.Helper
                 ? c.WaresCategory3.Select(wc => wc.Id).ToList()
                 : new List<long>()));
 
-            
+
 
             CreateMap<WareCategory2QueryBLL, WareCategory2QueryDAL>();
             #endregion

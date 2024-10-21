@@ -18,8 +18,8 @@ namespace HyggyBackend.BLL.DTO
         public long? StorageId { get; set; }
 		public ICollection<long>? OrderIds { get; set; } = new List<long>();
 		public ICollection<string>? ShopEmployeeIds { get; set; } = new List<string>();
-        public string? StringIds { get; set; }
         // Для результатів Get-запитів
+        public double? ExecutedOrdersSum{ get; set; }
         public string? Street { get; set; } // Назва вулиці
         public string? HouseNumber { get; set; } // Номер будинку
         public string? City { get; set; } // Місто

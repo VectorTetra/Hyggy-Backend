@@ -13,6 +13,12 @@ namespace HyggyBackend.DAL.Interfaces
         Task<IEnumerable<Storage>> GetByQuery(StorageQueryDAL query);
         Task<IEnumerable<Storage>> GetByStringIds(string stringIds);
         Task<IEnumerable<Storage>> GetPaged(int pageNumber, int pageSize);
+        Task<IEnumerable<Storage>> GetByCity(string city);
+        Task<IEnumerable<Storage>> GetByShopName(string shopName);
+        Task<IEnumerable<Storage>> GetByStreet(string Street);
+        Task<IEnumerable<Storage>> GetByPostalCode(string postalCode);
+        Task<IEnumerable<Storage>> GetByState(string state);
+        Task<IEnumerable<Storage>> GetByHouseNumber(string HouseNumber);
         Task<Storage?> GetById(long id);
         Task<Storage?> GetByAddressId(long addressId);
         Task<Storage?> GetByShopId(long ShopId);

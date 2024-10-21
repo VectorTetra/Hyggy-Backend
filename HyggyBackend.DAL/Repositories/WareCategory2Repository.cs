@@ -67,48 +67,73 @@ namespace HyggyBackend.DAL.Repositories
         {
             var collections = new List<IEnumerable<WareCategory2>>();
 
-            if (query.Id != null)
+            if (query.QueryAny != null)
             {
-                collections.Add(await _context.WareCategories2.Where(x => x.Id == query.Id).ToListAsync());
-            }
-
-            if (query.NameSubstring != null)
-            {
-                collections.Add(await GetByNameSubstring(query.NameSubstring));
-            }
-            if (query.WareCategory1Id != null)
-            {
-                collections.Add(await GetByWareCategory1Id(query.WareCategory1Id.Value));
-            }
-            if (query.WareCategory1NameSubstring != null)
-            {
-                collections.Add(await GetByWareCategory1NameSubstring(query.WareCategory1NameSubstring));
-            }
-            if (query.WareCategory3Id != null)
-            {
-                collections.Add(await GetByWareCategory3Id(query.WareCategory3Id.Value));
-            }
-            if (query.WareCategory3NameSubstring != null)
-            {
-                collections.Add(await GetByWareCategory3NameSubstring(query.WareCategory3NameSubstring));
-            }
-            if (query.StringIds != null)
-            {
-                collections.Add(await GetByStringIds(query.StringIds));
-            }
-            var result = new List<WareCategory2>();
-            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
-            {
-                result = _context.WareCategories2
-                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
-                .Take(query.PageSize.Value)
-                .ToList();
+                if (long.TryParse(query.QueryAny, out long id))
+                {
+                    collections.Add(new List<WareCategory2> { await GetById(id) });
+                }
+                collections.Add(await GetByNameSubstring(query.QueryAny));
+                collections.Add(await GetByWareCategory1NameSubstring(query.QueryAny));
+                collections.Add(await GetByWareCategory3NameSubstring(query.QueryAny));
             }
             else
             {
-                result = (List<WareCategory2>)collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+                if (query.Id != null)
+                {
+                    collections.Add(await _context.WareCategories2.Where(x => x.Id == query.Id).ToListAsync());
+                }
+
+                if (query.NameSubstring != null)
+                {
+                    collections.Add(await GetByNameSubstring(query.NameSubstring));
+                }
+
+                if (query.WareCategory1Id != null)
+                {
+                    collections.Add(await GetByWareCategory1Id(query.WareCategory1Id.Value));
+                }
+
+                if (query.WareCategory1NameSubstring != null)
+                {
+                    collections.Add(await GetByWareCategory1NameSubstring(query.WareCategory1NameSubstring));
+                }
+
+                if (query.WareCategory3Id != null)
+                {
+                    collections.Add(await GetByWareCategory3Id(query.WareCategory3Id.Value));
+                }
+
+                if (query.WareCategory3NameSubstring != null)
+                {
+                    collections.Add(await GetByWareCategory3NameSubstring(query.WareCategory3NameSubstring));
+                }
+
+                if (query.StringIds != null)
+                {
+                    collections.Add(await GetByStringIds(query.StringIds));
+                }
             }
 
+            var result = new List<WareCategory2>();
+
+            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
+            {
+                result = await _context.WareCategories2
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToListAsync();
+            }
+            else if (query.QueryAny != null && collections.Any())
+            {
+                // Об'єднання результатів
+                result = collections.SelectMany(x => x).Distinct().ToList();
+            }
+            else
+            {
+                result = collections.Aggregate(new List<WareCategory2>(), (previousList, nextList) =>
+                    previousList.Intersect(nextList).ToList());
+            }
 
             // Сортування
             if (query.Sorting != null)
@@ -152,12 +177,10 @@ namespace HyggyBackend.DAL.Repositories
                     .Take(query.PageSize.Value)
                     .ToList();
             }
-            if (!result.Any())
-            {
-                return new List<WareCategory2>();
-            }
-            return result;
+
+            return result.Any() ? result : new List<WareCategory2>();
         }
+
 
         public async IAsyncEnumerable<WareCategory2> GetByIdsAsync(IEnumerable<long> ids)
         {

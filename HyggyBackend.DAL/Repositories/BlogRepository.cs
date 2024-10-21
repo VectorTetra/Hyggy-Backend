@@ -102,68 +102,93 @@ namespace HyggyBackend.DAL.Repositories
         public async Task<IEnumerable<Blog>> GetByQuery(BlogQueryDAL query)
         {
             var collections = new List<IEnumerable<Blog>>();
-            if (query.Id.HasValue)
-            {
-                var rr = await GetById(query.Id.Value);
-                if (rr != null) collections.Add(new List<Blog> { rr });
-            }
-            if (!string.IsNullOrEmpty(query.Keyword))
-            {
-                collections.Add(await GetByKeywordSubstring(query.Keyword));
-            }
-            if (!string.IsNullOrEmpty(query.BlogTitle))
-            {
-                collections.Add(await GetByTitleSubstring(query.BlogTitle));
-            }
-            if (!string.IsNullOrEmpty(query.FilePath))
-            {
-                collections.Add(await GetByFilePathSubstring(query.FilePath));
-            }
-            if (!string.IsNullOrEmpty(query.PreviewImagePath))
-            {
-                collections.Add(await GetByPreviewImagePathSubstring(query.PreviewImagePath));
-            }
-            if (query.BlogCategory1Id.HasValue)
-            {
-                collections.Add(await GetByBlogCategory1Id(query.BlogCategory1Id.Value));
-            }
-            if (!string.IsNullOrEmpty(query.BlogCategory2Name))
-            {
-                collections.Add(await GetByBlogCategory2NameSubstring(query.BlogCategory2Name));
-            }
-            if (query.BlogCategory2Id.HasValue)
-            {
-                collections.Add(await GetByBlogCategory2Id(query.BlogCategory2Id.Value));
-            }
-            if (!string.IsNullOrEmpty(query.BlogCategory1Name))
-            {
-                collections.Add(await GetByBlogCategory1NameSubstring(query.BlogCategory1Name));
-            }
-            if (!string.IsNullOrEmpty(query.StringIds))
-            {
-                collections.Add(await GetByStringIds(query.StringIds));
-            }
 
-            var result = new List<Blog>();
-            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
+            if (!string.IsNullOrEmpty(query.QueryAny))
             {
-                result = _context.Blogs
-                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
-                .Take(query.PageSize.Value)
-                .ToList();
+                if (long.TryParse(query.QueryAny, out long id))
+                {
+                    collections.Add(new List<Blog> { await GetById(id) });
+                }
+                collections.Add(await GetByKeywordSubstring(query.QueryAny));
+                collections.Add(await GetByTitleSubstring(query.QueryAny));
+                collections.Add(await GetByFilePathSubstring(query.QueryAny));
+                collections.Add(await GetByPreviewImagePathSubstring(query.QueryAny));
+                collections.Add(await GetByBlogCategory2NameSubstring(query.QueryAny));
+                collections.Add(await GetByBlogCategory1NameSubstring(query.QueryAny));
             }
             else
             {
-                result = (List<Blog>)collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+                if (query.Id.HasValue)
+                {
+                    var res = await GetById(query.Id.Value);
+                    if (res != null)
+                    {
+                        collections.Add(new List<Blog> { res });
+                    }
+                }
+                if (!string.IsNullOrEmpty(query.Keyword))
+                {
+                    collections.Add(await GetByKeywordSubstring(query.Keyword));
+                }
+                if (!string.IsNullOrEmpty(query.BlogTitle))
+                {
+                    collections.Add(await GetByTitleSubstring(query.BlogTitle));
+                }
+                if (!string.IsNullOrEmpty(query.FilePath))
+                {
+                    collections.Add(await GetByFilePathSubstring(query.FilePath));
+                }
+                if (!string.IsNullOrEmpty(query.PreviewImagePath))
+                {
+                    collections.Add(await GetByPreviewImagePathSubstring(query.PreviewImagePath));
+                }
+                if (query.BlogCategory1Id.HasValue)
+                {
+                    collections.Add(await GetByBlogCategory1Id(query.BlogCategory1Id.Value));
+                }
+                if (!string.IsNullOrEmpty(query.BlogCategory2Name))
+                {
+                    collections.Add(await GetByBlogCategory2NameSubstring(query.BlogCategory2Name));
+                }
+                if (query.BlogCategory2Id.HasValue)
+                {
+                    collections.Add(await GetByBlogCategory2Id(query.BlogCategory2Id.Value));
+                }
+                if (!string.IsNullOrEmpty(query.BlogCategory1Name))
+                {
+                    collections.Add(await GetByBlogCategory1NameSubstring(query.BlogCategory1Name));
+                }
+                if (!string.IsNullOrEmpty(query.StringIds))
+                {
+                    collections.Add(await GetByStringIds(query.StringIds));
+                }
             }
 
+            var result = new List<Blog>();
 
-            // Сортування
+            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
+            {
+                result = _context.Blogs
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToList();
+            }
+            else if (!string.IsNullOrEmpty(query.QueryAny) && collections.Any())
+            {
+                // Використовуємо Union для об'єднання результатів
+                result = collections.SelectMany(x => x).Distinct().ToList();
+            }
+            else
+            {
+                // Використовуємо Intersect для знаходження записів, які задовольняють всі умови
+                result = collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList)).ToList();
+            }
+
             if (query.Sorting != null)
             {
+                // Сортування за вказаними критеріями
                 switch (query.Sorting)
                 {
-
                     case "BlogTitleAsc":
                         result = result.OrderBy(b => b.BlogTitle).ToList();
                         break;
@@ -223,20 +248,17 @@ namespace HyggyBackend.DAL.Repositories
                 }
             }
 
-            // Пагінація
-            if (query.PageNumber != null && query.PageSize != null)
+            if (query.PageNumber != null && query.PageSize != null && result.Any())
             {
                 result = result
                     .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
                     .Take(query.PageSize.Value)
                     .ToList();
             }
-            if (!result.Any())
-            {
-                return new List<Blog>();
-            }
-            return result;
+
+            return result.Any() ? result : new List<Blog>();
         }
+
         public async Task AddBlog(Blog blog)
         {
             await _context.Blogs.AddAsync(blog);

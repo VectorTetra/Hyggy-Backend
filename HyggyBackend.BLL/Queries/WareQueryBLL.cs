@@ -39,5 +39,6 @@ namespace HyggyBackend.BLL.Queries
         public string? StringCategory1Ids { get; set; }
         public string? StringCategory2Ids { get; set; }
         public string? StringCategory3Ids { get; set; }
+        public string? QueryAny {get;set;}
     }
 }

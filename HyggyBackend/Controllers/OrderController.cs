@@ -46,7 +46,12 @@ namespace HyggyBackend.Controllers
             .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.CustomerId))
             .ForMember(dest => dest.ShopId, opt => opt.MapFrom(src => src.ShopId))
             .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Sorting))
-            .ForMember(dest => dest.StringIds, opt => opt.MapFrom(src => src.StringIds));
+            .ForMember(dest => dest.StringIds, opt => opt.MapFrom(src => src.StringIds))
+            .ForMember(dest => dest.QueryAny, opt => opt.MapFrom(src => src.QueryAny))
+            .ForMember(dest => dest.PageNumber, opt => opt.MapFrom(src => src.PageNumber))
+            .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize));
+
+
         });
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderDTO>>> GetOrders([FromQuery] OrderQueryPL orderQueryPL)
@@ -456,5 +461,6 @@ namespace HyggyBackend.Controllers
         public long? ShopId { get; set; }
         public string? Sorting { get; set; }
         public string? StringIds { get; set; }
+        public string? QueryAny { get; set; }
     }
 }

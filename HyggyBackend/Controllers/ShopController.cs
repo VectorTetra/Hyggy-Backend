@@ -23,7 +23,7 @@ namespace HyggyBackend.Controllers
         }
         MapperConfiguration config = new MapperConfiguration(mc =>
         {
-			mc.CreateMap<ShopQueryPL, ShopQueryBLL>()
+            mc.CreateMap<ShopQueryPL, ShopQueryBLL>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.AddressId, opt => opt.MapFrom(src => src.AddressId))
             .ForMember(dest => dest.Street, opt => opt.MapFrom(src => src.Street))
@@ -40,7 +40,8 @@ namespace HyggyBackend.Controllers
             .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize))
             .ForMember(dest => dest.NearestCount, opt => opt.MapFrom(src => src.NearestCount))
             .ForMember(dest => dest.StringIds, opt => opt.MapFrom(src => src.StringIds))
-            .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Sorting));
+            .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Sorting))
+            .ForMember(dest => dest.QueryAny, opt => opt.MapFrom(src => src.QueryAny));
         });
         [HttpGet]
 		public async Task<ActionResult<IEnumerable<ShopDTO>>> Get([FromQuery] ShopQueryPL query)
@@ -358,6 +359,6 @@ namespace HyggyBackend.Controllers
         public int? NearestCount { get; set; }
         public string? StringIds { get; set; }
         public string? Sorting { get; set; }
-
+        public string? QueryAny { get; set; }
     }
 }

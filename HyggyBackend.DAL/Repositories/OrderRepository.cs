@@ -135,126 +135,152 @@ namespace HyggyBackend.DAL.Repositories
         {
             var collections = new List<IEnumerable<Order>>();
 
-            if (query.Id != null)
+            // Перевірка на наявність QueryAny
+            if (!string.IsNullOrEmpty(query.QueryAny))
             {
-                collections.Add(new List<Order> { await GetById(query.Id.Value) });
+                // Ви можете використовувати, наприклад, TryParse для конвертації
+                if (long.TryParse(query.QueryAny, out long id))
+                {
+                    collections.Add(await GetByOrderItemId(id));
+                    collections.Add(await GetByWareId(id));
+                    collections.Add(await GetByShopId(id));
+                    collections.Add(new List<Order> { await GetById(id) });
+                }
+                else
+                {
+                    collections.Add(await GetByPhoneSubstring(query.QueryAny));
+                    collections.Add(await GetByCommentSubstring(query.QueryAny));
+                    collections.Add(await GetByStatusNameSubstring(query.QueryAny));
+                    collections.Add(await GetByStatusDescriptionSubstring(query.QueryAny));
+                }
             }
-
-            if (query.AddressId != null)
+            else
             {
-                collections.Add(await GetByAddressId(query.AddressId.Value));
-            }
+                if (query.Id != null)
+                {
+                    collections.Add(new List<Order> { await GetById(query.Id.Value) });
+                }
 
-            if (query.Street != null)
-            {
-                collections.Add(await GetByStreet(query.Street));
-            }
+                if (query.AddressId != null)
+                {
+                    collections.Add(await GetByAddressId(query.AddressId.Value));
+                }
 
-            if (query.HouseNumber != null)
-            {
-                collections.Add(await GetByHouseNumber(query.HouseNumber));
-            }
+                if (query.Street != null)
+                {
+                    collections.Add(await GetByStreet(query.Street));
+                }
 
-            if (query.City != null)
-            {
-                collections.Add(await GetByCity(query.City));
-            }
+                if (query.HouseNumber != null)
+                {
+                    collections.Add(await GetByHouseNumber(query.HouseNumber));
+                }
 
-            if (query.PostalCode != null)
-            {
-                collections.Add(await GetByPostalCode(query.PostalCode));
-            }
+                if (query.City != null)
+                {
+                    collections.Add(await GetByCity(query.City));
+                }
 
-            if (query.State != null)
-            {
-                collections.Add(await GetByState(query.State));
-            }
+                if (query.PostalCode != null)
+                {
+                    collections.Add(await GetByPostalCode(query.PostalCode));
+                }
 
-            if (query.Latitude != null && query.Longitude != null)
-            {
-                collections.Add(await GetByLatitudeAndLongitude(query.Latitude.Value, query.Longitude.Value));
-            }
+                if (query.State != null)
+                {
+                    collections.Add(await GetByState(query.State));
+                }
 
-            if (query.MaxOrderDate != null && query.MinOrderDate != null)
-            {
-                collections.Add(await GetByOrderDateRange(query.MinOrderDate.Value, query.MaxOrderDate.Value));
-            }
+                if (query.Latitude != null && query.Longitude != null)
+                {
+                    collections.Add(await GetByLatitudeAndLongitude(query.Latitude.Value, query.Longitude.Value));
+                }
 
-            if (query.Phone != null)
-            {
-                collections.Add(await GetByPhoneSubstring(query.Phone));
-            }
+                if (query.MaxOrderDate != null && query.MinOrderDate != null)
+                {
+                    collections.Add(await GetByOrderDateRange(query.MinOrderDate.Value, query.MaxOrderDate.Value));
+                }
 
-            if (query.Comment != null)
-            {
-                collections.Add(await GetByCommentSubstring(query.Comment));
-            }
+                if (query.Phone != null)
+                {
+                    collections.Add(await GetByPhoneSubstring(query.Phone));
+                }
 
-            if (query.StatusId != null)
-            {
-                collections.Add(await GetByStatusId(query.StatusId.Value));
-            }
+                if (query.Comment != null)
+                {
+                    collections.Add(await GetByCommentSubstring(query.Comment));
+                }
 
-            if (query.StatusName != null)
-            {
-                collections.Add(await GetByStatusNameSubstring(query.StatusName));
-            }
+                if (query.StatusId != null)
+                {
+                    collections.Add(await GetByStatusId(query.StatusId.Value));
+                }
 
-            if (query.StatusDescription != null)
-            {
-                collections.Add(await GetByStatusDescriptionSubstring(query.StatusDescription));
-            }
+                if (query.StatusName != null)
+                {
+                    collections.Add(await GetByStatusNameSubstring(query.StatusName));
+                }
 
-            if (query.OrderItemId != null)
-            {
-                collections.Add(await GetByOrderItemId(query.OrderItemId.Value));
-            }
+                if (query.StatusDescription != null)
+                {
+                    collections.Add(await GetByStatusDescriptionSubstring(query.StatusDescription));
+                }
 
-            if (query.WareId != null)
-            {
-                collections.Add(await GetByWareId(query.WareId.Value));
-            }
+                if (query.OrderItemId != null)
+                {
+                    collections.Add(await GetByOrderItemId(query.OrderItemId.Value));
+                }
 
-            if (query.WarePriceHistoryId != null)
-            {
-                collections.Add(await GetByWarePriceHistoryId(query.WarePriceHistoryId.Value));
-            }
+                if (query.WareId != null)
+                {
+                    collections.Add(await GetByWareId(query.WareId.Value));
+                }
 
-            if (query.CustomerId != null)
-            {
-                collections.Add(await GetByCustomerId(query.CustomerId));
-            }
+                if (query.WarePriceHistoryId != null)
+                {
+                    collections.Add(await GetByWarePriceHistoryId(query.WarePriceHistoryId.Value));
+                }
 
-            if (query.ShopId != null)
-            {
-                collections.Add(await GetByShopId(query.ShopId.Value));
-            }
+                if (query.CustomerId != null)
+                {
+                    collections.Add(await GetByCustomerId(query.CustomerId));
+                }
 
-            if (!string.IsNullOrEmpty(query.StringIds))
-            {
-                collections.Add(await GetByStringIds(query.StringIds));
+                if (query.ShopId != null)
+                {
+                    collections.Add(await GetByShopId(query.ShopId.Value));
+                }
+
+                if (!string.IsNullOrEmpty(query.StringIds))
+                {
+                    collections.Add(await GetByStringIds(query.StringIds));
+                }
             }
 
             var result = new List<Order>();
             if (query.PageNumber != null && query.PageSize != null && !collections.Any())
             {
                 result = _context.Orders
-                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
-                .Take(query.PageSize.Value)
-                .ToList();
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToList();
+            }
+            else if (query.QueryAny != null && collections.Any())
+            {
+                // Використовуємо Union для об'єднання результатів
+                result = collections.SelectMany(x => x).Distinct().ToList();
             }
             else
             {
-                result = (List<Order>)collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+                result = collections
+                    .Aggregate(new List<Order>(), (previousList, nextList) => previousList.Intersect(nextList).ToList());
             }
-
 
             // Сортування
             if (query.Sorting != null)
             {
                 switch (query.Sorting)
                 {
-
                     case "IdAsc":
                         result = result.OrderBy(x => x.Id).ToList();
                         break;
@@ -316,13 +342,10 @@ namespace HyggyBackend.DAL.Repositories
                     .Take(query.PageSize.Value)
                     .ToList();
             }
-            if (!result.Any())
-            {
-                return new List<Order>();
-            }
-            return result;
 
+            return result.Any() ? result : new List<Order>();
         }
+
         public async Task Create(Order order)
         {
             await _context.Orders.AddAsync(order);

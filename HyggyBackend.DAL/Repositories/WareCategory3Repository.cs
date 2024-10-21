@@ -91,69 +91,88 @@ namespace HyggyBackend.DAL.Repositories
         {
             var collections = new List<IEnumerable<WareCategory3>>();
 
-
-            if(query.Id != null)
+            // Обробка запиту за QueryAny
+            if (query.QueryAny != null)
             {
-                var proto = await GetById(query.Id.Value);
-                if (proto != null)
+                if (long.TryParse(query.QueryAny, out long id))
                 {
-                    collections.Add(new List<WareCategory3> { proto });
+                    collections.Add(await GetByWareId(id));
+                    collections.Add(await GetByWareArticle(id));
+                    collections.Add(new List<WareCategory3> { await GetById(id) });
                 }
-            }
-
-            if (query.NameSubstring != null)
-            {
-                collections.Add(await GetByNameSubstring(query.NameSubstring));
-            }
-            if (query.WareCategory1Id != null)
-            {
-                collections.Add(await GetByWareCategory1Id(query.WareCategory1Id.Value));
-            }
-            if (query.WareCategory1NameSubstring != null)
-            {
-                collections.Add(await GetByWareCategory1NameSubstring(query.WareCategory1NameSubstring));
-            }
-            if (query.WareCategory2Id != null)
-            {
-                collections.Add(await GetByWareCategory2Id(query.WareCategory2Id.Value));
-            }
-            if (query.WareCategory2NameSubstring != null)
-            {
-                collections.Add(await GetByWareCategory2NameSubstring(query.WareCategory2NameSubstring));
-            }
-            if (query.WareId != null)
-            {
-                collections.Add(await GetByWareId(query.WareId.Value));
-            }
-            if (query.WareArticle != null)
-            {
-                collections.Add(await GetByWareArticle(query.WareArticle.Value));
-            }
-            if (query.WareNameSubstring != null)
-            {
-                collections.Add(await GetByWareNameSubstring(query.WareNameSubstring));
-            }
-            if (query.WareDescriptionSubstring != null)
-            {
-                collections.Add(await GetByWareDescriptionSubstring(query.WareDescriptionSubstring));
-            }
-            if (query.StringIds != null)
-            {
-                collections.Add(await GetByStringIds(query.StringIds));
-            }
-            var result = new List<WareCategory3>();
-            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
-            {
-                result = _context.WareCategories3
-                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
-                .Take(query.PageSize.Value)
-                .ToList();
+                collections.Add(await GetByNameSubstring(query.QueryAny));
+                collections.Add(await GetByWareCategory1NameSubstring(query.QueryAny));
+                collections.Add(await GetByWareCategory2NameSubstring(query.QueryAny));
+                collections.Add(await GetByWareNameSubstring(query.QueryAny));
+                collections.Add(await GetByWareDescriptionSubstring(query.QueryAny));
             }
             else
             {
-                result = (List<WareCategory3>)collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+                // Обробка інших параметрів запиту
+                if (query.Id != null)
+                {
+                    var proto = await GetById(query.Id.Value);
+                    if (proto != null)
+                    {
+                        collections.Add(new List<WareCategory3> { proto });
+                    }
+                }
+
+                if (query.NameSubstring != null)
+                {
+                    collections.Add(await GetByNameSubstring(query.NameSubstring));
+                }
+                if (query.WareCategory1Id != null)
+                {
+                    collections.Add(await GetByWareCategory1Id(query.WareCategory1Id.Value));
+                }
+                if (query.WareCategory1NameSubstring != null)
+                {
+                    collections.Add(await GetByWareCategory1NameSubstring(query.WareCategory1NameSubstring));
+                }
+                if (query.WareCategory2Id != null)
+                {
+                    collections.Add(await GetByWareCategory2Id(query.WareCategory2Id.Value));
+                }
+                if (query.WareCategory2NameSubstring != null)
+                {
+                    collections.Add(await GetByWareCategory2NameSubstring(query.WareCategory2NameSubstring));
+                }
+                if (query.WareId != null)
+                {
+                    collections.Add(await GetByWareId(query.WareId.Value));
+                }
+                if (query.WareArticle != null)
+                {
+                    collections.Add(await GetByWareArticle(query.WareArticle.Value));
+                }
+                if (query.StringIds != null)
+                {
+                    collections.Add(await GetByStringIds(query.StringIds));
+                }
             }
 
+            var result = new List<WareCategory3>();
+
+            // Пагінація без запитів
+            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
+            {
+                result = await _context.WareCategories3
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToListAsync();
+            }
+            else if (query.QueryAny != null && collections.Any())
+            {
+                // Об'єднання результатів за QueryAny
+                result = collections.SelectMany(x => x).Distinct().ToList();
+            }
+            else
+            {
+                // Знаходження перетину
+                result = collections.Aggregate(new List<WareCategory3>(), (previousList, nextList) =>
+                    previousList.Intersect(nextList).ToList());
+            }
 
             // Сортування
             if (query.Sorting != null)
@@ -209,12 +228,10 @@ namespace HyggyBackend.DAL.Repositories
                     .Take(query.PageSize.Value)
                     .ToList();
             }
-            if (!result.Any())
-            {
-                return new List<WareCategory3>();
-            }
-            return result;
+
+            return result.Any() ? result : new List<WareCategory3>();
         }
+
         public async Task Create(WareCategory3 category3)
         {
             _context.WareCategories3.Add(category3);

@@ -59,15 +59,16 @@ namespace HyggyBackend.DAL.Repositories
         }
         public async Task<IEnumerable<WareItem>> GetByWarePriceRange(float minPrice, float maxPrice)
         {
+
             if (maxPrice < minPrice)
             {
-                return await _context.WareItems.Where(x => x.Ware.Price >= maxPrice && x.Ware.Price <= minPrice).ToListAsync();
+                return await _context.WareItems.Where(x => (x.Ware.Price * (1-(x.Ware.Discount / 100))) >= maxPrice && (x.Ware.Price * (1 - (x.Ware.Discount / 100))) <= minPrice).ToListAsync();
             }
             if (minPrice == maxPrice)
             {
-                return await _context.WareItems.Where(x => x.Ware.Price == minPrice).ToListAsync();
+                return await _context.WareItems.Where(x => (x.Ware.Price * (1 - (x.Ware.Discount / 100))) == minPrice).ToListAsync();
             }
-            return await _context.WareItems.Where(x => x.Ware.Price >= minPrice && x.Ware.Price <= maxPrice).ToListAsync();
+            return await _context.WareItems.Where(x => (x.Ware.Price * (1 - (x.Ware.Discount / 100))) >= minPrice && (x.Ware.Price * (1 - (x.Ware.Discount / 100))) <= maxPrice).ToListAsync();
         }
 
         public async Task<IEnumerable<WareItem>> GetPagedWareItems(int pageNumber, int pageSize)
@@ -154,117 +155,151 @@ namespace HyggyBackend.DAL.Repositories
         {
             var collections = new List<IEnumerable<WareItem>>();
 
-            if (query.Id != null)
+            // Перевірка наявності QueryAny
+            if (query.QueryAny != null)
             {
-                var proto = await GetById(query.Id.Value);
-                if (proto != null)
+                if (long.TryParse(query.QueryAny, out long id))
                 {
-                    collections.Add(new List<WareItem> { proto });
+                    collections.Add(await GetByArticle(id));
+                    collections.Add(await GetByWareId(id));
+                    collections.Add(await GetByShopId(id));
+                    collections.Add(await GetByStorageId(id));
+                    collections.Add(await GetByQuantityRange(id, id));
+                    collections.Add(new List<WareItem> { await GetById(id) });
                 }
-            }
+                if (float.TryParse(query.QueryAny, out float val))
+                {
+                    collections.Add(await GetByWarePriceRange(val, val));
+                    collections.Add(await GetByWareDiscountRange(val, val));
+                }
+                
+                collections.Add(await GetByWareName(query.QueryAny));
+                collections.Add(await GetByWareDescription(query.QueryAny));
 
-            if (query.Article != null)
-            {
-                collections.Add(await GetByArticle(query.Article.Value));
-            }
 
-            if (query.WareId != null)
-            {
-                collections.Add(await GetByWareId(query.WareId.Value));
-            }
-
-            if (query.WareName != null)
-            {
-                collections.Add(await GetByWareName(query.WareName));
-            }
-
-            if (query.WareDescription != null)
-            {
-                collections.Add(await GetByWareDescription(query.WareDescription));
-            }
-
-            if (query.MinPrice != null && query.MaxPrice != null)
-            {
-                collections.Add(await GetByWarePriceRange(query.MinPrice.Value, query.MaxPrice.Value));
-            }
-
-            if (query.MinDiscount != null && query.MaxDiscount != null)
-            {
-                collections.Add(await GetByWareDiscountRange(query.MinDiscount.Value, query.MaxDiscount.Value));
-            }
-
-            if (query.StatusId != null)
-            {
-                collections.Add(await GetByWareStatusId(query.StatusId.Value));
-            }
-
-            if (query.WareCategory3Id != null)
-            {
-                collections.Add(await GetByWareCategory3Id(query.WareCategory3Id.Value));
-            }
-
-            if (query.WareCategory2Id != null)
-            {
-                collections.Add(await GetByWareCategory2Id(query.WareCategory2Id.Value));
-            }
-
-            if (query.WareCategory1Id != null)
-            {
-                collections.Add(await GetByWareCategory1Id(query.WareCategory1Id.Value));
-            }
-
-            if (query.WareImageId != null)
-            {
-                collections.Add(await GetByWareImageId(query.WareImageId.Value));
-            }
-
-            if (query.PriceHistoryId != null)
-            {
-                collections.Add(await GetByPriceHistoryId(query.PriceHistoryId.Value));
-            }
-
-            if (query.OrderItemId != null)
-            {
-                collections.Add(await GetByOrderItemId(query.OrderItemId.Value));
-            }
-
-            if (query.IsDeliveryAvailable != null)
-            {
-                collections.Add(await GetByIsDeliveryAvailable(query.IsDeliveryAvailable.Value));
-            }
-
-            if (query.StorageId != null)
-            {
-                collections.Add(await GetByStorageId(query.StorageId.Value));
-            }
-
-            if (query.ShopId != null)
-            {
-                collections.Add(await GetByShopId(query.ShopId.Value));
-            }
-
-            if (query.MinQuantity != null && query.MaxQuantity != null)
-            {
-                collections.Add(await GetByQuantityRange(query.MinQuantity.Value, query.MaxQuantity.Value));
-            }
-
-            if (query.StringIds != null)
-            {
-                collections.Add(await GetByStringIds(query.StringIds));
-            }
-            var result = new List<WareItem>();
-            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
-            {
-                result = _context.WareItems
-                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
-                .Take(query.PageSize.Value)
-                .ToList();
             }
             else
             {
-                result = (List<WareItem>)collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+                if (query.Id != null)
+                {
+                    var proto = await GetById(query.Id.Value);
+                    if (proto != null)
+                    {
+                        collections.Add(new List<WareItem> { proto });
+                    }
+                }
+
+                if (query.Article != null)
+                {
+                    collections.Add(await GetByArticle(query.Article.Value));
+                }
+
+                if (query.WareId != null)
+                {
+                    collections.Add(await GetByWareId(query.WareId.Value));
+                }
+
+                if (query.WareName != null)
+                {
+                    collections.Add(await GetByWareName(query.WareName));
+                }
+
+                if (query.WareDescription != null)
+                {
+                    collections.Add(await GetByWareDescription(query.WareDescription));
+                }
+
+                if (query.MinPrice != null && query.MaxPrice != null)
+                {
+                    collections.Add(await GetByWarePriceRange(query.MinPrice.Value, query.MaxPrice.Value));
+                }
+
+                if (query.MinDiscount != null && query.MaxDiscount != null)
+                {
+                    collections.Add(await GetByWareDiscountRange(query.MinDiscount.Value, query.MaxDiscount.Value));
+                }
+
+                if (query.StatusId != null)
+                {
+                    collections.Add(await GetByWareStatusId(query.StatusId.Value));
+                }
+
+                if (query.WareCategory3Id != null)
+                {
+                    collections.Add(await GetByWareCategory3Id(query.WareCategory3Id.Value));
+                }
+
+                if (query.WareCategory2Id != null)
+                {
+                    collections.Add(await GetByWareCategory2Id(query.WareCategory2Id.Value));
+                }
+
+                if (query.WareCategory1Id != null)
+                {
+                    collections.Add(await GetByWareCategory1Id(query.WareCategory1Id.Value));
+                }
+
+                if (query.WareImageId != null)
+                {
+                    collections.Add(await GetByWareImageId(query.WareImageId.Value));
+                }
+
+                if (query.PriceHistoryId != null)
+                {
+                    collections.Add(await GetByPriceHistoryId(query.PriceHistoryId.Value));
+                }
+
+                if (query.OrderItemId != null)
+                {
+                    collections.Add(await GetByOrderItemId(query.OrderItemId.Value));
+                }
+
+                if (query.IsDeliveryAvailable != null)
+                {
+                    collections.Add(await GetByIsDeliveryAvailable(query.IsDeliveryAvailable.Value));
+                }
+
+                if (query.StorageId != null)
+                {
+                    collections.Add(await GetByStorageId(query.StorageId.Value));
+                }
+
+                if (query.ShopId != null)
+                {
+                    collections.Add(await GetByShopId(query.ShopId.Value));
+                }
+
+                if (query.MinQuantity != null && query.MaxQuantity != null)
+                {
+                    collections.Add(await GetByQuantityRange(query.MinQuantity.Value, query.MaxQuantity.Value));
+                }
+
+                if (query.StringIds != null)
+                {
+                    collections.Add(await GetByStringIds(query.StringIds));
+                }
             }
 
+            var result = new List<WareItem>();
+
+            // Пагінація за замовчуванням, якщо не знайдено колекцій
+            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
+            {
+                result = _context.WareItems
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToList();
+            }
+            else if (query.QueryAny != null && collections.Any())
+            {
+                // Об'єднання результатів з QueryAny
+                result = collections.SelectMany(x => x).Distinct().ToList();
+            }
+            else
+            {
+                // Знаходження перетину результатів
+                result = collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList)).ToList();
+            }
 
             // Сортування
             if (query.Sorting != null)
@@ -277,7 +312,6 @@ namespace HyggyBackend.DAL.Repositories
                     case "IdDesc":
                         result = result.OrderByDescending(ware => ware.Id).ToList();
                         break;
-
                     case "ArticleAsc":
                         result = result.OrderBy(ware => ware.Ware.Article).ToList();
                         break;
@@ -363,12 +397,10 @@ namespace HyggyBackend.DAL.Repositories
                     .Take(query.PageSize.Value)
                     .ToList();
             }
-            if (!result.Any())
-            {
-                return new List<WareItem>();
-            }
-            return result;
+
+            return result.Any() ? result : new List<WareItem>();
         }
+
 
         public async IAsyncEnumerable<WareItem> GetByIdsAsync(IEnumerable<long> ids)
         {

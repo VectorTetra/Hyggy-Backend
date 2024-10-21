@@ -100,71 +100,100 @@ namespace HyggyBackend.DAL.Repositories
         {
             var collections = new List<IEnumerable<WareReview>>();
 
-            if (query.Id != null)
+            // Перевірка наявності QueryAny
+            if (query.QueryAny != null)
             {
-                var res = await GetById(query.Id.Value);
-                if (res != null)
+                if (long.TryParse(query.QueryAny, out long id))
                 {
-                    return new List<WareReview> { res };
+                    collections.Add(await GetByWareId(id)); // Пошук за WareId
+                    collections.Add(new List<WareReview> { await GetById(id) }); // Пошук за WareId
                 }
-            }
 
-            if (query.WareId != null)
-            {
-                collections.Add(await GetByWareId(query.WareId.Value));
-            }
-
-            if (query.Text != null)
-            {
-                collections.Add(await GetByTextSubstring(query.Text));
-            }
-
-            if (query.Theme != null)
-            {
-                collections.Add(await GetByThemeSubstring(query.Theme));
-            }
-
-            if (query.CustomerName != null)
-            {
-                collections.Add(await GetByCustomerNameSubstring(query.CustomerName));
-            }
-
-            if (query.AuthorizedCustomerId != null)
-            {
-                collections.Add(await GetByAuthorizedCustomerId(query.AuthorizedCustomerId));
-            }
-
-            if (query.Email != null)
-            {
-                collections.Add(await GetByEmailSubstring(query.Email));
-            }
-
-            if (query.MinRating != null && query.MaxRating != null)
-            {
-                collections.Add(await GetByRatingRange(query.MinRating.Value, query.MaxRating.Value));
-            }
-
-            if (query.MinDate != null && query.MaxDate != null)
-            {
-                collections.Add(await GetByDateRange(query.MinDate.Value, query.MaxDate.Value));
-            }
-
-            if (query.StringIds != null)
-            {
-                collections.Add(await GetByStringIds(query.StringIds));
-            }
-
-            var result = new List<WareReview>();
-            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
-            {
-                result = _context.WareReviews
-                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
-                .Take(query.PageSize.Value)
-                .ToList();
+                // Пошук за рядками
+                collections.Add(await GetByTextSubstring(query.QueryAny));
+                collections.Add(await GetByThemeSubstring(query.QueryAny));
+                collections.Add(await GetByCustomerNameSubstring(query.QueryAny));
+                collections.Add(await GetByEmailSubstring(query.QueryAny));
+                
+                // Додайте інші можливі пошукові методи
             }
             else
             {
-                result = (List<WareReview>)collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+                // Логіка для інших полів, що не включають QueryAny
+                if (query.Id != null)
+                {
+                    var res = await GetById(query.Id.Value);
+                    if (res != null)
+                    {
+                        return new List<WareReview> { res };
+                    }
+                }
+
+                if (query.WareId != null)
+                {
+                    collections.Add(await GetByWareId(query.WareId.Value));
+                }
+
+                if (query.Text != null)
+                {
+                    collections.Add(await GetByTextSubstring(query.Text));
+                }
+
+                if (query.Theme != null)
+                {
+                    collections.Add(await GetByThemeSubstring(query.Theme));
+                }
+
+                if (query.CustomerName != null)
+                {
+                    collections.Add(await GetByCustomerNameSubstring(query.CustomerName));
+                }
+
+                if (query.AuthorizedCustomerId != null)
+                {
+                    collections.Add(await GetByAuthorizedCustomerId(query.AuthorizedCustomerId));
+                }
+
+                if (query.Email != null)
+                {
+                    collections.Add(await GetByEmailSubstring(query.Email));
+                }
+
+                if (query.MinRating != null && query.MaxRating != null)
+                {
+                    collections.Add(await GetByRatingRange(query.MinRating.Value, query.MaxRating.Value));
+                }
+
+                if (query.MinDate != null && query.MaxDate != null)
+                {
+                    collections.Add(await GetByDateRange(query.MinDate.Value, query.MaxDate.Value));
+                }
+
+                if (query.StringIds != null)
+                {
+                    collections.Add(await GetByStringIds(query.StringIds));
+                }
+            }
+
+            var result = new List<WareReview>();
+
+            // Пагінація за замовчуванням, якщо не знайдено колекцій
+            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
+            {
+                result = _context.WareReviews
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToList();
+            }
+            else if (query.QueryAny != null && collections.Any())
+            {
+                // Об'єднання результатів з QueryAny
+                result = collections.SelectMany(x => x).Distinct().ToList();
+            }
+            else
+            {
+                // Знаходження перетину результатів
+                result = collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList)).ToList();
             }
 
             // Сортування
@@ -227,12 +256,10 @@ namespace HyggyBackend.DAL.Repositories
                     .Take(query.PageSize.Value)
                     .ToList();
             }
-            if (!result.Any())
-            {
-                return new List<WareReview>();
-            }
-            return result;
+
+            return result.Any() ? result : new List<WareReview>();
         }
+
         public async Task Create(WareReview wareReview)
         {
             await _context.WareReviews.AddAsync(wareReview);

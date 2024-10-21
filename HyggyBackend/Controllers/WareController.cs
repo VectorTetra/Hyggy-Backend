@@ -58,7 +58,8 @@ namespace HyggyBackend.Controllers
              .ForMember(dest => dest.StringCategory3Ids, opt => opt.MapFrom(src => src.StringCategory3Ids))
              .ForMember(dest => dest.PageNumber, opt => opt.MapFrom(src => src.PageNumber))
              .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize))
-             .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.CustomerId));
+             .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.CustomerId))
+             .ForMember(dest => dest.QueryAny, opt => opt.MapFrom(src => src.QueryAny));
 
         });
 
@@ -530,20 +531,29 @@ namespace HyggyBackend.Controllers
         {
             try
             {
-                // генеруємо новий GUID
+                // Генеруємо новий GUID
                 string guid = Guid.NewGuid().ToString();
                 string newFileName = $"{guid}.json";
-                string path = "/WarePageJsonStructures/" + newFileName;
+                string folderPath = Path.Combine(_appEnvironment.WebRootPath, "WarePageJsonStructures");
 
-                using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
+                // Перевіряємо, чи існує папка, і створюємо її, якщо ні
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+
+                string filePath = Path.Combine(folderPath, newFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     using (var writer = new StreamWriter(fileStream))
                     {
-                        writer.Write(jsonContent.ToString()); // jsonContent може бути і JObject, і JArray
+                        writer.Write(jsonContent.ToString());
                     }
                 }
 
-                path = "http://hyggy.somee.com" + path;
+                // Формуємо шлях до файлу для повернення
+                string path = "http://www.hyggy.somee.com/WarePageJsonStructures/" + newFileName;
                 return new ObjectResult(path);
             }
             catch (Exception ex)
@@ -565,36 +575,9 @@ namespace HyggyBackend.Controllers
                 var oldFileUri = new Uri(oldConstructorFilePath);
                 var oldFilePath = Path.Combine(_appEnvironment.WebRootPath, oldFileUri.AbsolutePath.TrimStart('/'));
                 Console.WriteLine(oldFilePath);
+
                 if (System.IO.File.Exists(oldFilePath))
                 {
-                    // Отримати вміст файлу
-                    //string fileContent = await System.IO.File.ReadAllTextAsync(oldFilePath);
-
-                    // Парсимо JSON-масив
-                    //JArray jsonOldFileObject = JArray.Parse(fileContent);
-                    //foreach (var item in jsonOldFileObject)
-                    //{
-                    //    if (item["type"] != null && item["type"].ToString() == "gallery")
-                    //    {
-                    //        JArray valueArray = (JArray)item["value"];
-                    //        foreach (var valueItem in valueArray)
-                    //        {
-                    //            if (valueItem["dataUrl"] != null)
-                    //            {
-                    //                string dataUrl = valueItem["dataUrl"].ToString();
-
-                    //                var oldFileUri1 = new Uri(dataUrl);
-                    //                var oldFilePath1 = Path.Combine(_appEnvironment.WebRootPath, oldFileUri1.AbsolutePath.TrimStart('/'));
-                    //                Console.WriteLine(oldFilePath1);
-                    //                if (System.IO.File.Exists(oldFilePath1))
-                    //                {
-                    //                    System.IO.File.Delete(oldFilePath1);
-                    //                }
-                    //            }
-                    //        }
-                    //    }
-                    //}
-
                     // Записуємо новий контент у старий файл
                     System.IO.File.WriteAllText(oldFilePath, JsonConstructorItems);
 
@@ -609,17 +592,14 @@ namespace HyggyBackend.Controllers
             }
             catch (ValidationException ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, ex.Message); // Змінив статус помилки на 400, якщо це валідна помилка
             }
             catch (Exception ex)
             {
-                if (ex.InnerException != null)
-                {
-                    return StatusCode(500, ex.InnerException.Message);
-                }
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, ex.InnerException?.Message ?? ex.Message);
             }
         }
+
 
         [HttpDelete]
         [Route("DeleteJsonConstructorFile")]
@@ -630,53 +610,28 @@ namespace HyggyBackend.Controllers
                 var oldFileUri = new Uri(ConstructorFilePath);
                 var oldFilePath = Path.Combine(_appEnvironment.WebRootPath, oldFileUri.AbsolutePath.TrimStart('/'));
                 Console.WriteLine(oldFilePath);
+
                 if (System.IO.File.Exists(oldFilePath))
                 {
-                    //// Отримати вміст файлу
-                    //string fileContent = await System.IO.File.ReadAllTextAsync(oldFilePath);
-
-                    //// Парсимо JSON-масив
-                    //JArray jsonOldFileObject = JArray.Parse(fileContent);
-                    //foreach (var item in jsonOldFileObject)
-                    //{
-                    //    if (item["type"] != null && item["type"].ToString() == "gallery")
-                    //    {
-                    //        JArray valueArray = (JArray)item["value"];
-                    //        foreach (var valueItem in valueArray)
-                    //        {
-                    //            if (valueItem["dataUrl"] != null)
-                    //            {
-                    //                string dataUrl = valueItem["dataUrl"].ToString();
-
-                    //                var oldFileUri1 = new Uri(dataUrl);
-                    //                var oldFilePath1 = Path.Combine(_appEnvironment.WebRootPath, oldFileUri1.AbsolutePath.TrimStart('/'));
-                    //                Console.WriteLine(oldFilePath1);
-                    //                if (System.IO.File.Exists(oldFilePath1))
-                    //                {
-                    //                    System.IO.File.Delete(oldFilePath1);
-                    //                }
-                    //            }
-                    //        }
-                    //    }
-                    //}
                     // Видаляємо старий файл конструктора
                     System.IO.File.Delete(oldFilePath);
+                    return new ObjectResult($"Файл {ConstructorFilePath} було успішно видалено!");
                 }
-                return new ObjectResult($"Файл {ConstructorFilePath} було успішно видалено!");
+                else
+                {
+                    return StatusCode(404, "Файл не знайдено для видалення.");
+                }
             }
             catch (ValidationException ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, ex.Message); // Змінив статус помилки на 400, якщо це валідна помилка
             }
             catch (Exception ex)
             {
-                if (ex.InnerException != null)
-                {
-                    return StatusCode(500, ex.InnerException.Message);
-                }
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, ex.InnerException?.Message ?? ex.Message);
             }
         }
+
 
     }
 
@@ -714,6 +669,7 @@ namespace HyggyBackend.Controllers
         public string? StringCategory1Ids { get; set; }
         public string? StringCategory2Ids { get; set; }
         public string? StringCategory3Ids { get; set; }
+        public string? QueryAny { get; set; }
     }
 
 }

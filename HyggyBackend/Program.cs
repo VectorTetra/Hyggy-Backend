@@ -18,6 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 var emailConfig = builder.Configuration.GetSection("EmailConfiguration")
     .Get<EmailConfiguration>();
+builder.Services.AddCors();
 builder.Services.AddSingleton(emailConfig!);
 // Add services to the container.
 string? connection = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -104,7 +105,11 @@ builder.Services.AddSwaggerGen(option =>
 });
 
 var app = builder.Build();
-//app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+app.UseCors(builder =>
+    builder
+        .AllowAnyOrigin()
+        .AllowAnyHeader()
+        .AllowAnyMethod());
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

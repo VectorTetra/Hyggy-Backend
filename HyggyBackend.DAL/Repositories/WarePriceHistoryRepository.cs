@@ -65,48 +65,77 @@ namespace HyggyBackend.DAL.Repositories
         {
             var collections = new List<IEnumerable<WarePriceHistory>>();
 
-            if (query.Id.HasValue)
+            // Перевірка наявності QueryAny
+            if (!string.IsNullOrEmpty(query.QueryAny))
             {
-                var proto = await GetById(query.Id.Value);
-                if(proto != null)
+                if (long.TryParse(query.QueryAny, out long id))
                 {
-                    collections.Add(new List<WarePriceHistory> { proto });
+                    collections.Add(await GetByWareId(id));
+                    collections.Add(new List<WarePriceHistory> { await GetById(id) });
+
                 }
-
-            }
-            if (query.WareId.HasValue)
-            {
-                collections.Add(await GetByWareId(query.WareId.Value));
-            }
-
-            if (query.MinPrice.HasValue && query.MaxPrice.HasValue)
-            {
-                collections.Add(await GetByPriceRange(query.MinPrice.Value, query.MaxPrice.Value));
-            }
-
-            if (query.StartDate.HasValue && query.EndDate.HasValue)
-            {
-                collections.Add(await GetByDateRange(query.StartDate.Value, query.EndDate.Value));
-            }
-
-            if (!string.IsNullOrEmpty(query.StringIds))
-            {
-                collections.Add(await GetByStringIds(query.StringIds));
-            }
-
-            var result = new List<WarePriceHistory>();
-            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
-            {
-                result = _context.WarePriceHistories
-                .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
-                .Take(query.PageSize.Value)
-                .ToList();
+                if (float.TryParse(query.QueryAny, out float val))
+                {
+                    collections.Add(await GetByPriceRange(val, val));
+                }
+                if (DateTime.TryParse(query.QueryAny, out DateTime dat))
+                {
+                    collections.Add(await GetByDateRange(dat, dat));
+                }
             }
             else
             {
-                result = (List<WarePriceHistory>)collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+                // Перевірка наявності інших параметрів запиту
+                if (query.Id.HasValue)
+                {
+                    var proto = await GetById(query.Id.Value);
+                    if (proto != null)
+                    {
+                        collections.Add(new List<WarePriceHistory> { proto });
+                    }
+                }
+
+                if (query.WareId.HasValue)
+                {
+                    collections.Add(await GetByWareId(query.WareId.Value));
+                }
+
+                if (query.MinPrice.HasValue && query.MaxPrice.HasValue)
+                {
+                    collections.Add(await GetByPriceRange(query.MinPrice.Value, query.MaxPrice.Value));
+                }
+
+                if (query.StartDate.HasValue && query.EndDate.HasValue)
+                {
+                    collections.Add(await GetByDateRange(query.StartDate.Value, query.EndDate.Value));
+                }
+
+                if (!string.IsNullOrEmpty(query.StringIds))
+                {
+                    collections.Add(await GetByStringIds(query.StringIds));
+                }
             }
 
+            var result = new List<WarePriceHistory>();
+
+            // Пагінація за замовчуванням, якщо не знайдено колекцій
+            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
+            {
+                result = _context.WarePriceHistories
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToList();
+            }
+            else if (query.QueryAny != null && collections.Any())
+            {
+                // Об'єднання результатів з QueryAny
+                result = collections.SelectMany(x => x).Distinct().ToList();
+            }
+            else
+            {
+                // Знаходження перетину результатів
+                result = collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList)).ToList();
+            }
 
             // Сортування
             if (query.Sorting != null)
@@ -150,12 +179,10 @@ namespace HyggyBackend.DAL.Repositories
                     .Take(query.PageSize.Value)
                     .ToList();
             }
-            if (!result.Any())
-            {
-                return new List<WarePriceHistory>();
-            }
-            return result;
+
+            return result.Any() ? result : new List<WarePriceHistory>();
         }
+
 
         public async IAsyncEnumerable<WarePriceHistory> GetByIdsAsync(IEnumerable<long> ids)
         {

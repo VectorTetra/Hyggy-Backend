@@ -37,5 +37,6 @@ namespace HyggyBackend.DAL.Queries
         public int? PageSize { get; set; }
         public string? StringIds { get; set; }
         public string? Sorting { get; set; }
+        public string? QueryAny {get;set;}
     }
 }
