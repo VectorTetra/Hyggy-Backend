@@ -10,8 +10,8 @@ namespace HyggyBackend.DAL.Queries
     {
         //public string? DeliveryAddress { get; set; }
 
-        public long? Id;
-        public long? AddressId;
+        public long? Id { get; set; }
+        public long? AddressId { get; set; }
 
         // Адреса доставки, розділена на компоненти
         public string? Street { get; set; } // Назва вулиці
@@ -41,5 +41,8 @@ namespace HyggyBackend.DAL.Queries
         public long? WarePriceHistoryId { get; set; }
         public string CustomerId { get; set; }
         public long? ShopId { get; set; }
+        public string? Sorting { get; set; }
+        public string? StringIds { get; set; }
+        public string? QueryAny {get;set;}
     }
 }

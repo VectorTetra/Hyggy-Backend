@@ -6,7 +6,6 @@ using HyggyBackend.BLL.Queries;
 using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Interfaces;
 using HyggyBackend.DAL.Queries;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace HyggyBackend.BLL.Services
 {
@@ -25,34 +24,38 @@ namespace HyggyBackend.BLL.Services
         {
             return _mapper.Map<WareImageDTO>(await Database.WareImages.GetById(id));
         }
+        public async Task<IEnumerable<WareImageDTO>> GetByStringIds(string stringIds)
+        {
+            return _mapper.Map<IEnumerable<WareImageDTO>>(await Database.WareImages.GetByStringIds(stringIds));
+        }
         public async Task<IEnumerable<WareImageDTO>> GetByWareId(long wareId)
         {
-            
+
             return _mapper.Map<IEnumerable<WareImageDTO>>(await Database.WareImages.GetByWareId(wareId));
         }
         public async Task<IEnumerable<WareImageDTO>> GetByWareArticle(long wareArticle)
         {
-            
+
             return _mapper.Map<IEnumerable<WareImageDTO>>(await Database.WareImages.GetByWareArticle(wareArticle));
         }
         public async Task<IEnumerable<WareImageDTO>> GetByPathSubstring(string path)
         {
-            
+
             return _mapper.Map<IEnumerable<WareImageDTO>>(await Database.WareImages.GetByPathSubstring(path));
         }
-        public async Task<IEnumerable<WareImageDTO>> GetByQuery(WareImageQueryDAL queryDAL)
+        public async Task<IEnumerable<WareImageDTO>> GetByQuery(WareImageQueryBLL query)
         {
-            return _mapper.Map<IEnumerable<WareImageDTO>>(await Database.WareImages.GetByQuery(queryDAL));
+            return _mapper.Map<IEnumerable<WareImageDTO>>(await Database.WareImages.GetByQuery(_mapper.Map<WareImageQueryDAL>(query)));
         }
         public async Task<WareImageDTO> Create(WareImageDTO wareImage)
         {
-            var existedWareId = await Database.Wares.GetById(wareImage.WareId.Value);
+            var existedWareId = await Database.Wares.GetById(wareImage.WareId);
             if (existedWareId == null)
             {
                 throw new ValidationException("Товару з таким Id не існує!", wareImage.WareId.ToString());
             }
 
-            
+
             var wareImageDAL = _mapper.Map<WareImage>(wareImage);
             await Database.WareImages.Create(wareImageDAL);
             await Database.Save();
@@ -66,7 +69,7 @@ namespace HyggyBackend.BLL.Services
         }
         public async Task<WareImageDTO> Update(WareImageDTO wareImage)
         {
-            var existedWareId = await Database.Wares.GetById(wareImage.WareId.Value);
+            var existedWareId = await Database.Wares.GetById(wareImage.WareId);
             if (existedWareId == null)
             {
                 throw new ValidationException("Товару з таким Id не існує!", wareImage.WareId.ToString());
@@ -78,7 +81,7 @@ namespace HyggyBackend.BLL.Services
                 throw new ValidationException("Зображення товару з таким Id не існує!", wareImage.Id.ToString());
             }
 
-            
+
             var wareImageDAL = _mapper.Map<WareImage>(wareImage);
             Database.WareImages.Update(wareImageDAL);
             await Database.Save();

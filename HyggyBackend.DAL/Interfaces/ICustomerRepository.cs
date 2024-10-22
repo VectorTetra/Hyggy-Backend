@@ -12,6 +12,7 @@ namespace HyggyBackend.DAL.Interfaces
     {
         Task<IEnumerable<Customer>> GetPagedCustomers(int pageNumber, int pageSize);
         Task<IEnumerable<Customer>> GetByOrderId(long orderId);
+        Task<IEnumerable<Customer>> GetByStringIds(string StringIds);
         Task<IEnumerable<Customer>> GetByNameSubstring(string nameSubstring);
         Task<IEnumerable<Customer>> GetBySurnameSubstring(string surnameSubstring);
         Task<IEnumerable<Customer>> GetByEmailSubstring(string emailSubstring);
@@ -19,7 +20,6 @@ namespace HyggyBackend.DAL.Interfaces
         IAsyncEnumerable<Customer> GetByIdsAsync(IEnumerable<string> ids);
         Task<Customer?> GetByIdAsync(string id);
         Task<IEnumerable<Customer>> GetByQuery(CustomerQueryDAL query);
-
         Task CreateAsync(Customer item);
         void Update(Customer item);
         Task DeleteAsync(string id);

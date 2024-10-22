@@ -28,15 +28,25 @@ namespace HyggyBackend.DAL.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<WareCategory1>> GetByStringIds(string stringIds)
+        {
+            // Розділяємо рядок за символом '|' та конвертуємо в список long
+            List<long> ids = stringIds.Split('|').Select(long.Parse).ToList();
+            // Створюємо список для збереження результатів
+            var waress = new List<WareCategory1>();
+            // Викликаємо асинхронний метод та збираємо результати
+            await foreach (var ware in GetByIdsAsync(ids))
+            {
+                waress.Add(ware);
+            }
+            return waress;
+        }
+
         public async Task<IEnumerable<WareCategory1>> GetByNameSubstring(string nameSubstring)
         {
             return await _context.WareCategories1.Where(x => x.Name.Contains(nameSubstring)).ToListAsync();
         }
 
-        public async Task<IEnumerable<WareCategory1>> GetByJSONStructureFilePathSubstring(string JSONStructureFilePathSubstring)
-        {
-            return await _context.WareCategories1.Where(x => x.JSONStructureFilePath.Contains(JSONStructureFilePathSubstring)).ToListAsync();
-        }
 
         public async Task<IEnumerable<WareCategory1>> GetByWareCategory2Id(long id)
         {
@@ -58,59 +68,147 @@ namespace HyggyBackend.DAL.Repositories
             return await _context.WareCategories1.Where(x => x.WaresCategory2.Any(m => m.WaresCategory3.Any(n => n.Name.Contains(WareCategory3NameSubstring)))).ToListAsync();
         }
 
+        public async IAsyncEnumerable<WareCategory1> GetByIdsAsync(IEnumerable<long> ids)
+        {
+            foreach (var id in ids)
+            {
+                var item = await GetById(id);  // Виклик методу репозиторію
+                if (item != null)
+                {
+                    yield return item;
+                }
+            }
+        }
         public async Task<IEnumerable<WareCategory1>> GetByQuery(WareCategory1QueryDAL query)
         {
-            var WareCategories1Collection = new List<IEnumerable<WareCategory1>>();
+            var collections = new List<IEnumerable<WareCategory1>>();
 
-            if (query.Id != null)
+            // Пошук по QueryAny
+            if (query.QueryAny != null)
             {
-                WareCategories1Collection.Add(await _context.WareCategories1.Where(x => x.Id == query.Id).ToListAsync());
+                if (long.TryParse(query.QueryAny, out long id))
+                {
+                    collections.Add(new List<WareCategory1> { await GetById(id) });
+                }
+                collections.Add(await GetByNameSubstring(query.QueryAny));
+                collections.Add(await GetByWareCategory2NameSubstring(query.QueryAny));
+                collections.Add(await GetByWareCategory3NameSubstring(query.QueryAny));
+            }
+            else
+            {
+                if (query.Id != null)
+                {
+                    collections.Add(await _context.WareCategories1.Where(x => x.Id == query.Id).ToListAsync());
+                }
+
+                if (query.NameSubstring != null)
+                {
+                    collections.Add(await GetByNameSubstring(query.NameSubstring));
+                }
+
+                if (query.WareCategory2Id != null)
+                {
+                    collections.Add(await GetByWareCategory2Id(query.WareCategory2Id.Value));
+                }
+
+                if (query.WareCategory2NameSubstring != null)
+                {
+                    collections.Add(await GetByWareCategory2NameSubstring(query.WareCategory2NameSubstring));
+                }
+
+                if (query.WareCategory3Id != null)
+                {
+                    collections.Add(await GetByWareCategory3Id(query.WareCategory3Id.Value));
+                }
+
+                if (query.WareCategory3NameSubstring != null)
+                {
+                    collections.Add(await GetByWareCategory3NameSubstring(query.WareCategory3NameSubstring));
+                }
+
+                if (query.StringIds != null)
+                {
+                    collections.Add(await GetByStringIds(query.StringIds));
+                }
             }
 
-            if (query.NameSubstring != null)
+            var result = new List<WareCategory1>();
+            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
             {
-                WareCategories1Collection.Add(await GetByNameSubstring(query.NameSubstring));
+                result = await _context.WareCategories1
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToListAsync();
+            }
+            else if (query.QueryAny != null && collections.Any())
+            {
+                // Об'єднання результатів
+                result = collections.SelectMany(x => x).Distinct().ToList();
+            }
+            else
+            {
+                // Використовуємо Intersect для знаходження записів, які задовольняють всі умови
+                result = collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList)).ToList();
             }
 
-            if (query.JSONStructureFilePathSubstring != null)
+            // Сортування
+            if (query.Sorting != null)
             {
-                WareCategories1Collection.Add(await GetByJSONStructureFilePathSubstring(query.JSONStructureFilePathSubstring));
+                switch (query.Sorting)
+                {
+                    case "IdAsc":
+                        result = result.OrderBy(ware => ware.Id).ToList();
+                        break;
+                    case "IdDesc":
+                        result = result.OrderByDescending(ware => ware.Id).ToList();
+                        break;
+                    case "NameAsc":
+                        result = result.OrderBy(ware => ware.Name).ToList();
+                        break;
+                    case "NameDesc":
+                        result = result.OrderByDescending(ware => ware.Name).ToList();
+                        break;
+                    case "WareCategory2IdAsc":
+                        result = result.OrderBy(ware => ware.WaresCategory2).ToList();
+                        break;
+                    case "WareCategory2IdDesc":
+                        result = result.OrderByDescending(ware => ware.WaresCategory2).ToList();
+                        break;
+                    case "WareCategory3IdAsc":
+                        result = result.OrderBy(ware => ware.WaresCategory2).ToList();
+                        break;
+                    case "WareCategory3IdDesc":
+                        result = result.OrderByDescending(ware => ware.WaresCategory2).ToList();
+                        break;
+                    case "WareCategory2NameAsc":
+                        result = result.OrderBy(ware => ware.WaresCategory2).ToList();
+                        break;
+                    case "WareCategory2NameDesc":
+                        result = result.OrderByDescending(ware => ware.WaresCategory2).ToList();
+                        break;
+                    case "WareCategory3NameAsc":
+                        result = result.OrderBy(ware => ware.WaresCategory2).ToList();
+                        break;
+                    case "WareCategory3NameDesc":
+                        result = result.OrderByDescending(ware => ware.WaresCategory2).ToList();
+                        break;
+                    default:
+                        break;
+                }
             }
 
-            if (query.WareCategory2Id != null)
-            {
-                WareCategories1Collection.Add(await GetByWareCategory2Id(query.WareCategory2Id.Value));
-            }
-
-            if (query.WareCategory2NameSubstring != null)
-            {
-                WareCategories1Collection.Add(await GetByWareCategory2NameSubstring(query.WareCategory2NameSubstring));
-            }
-
-            if (query.WareCategory3Id != null)
-            {
-                WareCategories1Collection.Add(await GetByWareCategory3Id(query.WareCategory3Id.Value));
-            }
-
-            if (query.WareCategory3NameSubstring != null)
-            {
-                WareCategories1Collection.Add(await GetByWareCategory3NameSubstring(query.WareCategory3NameSubstring));
-            }
-
-            if (!WareCategories1Collection.Any())
-            {
-                return new List<WareCategory1>();
-            }
-
+            // Пагінація
             if (query.PageNumber != null && query.PageSize != null)
             {
-                return WareCategories1Collection.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList())
-                   .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
-                   .Take(query.PageSize.Value);
+                result = result
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToList();
             }
 
-            return WareCategories1Collection.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+            return result.Any() ? result : new List<WareCategory1>();
         }
+
 
         public async Task Create(WareCategory1 wareCategory1)
         {

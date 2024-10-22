@@ -7,6 +7,7 @@ using HyggyBackend.BLL.Services;
 using HyggyBackend.DAL.Queries;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
 using System.Linq.Expressions;
 
 namespace HyggyBackend.Controllers
@@ -49,7 +50,16 @@ namespace HyggyBackend.Controllers
              .ForMember(dest => dest.StatusDescription, opt => opt.MapFrom(src => src.StatusDescription))
              .ForMember(dest => dest.ImagePath, opt => opt.MapFrom(src => src.ImagePath))
              .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Sorting))
-             .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.CustomerId));
+             .ForMember(dest => dest.StringIds, opt => opt.MapFrom(src => src.StringIds))
+             .ForMember(dest => dest.StringTrademarkIds, opt => opt.MapFrom(src => src.StringTrademarkIds))
+             .ForMember(dest => dest.StringStatusIds, opt => opt.MapFrom(src => src.StringStatusIds))
+             .ForMember(dest => dest.StringCategory1Ids, opt => opt.MapFrom(src => src.StringCategory1Ids))
+             .ForMember(dest => dest.StringCategory2Ids, opt => opt.MapFrom(src => src.StringCategory2Ids))
+             .ForMember(dest => dest.StringCategory3Ids, opt => opt.MapFrom(src => src.StringCategory3Ids))
+             .ForMember(dest => dest.PageNumber, opt => opt.MapFrom(src => src.PageNumber))
+             .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize))
+             .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.CustomerId))
+             .ForMember(dest => dest.QueryAny, opt => opt.MapFrom(src => src.QueryAny));
 
         });
 
@@ -62,7 +72,7 @@ namespace HyggyBackend.Controllers
 
                 switch (query.SearchParameter)  
                 {
-                    case "GetById":
+                    case "Id":
                         {
                             if (query.Id == null)
                             {
@@ -74,7 +84,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByArticle":
+                    case "Article":
                         {
                             if (query.Article == null)
                             {
@@ -86,7 +96,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByCategory1Id":
+                    case "Category1Id":
                         {
                             if (query.Category1Id == null)
                             {
@@ -98,7 +108,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByCategory2Id":
+                    case "Category2Id":
                         {
                             if (query.Category2Id == null)
                             {
@@ -110,7 +120,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByCategory3Id":
+                    case "Category3Id":
                         {
                             if (query.Category3Id == null)
                             {
@@ -122,7 +132,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByNameSubstring":
+                    case "Name":
                         {
                             if (query.NameSubstring == null)
                             {
@@ -134,7 +144,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByDescriptionSubstring":
+                    case "Description":
                         {
                             if (query.DescriptionSubstring == null)
                             {
@@ -146,7 +156,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByCategory1NameSubstring":
+                    case "Category1Name":
                         {
                             if (query.Category1NameSubstring == null)
                             {
@@ -158,7 +168,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByCategory2NameSubstring":
+                    case "Category2Name":
                         {
                             if (query.Category2NameSubstring == null)
                             {
@@ -170,7 +180,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByCategory3NameSubstring":
+                    case "Category3Name":
                         {
                             if (query.Category3NameSubstring == null)
                             {
@@ -182,7 +192,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByTrademarkId":
+                    case "TrademarkId":
                         {
                             if (query.TrademarkId == null)
                             {
@@ -194,7 +204,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByTrademarkNameSubstring":
+                    case "TrademarkName":
                         {
                             if (query.TrademarkNameSubstring == null)
                             {
@@ -206,7 +216,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByPrice":
+                    case "Price":
                         {
                             if (query.MinPrice == null )
                             {
@@ -220,7 +230,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByPriceRange(query.MinPrice.Value, query.MaxPrice.Value);
                         }
                         break;
-                    case "GetByDiscount":
+                    case "Discount":
                         {
 
                             if (query.MinDiscount == null)
@@ -235,7 +245,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByDiscountRange(query.MinDiscount.Value, query.MaxDiscount.Value);
                         }
                         break;
-                    case "GetByIsDeliveryAvailable":
+                    case "IsDeliveryAvailable":
                         {
                             if (query.IsDeliveryAvailable == null)
                             {
@@ -247,7 +257,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByStatusId":
+                    case "StatusId":
                         {
                             if (query.StatusId == null)
                             {
@@ -259,7 +269,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByStatusName":
+                    case "StatusName":
                         {
                             if (query.StatusName == null)
                             {
@@ -271,7 +281,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByStatusDescription":
+                    case "StatusDescription":
                         {
                             if (query.StatusDescription == null)
                             {
@@ -283,7 +293,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByImagePath":
+                    case "ImagePath":
                         {
                             if (query.ImagePath == null)
                             {
@@ -307,7 +317,92 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByQuery":
+                    case "StringIds":
+                        {
+                            if (query.StringIds == null)
+                            {
+                                throw new ValidationException("Не вказано Ware.StringIds для пошуку!", nameof(WareQueryPL.StringIds));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByStringIds(query.StringIds);
+                            }
+                        }
+                        break;
+                    case "StringTrademarkIds":
+                        {
+                            if (query.StringTrademarkIds == null)
+                            {
+                                throw new ValidationException("Не вказано Ware.StringTrademarkIds для пошуку!", nameof(WareQueryPL.StringTrademarkIds));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByStringTrademarkIds(query.StringTrademarkIds);
+                            }
+                        }
+                        break;
+                    case "StringStatusIds":
+                        {
+                            if (query.StringStatusIds == null)
+                            {
+                                throw new ValidationException("Не вказано Ware.StringStatusIds для пошуку!", nameof(WareQueryPL.StringStatusIds));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByStringStatusIds(query.StringStatusIds);
+                            }
+                        }
+                        break;
+                    case "StringCategory1Ids":
+                        {
+                            if (query.StringCategory1Ids == null)
+                            {
+                                throw new ValidationException("Не вказано Ware.StringCategory1Ids для пошуку!", nameof(WareQueryPL.StringCategory1Ids));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByStringCategory1Ids(query.StringCategory1Ids);
+                            }
+                        }
+                        break;
+                    case "StringCategory2Ids":
+                        {
+                            if (query.StringCategory2Ids == null)
+                            {
+                                throw new ValidationException("Не вказано Ware.StringCategory2Ids для пошуку!", nameof(WareQueryPL.StringCategory2Ids));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByStringCategory2Ids(query.StringCategory2Ids);
+                            }
+                        }
+                        break;
+                    case "StringCategory3Ids":
+                        {
+                            if (query.StringCategory3Ids == null)
+                            {
+                                throw new ValidationException("Не вказано Ware.StringCategory3Ids для пошуку!", nameof(WareQueryPL.StringCategory3Ids));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByStringCategory3Ids(query.StringCategory3Ids);
+                            }
+                        }
+                        break;
+                    case "Paged":
+                        {
+                            if (query.PageNumber == null)
+                            {
+                                throw new ValidationException("Не вказано WareQuery.PageNumber для пошуку!", nameof(WareQueryPL.PageNumber));
+                            }
+                            if (query.PageSize == null)
+                            {
+                                throw new ValidationException("Не вказано WareQuery.PageSize для пошуку!", nameof(WareQueryPL.PageSize));
+                            }
+                            collection = await _serv.GetPagedWares(query.PageNumber.Value, query.PageSize.Value);
+                        }
+                        break;
+                    case "Query":
                         {
                             var mapper = new Mapper(config);
                             var queryBLL = mapper.Map<WareQueryBLL>(query);
@@ -332,6 +427,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -354,6 +453,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -376,6 +479,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -394,10 +501,136 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
 
+        [HttpPost]
+        [Route("PostJsonConstructorFile")]
+        public async Task<ActionResult<string>> PostJsonConstructorFile([FromForm] string JsonConstructorItems)
+        {
+            try
+            {
+                JToken jsonToken = JToken.Parse(JsonConstructorItems);
+                return await SaveJsonToFile(jsonToken);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
+        private async Task<ActionResult<string>> SaveJsonToFile(JToken jsonContent)
+        {
+            try
+            {
+                // Генеруємо новий GUID
+                string guid = Guid.NewGuid().ToString();
+                string newFileName = $"{guid}.json";
+                string folderPath = Path.Combine(_appEnvironment.WebRootPath, "WarePageJsonStructures");
+
+                // Перевіряємо, чи існує папка, і створюємо її, якщо ні
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+
+                string filePath = Path.Combine(folderPath, newFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    using (var writer = new StreamWriter(fileStream))
+                    {
+                        writer.Write(jsonContent.ToString());
+                    }
+                }
+
+                // Формуємо шлях до файлу для повернення
+                string path = "http://www.hyggy.somee.com/WarePageJsonStructures/" + newFileName;
+                return new ObjectResult(path);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("PutJsonConstructorFile")]
+        public async Task<ActionResult<string>> PutJsonConstructorFile([FromForm] string oldConstructorFilePath, [FromForm] string JsonConstructorItems)
+        {
+            try
+            {
+                var oldFileUri = new Uri(oldConstructorFilePath);
+                var oldFilePath = Path.Combine(_appEnvironment.WebRootPath, oldFileUri.AbsolutePath.TrimStart('/'));
+                Console.WriteLine(oldFilePath);
+
+                if (System.IO.File.Exists(oldFilePath))
+                {
+                    // Записуємо новий контент у старий файл
+                    System.IO.File.WriteAllText(oldFilePath, JsonConstructorItems);
+
+                    // Повертаємо URL до оновленого файлу
+                    string updatedFilePath = oldConstructorFilePath; // Якщо шлях до файлу не змінюється
+                    return new ObjectResult(updatedFilePath);
+                }
+                else
+                {
+                    return StatusCode(404, "Старий файл не знайдено.");
+                }
+            }
+            catch (ValidationException ex)
+            {
+                return StatusCode(500, ex.Message); // Змінив статус помилки на 400, якщо це валідна помилка
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.InnerException?.Message ?? ex.Message);
+            }
+        }
+
+
+        [HttpDelete]
+        [Route("DeleteJsonConstructorFile")]
+        public async Task<ActionResult<string>> DeleteJsonConstructorFile([FromForm] string ConstructorFilePath)
+        {
+            try
+            {
+                var oldFileUri = new Uri(ConstructorFilePath);
+                var oldFilePath = Path.Combine(_appEnvironment.WebRootPath, oldFileUri.AbsolutePath.TrimStart('/'));
+                Console.WriteLine(oldFilePath);
+
+                if (System.IO.File.Exists(oldFilePath))
+                {
+                    // Видаляємо старий файл конструктора
+                    System.IO.File.Delete(oldFilePath);
+                    return new ObjectResult($"Файл {ConstructorFilePath} було успішно видалено!");
+                }
+                else
+                {
+                    return StatusCode(404, "Файл не знайдено для видалення.");
+                }
+            }
+            catch (ValidationException ex)
+            {
+                return StatusCode(500, ex.Message); // Змінив статус помилки на 400, якщо це валідна помилка
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.InnerException?.Message ?? ex.Message);
+            }
+        }
 
 
     }
@@ -405,6 +638,8 @@ namespace HyggyBackend.Controllers
     public class WareQueryPL
     {
         public string? SearchParameter { get; set; }
+        public int? PageNumber { get; set; }
+        public int? PageSize { get; set; }
         public long? Id { get; set; }
         public long? Article { get; set; }
         public long? Category1Id { get; set; }
@@ -428,6 +663,13 @@ namespace HyggyBackend.Controllers
         public string? CustomerId { get; set; }
         public string? ImagePath { get; set; }
         public string? Sorting { get; set; }
+        public string? StringIds { get; set; }
+        public string? StringTrademarkIds { get; set; }
+        public string? StringStatusIds { get; set; }
+        public string? StringCategory1Ids { get; set; }
+        public string? StringCategory2Ids { get; set; }
+        public string? StringCategory3Ids { get; set; }
+        public string? QueryAny { get; set; }
     }
 
 }

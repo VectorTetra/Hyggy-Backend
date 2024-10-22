@@ -33,7 +33,10 @@ namespace HyggyBackend.Controllers
             .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))
             .ForMember(dest => dest.OrderId, opt => opt.MapFrom(src => src.OrderId))
             .ForMember(dest => dest.PageNumber, opt => opt.MapFrom(src => src.PageNumber))
-            .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize));
+            .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize))
+            .ForMember(dest => dest.StringIds, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.QueryAny, opt => opt.MapFrom(src => src.QueryAny));
         });
 
         [HttpGet]
@@ -45,7 +48,7 @@ namespace HyggyBackend.Controllers
 
                 switch (query.SearchParameter)
                 {
-                    case "GetById":
+                    case "Id":
                         {
                             if (query.Id == null)
                             {
@@ -57,7 +60,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByName":
+                    case "Name":
                         {
                             if (query.Name == null)
                             {
@@ -69,7 +72,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetBySurname":
+                    case "Surname":
                         {
                             if (query.Surname == null)
                             {
@@ -81,7 +84,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByEmail":
+                    case "Email":
                         {
                             if (query.Email == null)
                             {
@@ -93,7 +96,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByPhone":
+                    case "Phone":
                         {
                             if (query.Phone == null)
                             {
@@ -105,7 +108,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByOrderId":
+                    case "OrderId":
                         {
                             if (query.OrderId == null)
                             {
@@ -117,7 +120,16 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetPaged":
+                    case "StringIds":
+                        {
+                            if (query.StringIds == null)
+                            {
+                                throw new ValidationException("Не вказано CustomerQuery.StringIds для пошуку!", nameof(CustomerQueryPL.StringIds));
+                            }
+                            collection = await _serv.GetByStringIds(query.StringIds);
+                        }
+                        break;
+                    case "Paged":
                         {
                             if (query.PageNumber == null)
                             {
@@ -130,7 +142,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetPagedCustomers(query.PageNumber.Value, query.PageSize.Value);
                         }
                         break;
-                    case "GetByQuery":
+                    case "Query":
                         {
                             var mapper = new Mapper(config);
                             var queryBLL = mapper.Map<CustomerQueryBLL>(query);
@@ -155,6 +167,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -194,11 +210,15 @@ namespace HyggyBackend.Controllers
 
 				return Ok(new { message = "Будь ласка підтвердіть ваш обліковий запис" });
 			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, ex.Message);
-			}
-		}
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
 		[HttpPost("authenticate")]
 		public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDto authenticationDto)
 		{
@@ -210,11 +230,15 @@ namespace HyggyBackend.Controllers
 
 				return Ok(response);
 			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, ex.Message);
-			}
-		}
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
 		[HttpGet("emailconfirmation")]
 		public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string token)
 		{
@@ -228,11 +252,15 @@ namespace HyggyBackend.Controllers
 			{
 				return StatusCode(500, ex.Message);
 			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, ex.Message);
-			}
-		}
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
 		[HttpPut]
         public async Task<ActionResult<CustomerDTO>> PutCustomer([FromBody] CustomerDTO customer)
         {
@@ -251,6 +279,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -274,6 +306,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -290,5 +326,8 @@ namespace HyggyBackend.Controllers
         public long? OrderId { get; set; }
         public int? PageNumber { get; set; }
         public int? PageSize { get; set; }
+        public string? StringIds { get; set; }
+        public string? Sorting { get; set; }
+        public string? QueryAny { get; set; }
     }
 }

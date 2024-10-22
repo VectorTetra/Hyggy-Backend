@@ -29,6 +29,19 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.WareStatuses.FirstOrDefaultAsync(x => x.Wares.Any(w => w.Id == id));
         }
+        public async Task<IEnumerable<WareStatus>> GetByStringIds(string stringIds)
+        {
+            // Розділяємо рядок за символом '|' та конвертуємо в список long
+            List<long> ids = stringIds.Split('|').Select(long.Parse).ToList();
+            // Створюємо список для збереження результатів
+            var waress = new List<WareStatus>();
+            // Викликаємо асинхронний метод та збираємо результати
+            await foreach (var ware in GetByIdsAsync(ids))
+            {
+                waress.Add(ware);
+            }
+            return waress;
+        }
         public async Task<WareStatus?> GetByWareArticle(long article)
         {
             return await _context.WareStatuses.FirstOrDefaultAsync(x => x.Wares.Any(w => w.Article == article));
@@ -48,49 +61,129 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.WareStatuses.Where(x => x.Description.Contains(descriptionSubstring)).ToListAsync();
         }
-        public async Task<IEnumerable<WareStatus>> GetByQuery(WareStatusQueryDAL queryDAL)
+
+        public async IAsyncEnumerable<WareStatus> GetByIdsAsync(IEnumerable<long> ids)
         {
-            var wareStatusCollections = new List<IEnumerable<WareStatus>>();
-
-
-            if (queryDAL.Id != null)
+            foreach (var id in ids)
             {
-                wareStatusCollections.Add(await _context.WareStatuses.Where(x => x.Id == queryDAL.Id).ToListAsync());
+                var item = await GetById(id);  // Виклик методу репозиторію
+                if (item != null)
+                {
+                    yield return item;
+                }
             }
-
-            if (queryDAL.WareId != null)
-            {
-                wareStatusCollections.Add(await _context.WareStatuses.Where(x => x.Wares.Any(w => w.Id == queryDAL.WareId)).ToListAsync());
-            }
-
-            if (queryDAL.WareArticle != null)
-            {
-                wareStatusCollections.Add(await _context.WareStatuses.Where(x => x.Wares.Any(w => w.Article == queryDAL.WareArticle)).ToListAsync());
-            }
-
-            if (queryDAL.NameSubstring != null)
-            {
-                wareStatusCollections.Add(await _context.WareStatuses.Where(x => x.Name.Contains(queryDAL.NameSubstring)).ToListAsync());
-            }
-
-            if (queryDAL.DescriptionSubstring != null)
-            {
-                wareStatusCollections.Add(await _context.WareStatuses.Where(x => x.Description.Contains(queryDAL.DescriptionSubstring)).ToListAsync());
-            }
-
-            if (!wareStatusCollections.Any())
-            {
-                return new List<WareStatus>();
-            }
-
-            if (queryDAL.PageNumber != null && queryDAL.PageSize != null)
-            {
-                return wareStatusCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList())
-                    .Skip((queryDAL.PageNumber.Value - 1) * queryDAL.PageSize.Value)
-                    .Take(queryDAL.PageSize.Value);
-            }
-            return wareStatusCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
         }
+        public async Task<IEnumerable<WareStatus>> GetByQuery(WareStatusQueryDAL query)
+        {
+            var collections = new List<IEnumerable<WareStatus>>();
+
+            // Перевірка наявності QueryAny
+            if (query.QueryAny != null)
+            {
+                if (long.TryParse(query.QueryAny, out long id))
+                {
+                    collections.Add(new List<WareStatus> { await GetById(id) }); // Можливий ID
+                    collections.Add(await _context.WareStatuses.Where(x => x.Wares.Any(w => w.Id == id)).ToListAsync()); // За WareId
+                    collections.Add(await _context.WareStatuses.Where(x => x.Wares.Any(w => w.Article == id)).ToListAsync()); // За WareArticle
+                }
+
+                // Пошук за рядками
+                collections.Add(await _context.WareStatuses.Where(x => x.Name.Contains(query.QueryAny)).ToListAsync());
+                collections.Add(await _context.WareStatuses.Where(x => x.Description.Contains(query.QueryAny)).ToListAsync());
+            }
+            else
+            {
+                // Інші параметри запиту
+                if (query.Id != null)
+                {
+                    collections.Add(await _context.WareStatuses.Where(x => x.Id == query.Id).ToListAsync());
+                }
+
+                if (query.WareId != null)
+                {
+                    collections.Add(await _context.WareStatuses.Where(x => x.Wares.Any(w => w.Id == query.WareId)).ToListAsync());
+                }
+
+                if (query.WareArticle != null)
+                {
+                    collections.Add(await _context.WareStatuses.Where(x => x.Wares.Any(w => w.Article == query.WareArticle)).ToListAsync());
+                }
+
+                if (query.NameSubstring != null)
+                {
+                    collections.Add(await _context.WareStatuses.Where(x => x.Name.Contains(query.NameSubstring)).ToListAsync());
+                }
+
+                if (query.DescriptionSubstring != null)
+                {
+                    collections.Add(await _context.WareStatuses.Where(x => x.Description.Contains(query.DescriptionSubstring)).ToListAsync());
+                }
+
+                if (query.StringIds != null)
+                {
+                    collections.Add(await GetByStringIds(query.StringIds));
+                }
+            }
+
+            var result = new List<WareStatus>();
+            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
+            {
+                result = _context.WareStatuses
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToList();
+            }
+            else if (query.QueryAny != null && collections.Any())
+            {
+                // Об'єднання результатів з QueryAny
+                result = collections.SelectMany(x => x).Distinct().ToList();
+            }
+            else
+            {
+                // Знаходження перетину результатів
+                result = collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList)).ToList();
+            }
+
+            // Сортування
+            if (query.Sorting != null)
+            {
+                switch (query.Sorting)
+                {
+                    case "IdAsc":
+                        result = result.OrderBy(ware => ware.Id).ToList();
+                        break;
+                    case "IdDesc":
+                        result = result.OrderByDescending(ware => ware.Id).ToList();
+                        break;
+                    case "NameAsc":
+                        result = result.OrderBy(ware => ware.Name).ToList();
+                        break;
+                    case "NameDesc":
+                        result = result.OrderByDescending(ware => ware.Name).ToList();
+                        break;
+                    case "DescriptionAsc":
+                        result = result.OrderBy(ware => ware.Description).ToList();
+                        break;
+                    case "DescriptionDesc":
+                        result = result.OrderByDescending(ware => ware.Description).ToList();
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            // Пагінація
+            if (query.PageNumber != null && query.PageSize != null)
+            {
+                result = result
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToList();
+            }
+
+            return result.Any() ? result : new List<WareStatus>();
+        }
+
         public async Task Create(WareStatus wareStatus)
         {
             await _context.WareStatuses.AddAsync(wareStatus);

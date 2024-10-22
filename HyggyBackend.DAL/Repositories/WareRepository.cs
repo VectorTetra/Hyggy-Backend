@@ -3,6 +3,7 @@ using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Interfaces;
 using HyggyBackend.DAL.Queries;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace HyggyBackend.DAL.Repositories
 {
@@ -29,6 +30,80 @@ namespace HyggyBackend.DAL.Repositories
                 .Take(pageSize)
                 .ToListAsync();
         }
+        public async Task<IEnumerable<Ware>> GetByStringIds(string stringIds)
+        {
+            // Розділяємо рядок за символом '|' та конвертуємо в список long
+            List<long> ids = stringIds.Split('|').Select(long.Parse).ToList();
+            // Створюємо список для збереження результатів
+            var waress = new List<Ware>();
+            // Викликаємо асинхронний метод та збираємо результати
+            await foreach (var ware in GetByIdsAsync(ids))
+            {
+                waress.Add(ware);
+            }
+            return waress;
+        }
+        public async Task<IEnumerable<Ware>> GetByStringTrademarkIds(string stringTrademarkIds)
+        {
+            // Розділяємо рядок за символом '|' та конвертуємо в список long
+            List<long> ids = stringTrademarkIds.Split('|').Select(long.Parse).ToList();
+
+            // Виконуємо запит до контексту для отримання товарів, у яких ідентифікатор торгової марки міститься у списку
+            var waress = await _context.Wares
+                .Where(ware =>  ware.WareTrademark != null && ids.Contains(ware.WareTrademark.Id))
+                .ToListAsync();
+
+            return waress;
+        }
+        public async Task<IEnumerable<Ware>> GetByStringStatusIds(string stringStatusIds)
+        {
+            // Розділяємо рядок за символом '|' та конвертуємо в список long
+            List<long> ids = stringStatusIds.Split('|').Select(long.Parse).ToList();
+
+            // Виконуємо запит до контексту для отримання товарів, у яких ідентифікатор статусу міститься у списку
+            var waress = await _context.Wares
+                .Where(ware => ware.Statuses.Any(status => ids.Contains(status.Id)))
+                .ToListAsync();
+
+            return waress;
+        }
+        public async Task<IEnumerable<Ware>> GetByStringCategory1Ids(string stringCategory1Ids)
+        {
+            // Розділяємо рядок за символом '|' та конвертуємо в список long
+            List<long> ids = stringCategory1Ids.Split('|').Select(long.Parse).ToList();
+
+            // Виконуємо запит до контексту для отримання товарів, у яких ідентифікатор категорії 1 міститься у списку
+            var waress = await _context.Wares
+                .Where(ware => ware.WareCategory3.WareCategory2.WareCategory1 != null && ids.Contains(ware.WareCategory3.WareCategory2.WareCategory1.Id))
+                .ToListAsync();
+
+            return waress;
+        }
+        public async Task<IEnumerable<Ware>> GetByStringCategory2Ids(string stringCategory2Ids)
+        {
+            // Розділяємо рядок за символом '|' та конвертуємо в список long
+            List<long> ids = stringCategory2Ids.Split('|').Select(long.Parse).ToList();
+
+            // Виконуємо запит до контексту для отримання товарів, у яких ідентифікатор категорії 2 міститься у списку
+            var waress = await _context.Wares
+                .Where(ware => ware.WareCategory3.WareCategory2 != null && ids.Contains(ware.WareCategory3.WareCategory2.Id))
+                .ToListAsync();
+
+            return waress;
+        }
+        public async Task<IEnumerable<Ware>> GetByStringCategory3Ids(string stringCategory3Ids)
+        {
+            // Розділяємо рядок за символом '|' та конвертуємо в список long
+            List<long> ids = stringCategory3Ids.Split('|').Select(long.Parse).ToList();
+
+            // Виконуємо запит до контексту для отримання товарів, у яких ідентифікатор категорії 3 міститься у списку
+            var waress = await _context.Wares
+                .Where(ware => ware.WareCategory3 != null && ids.Contains(ware.WareCategory3.Id))
+                .ToListAsync();
+
+            return waress;
+        }
+
         public async Task<IEnumerable<Ware>> GetByCategory1Id(long category1Id)
         {
             return await _context.Wares.Where(x => x.WareCategory3.WareCategory2.WareCategory1.Id == category1Id).ToListAsync();
@@ -44,6 +119,10 @@ namespace HyggyBackend.DAL.Repositories
         public async Task<IEnumerable<Ware>> GetByNameSubstring(string nameSubstring)
         {
             return await _context.Wares.Where(x => x.Name.Contains(nameSubstring)).ToListAsync();
+        }
+        public async Task<IEnumerable<Ware>> GetByStructureFilePathSubstring(string StructureFilePathSubstring)
+        {
+            return await _context.Wares.Where(x => x.StructureFilePath.Contains(StructureFilePathSubstring)).ToListAsync();
         }
         public async Task<IEnumerable<Ware>> GetByDescriptionSubstring(string descriptionSubstring)
         {
@@ -99,26 +178,24 @@ namespace HyggyBackend.DAL.Repositories
         }
         public async Task<IEnumerable<Ware>> GetByStatusId(long statusId)
         {
-            return await _context.Wares.Where(x => x.Status.Id == statusId).ToListAsync();
+            return await _context.Wares.Where(x => x.Statuses.Any(st => st.Id == statusId)).ToListAsync();
         }
         public async Task<IEnumerable<Ware>> GetByStatusNameSubstring(string statusNameSubstring)
         {
-            return await _context.Wares.Where(x => x.Status.Name.Contains(statusNameSubstring)).ToListAsync();
+            return await _context.Wares.Where(x => x.Statuses.Any(s => s.Name.Contains(statusNameSubstring))).ToListAsync();
         }
         public async Task<IEnumerable<Ware>> GetByStatusDescriptionSubstring(string statusDescriptionSubstring)
         {
-            return await _context.Wares.Where(x => x.Status.Description.Contains(statusDescriptionSubstring)).ToListAsync();
+            return await _context.Wares.Where(x => x.Statuses.Any(s => s.Description.Contains(statusDescriptionSubstring))).ToListAsync();
         }
         public async Task<IEnumerable<Ware>> GetByImagePathSubstring(string imagePathSubstring)
         {
             return await _context.Wares.Where(x => x.Images.Any(y => y.Path.Contains(imagePathSubstring))).ToListAsync();
         }
-
         public async Task<IEnumerable<Ware>> GetFavoritesByCustomerId(string customerId)
         {
             return await _context.Wares.Where(x => x.CustomerFavorites.Any(cu => cu.Id == customerId)).ToListAsync();
         }
-
         public async IAsyncEnumerable<Ware> GetByIdsAsync(IEnumerable<long> ids)
         {
             foreach (var id in ids)
@@ -146,122 +223,89 @@ namespace HyggyBackend.DAL.Repositories
         }
         */
 
-        public async Task<IEnumerable<Ware>> GetByQuery(WareQueryDAL queryDAL)
+        public async Task<IEnumerable<Ware>> GetByQuery(WareQueryDAL query)
         {
-            var wareCollections = new List<IEnumerable<Ware>>();
+            var collections = new List<IEnumerable<Ware>>();
 
-            if (queryDAL.Id != null)
+            // Перевірка наявності QueryAny
+            if (query.QueryAny != null)
             {
-                wareCollections.Add(new List<Ware> { await GetById(queryDAL.Id.Value) });
+                if (long.TryParse(query.QueryAny, out long id))
+                {
+                    collections.Add(new List<Ware> {await GetById(id)}); // Можливий артикул
+                    collections.Add(new List<Ware> {await GetByArticle(id)}); // Можливий артикул
+                    collections.Add(await GetByCategory1Id(id));
+                    collections.Add(await GetByCategory2Id(id));
+                    collections.Add(await GetByCategory3Id(id));
+                    collections.Add(await GetByTrademarkId(id));
+                    // Інші методи для отримання
+                }
+                if (float.TryParse(query.QueryAny, out float val))
+                {
+                    collections.Add(await GetByPriceRange(val, val)); // Якщо це ціна
+                    collections.Add(await GetByDiscountRange(val, val)); // Якщо це знижка
+                }
+
+                // Пошук за рядками
+                collections.Add(await GetByNameSubstring(query.QueryAny));
+                collections.Add(await GetByDescriptionSubstring(query.QueryAny));
+                collections.Add(await GetByTrademarkNameSubstring(query.QueryAny));
+                // Додайте інші можливі пошукові методи
+            }
+            else
+            {
+                // Ваша логіка для інших полів, що не включають QueryAny
+                if (query.Id != null)
+                {
+                    var res = await GetById(query.Id.Value);
+                    if (res != null)
+                    {
+                        collections.Add(new List<Ware> { res });
+                    }
+                }
+                if (query.Article != null)
+                {
+                    var res = await GetByArticle(query.Article.Value);
+                    if (res != null)
+                    {
+                        collections.Add(new List<Ware> { res });
+                    }
+                }
+                // Додайте інші перевірки за параметрами
             }
 
-            if (queryDAL.Article != null)
-            {
-                wareCollections.Add(new List<Ware> { await GetByArticle(queryDAL.Article.Value) });
-            }
+            var result = new List<Ware>();
 
-            if (queryDAL.Category1Id != null)
+            // Пагінація за замовчуванням, якщо не знайдено колекцій
+            if (query.PageNumber != null && query.PageSize != null && !collections.Any())
             {
-                wareCollections.Add(await GetByCategory1Id(queryDAL.Category1Id.Value));
+                result = _context.Wares
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
+                    .ToList();
             }
-
-            if (queryDAL.Category2Id != null)
+            else if (query.QueryAny != null && collections.Any())
             {
-                wareCollections.Add(await GetByCategory2Id(queryDAL.Category2Id.Value));
+                // Об'єднання результатів з QueryAny
+                result = collections.SelectMany(x => x).Distinct().ToList();
             }
-
-            if (queryDAL.Category3Id != null)
+            else
             {
-                wareCollections.Add(await GetByCategory3Id(queryDAL.Category3Id.Value));
+                // Знаходження перетину результатів
+                result = collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList)).ToList();
             }
-
-            if (queryDAL.NameSubstring != null)
-            {
-                wareCollections.Add(await GetByNameSubstring(queryDAL.NameSubstring));
-            }
-
-            if (queryDAL.DescriptionSubstring != null)
-            {
-                wareCollections.Add(await GetByDescriptionSubstring(queryDAL.DescriptionSubstring));
-            }
-
-            if (queryDAL.Category1NameSubstring != null)
-            {
-                wareCollections.Add(await GetByCategory1NameSubstring(queryDAL.Category1NameSubstring));
-            }
-
-            if (queryDAL.Category2NameSubstring != null)
-            {
-                wareCollections.Add(await GetByCategory2NameSubstring(queryDAL.Category2NameSubstring));
-            }
-
-            if (queryDAL.Category3NameSubstring != null)
-            {
-                wareCollections.Add(await GetByCategory3NameSubstring(queryDAL.Category3NameSubstring));
-            }
-
-            if (queryDAL.TrademarkId != null)
-            {
-                wareCollections.Add(await GetByTrademarkId(queryDAL.TrademarkId.Value));
-            }
-
-            if (queryDAL.TrademarkNameSubstring != null)
-            {
-                wareCollections.Add(await GetByTrademarkNameSubstring(queryDAL.TrademarkNameSubstring));
-            }
-
-            if (queryDAL.MinPrice != null && queryDAL.MaxPrice != null)
-            {
-                wareCollections.Add(await GetByPriceRange(queryDAL.MinPrice.Value, queryDAL.MaxPrice.Value));
-            }
-
-            if (queryDAL.MinDiscount != null && queryDAL.MaxDiscount != null)
-            {
-                wareCollections.Add(await GetByDiscountRange(queryDAL.MinDiscount.Value, queryDAL.MaxDiscount.Value));
-            }
-
-            if (queryDAL.IsDeliveryAvailable != null)
-            {
-                wareCollections.Add(await GetByIsDeliveryAvailable(queryDAL.IsDeliveryAvailable.Value));
-            }
-
-            if (queryDAL.StatusId != null)
-            {
-                wareCollections.Add(await GetByStatusId(queryDAL.StatusId.Value));
-            }
-
-            if (queryDAL.StatusName != null)
-            {
-                wareCollections.Add(await GetByStatusNameSubstring(queryDAL.StatusName));
-            }
-
-            if (queryDAL.StatusDescription != null)
-            {
-                wareCollections.Add(await GetByStatusDescriptionSubstring(queryDAL.StatusDescription));
-            }
-
-            if (queryDAL.ImagePath != null)
-            {
-                wareCollections.Add(await GetByImagePathSubstring(queryDAL.ImagePath));
-            }
-
-            if (queryDAL.CustomerId != null)
-            {
-                wareCollections.Add(await GetFavoritesByCustomerId(queryDAL.CustomerId));
-            }
-
-            if (!wareCollections.Any())
-            {
-                return new List<Ware>();
-            }
-
-            var result = wareCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
 
             // Сортування
-            if (queryDAL.Sorting != null)
+            if (query.Sorting != null)
             {
-                switch (queryDAL.Sorting)
+                switch (query.Sorting)
                 {
+                    case "IdAsc":
+                        result = result.OrderBy(ware => ware.Id).ToList();
+                        break;
+                    case "IdDesc":
+                        result = result.OrderByDescending(ware => ware.Id).ToList();
+                        break;
                     case "PriceAsc":
                         result = result.OrderBy(ware => ware.Price * (1 - ware.Discount / 100)).ToList(); // Ціна з урахуванням знижки
                         break;
@@ -277,23 +321,74 @@ namespace HyggyBackend.DAL.Repositories
                     case "Rating":
                         result = result.OrderByDescending(ware => ware.Reviews.Average(review => (float)review.Rating)).ToList(); // Сортування за рейтингом
                         break;
+                    case "DiscountAsc":
+                        result = result.OrderBy(ware => ware.Discount).ToList();
+                        break;
+                    case "DiscountDesc":
+                        result = result.OrderByDescending(ware => ware.Discount).ToList();
+                        break;
+                    case "IsDeliveryAvailable":
+                        result = result.OrderByDescending(ware => ware.IsDeliveryAvailable).ToList();
+                        break;
+                    case "ArticleAsc":
+                        result = result.OrderBy(ware => ware.Article).ToList();
+                        break;
+                    case "ArticleDesc":
+                        result = result.OrderByDescending(ware => ware.Article).ToList();
+                        break;
+                    case "StructureFilePathAsc":
+                        result = result.OrderBy(ware => ware.StructureFilePath).ToList();
+                        break;
+                    case "StructureFilePathDesc":
+                        result = result.OrderByDescending(ware => ware.StructureFilePath).ToList();
+                        break;
+                    case "DescriptionAsc":
+                        result = result.OrderBy(ware => ware.Description).ToList();
+                        break;
+                    case "DescriptionDesc":
+                        result = result.OrderByDescending(ware => ware.Description).ToList();
+                        break;
+                    case "Category1NameAsc":
+                        result = result.OrderBy(ware => ware.WareCategory3.WareCategory2.WareCategory1.Name).ToList();
+                        break;
+                    case "Category1NameDesc":
+                        result = result.OrderByDescending(ware => ware.WareCategory3.WareCategory2.WareCategory1.Name).ToList();
+                        break;
+                    case "Category2NameAsc":
+                        result = result.OrderBy(ware => ware.WareCategory3.WareCategory2.Name).ToList();
+                        break;
+                    case "Category2NameDesc":
+                        result = result.OrderByDescending(ware => ware.WareCategory3.WareCategory2.Name).ToList();
+                        break;
+                    case "Category3NameAsc":
+                        result = result.OrderBy(ware => ware.WareCategory3.Name).ToList();
+                        break;
+                    case "Category3NameDesc":
+                        result = result.OrderByDescending(ware => ware.WareCategory3.Name).ToList();
+                        break;
+                    case "TrademarkNameAsc":
+                        result = result.OrderBy(ware => ware.WareTrademark?.Name).ToList();
+                        break;
+                    case "TrademarkNameDesc":
+                        result = result.OrderByDescending(ware => ware.WareTrademark?.Name).ToList();
+                        break;
                     default:
                         break;
                 }
             }
 
             // Пагінація
-            if (queryDAL.PageNumber != null && queryDAL.PageSize != null)
+            if (query.PageNumber != null && query.PageSize != null)
             {
                 result = result
-                    .Skip((queryDAL.PageNumber.Value - 1) * queryDAL.PageSize.Value)
-                    .Take(queryDAL.PageSize.Value)
+                    .Skip((query.PageNumber.Value - 1) * query.PageSize.Value)
+                    .Take(query.PageSize.Value)
                     .ToList();
             }
 
-            return result;
-
+            return result.Any() ? result : new List<Ware>();
         }
+
         public async Task Create(Ware ware)
         {
             await _context.Wares.AddAsync(ware);

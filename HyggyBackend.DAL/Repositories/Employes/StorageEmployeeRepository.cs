@@ -1,4 +1,5 @@
 ﻿using HyggyBackend.DAL.EF;
+using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Entities.Employes;
 using HyggyBackend.DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -63,7 +64,18 @@ namespace HyggyBackend.DAL.Repositories.Employes
 				.FirstOrDefault();
 		}
 
-		public async Task CreateAsync(StorageEmployee employee)
+        public async IAsyncEnumerable<StorageEmployee> GetByIdsAsync(IEnumerable<string> ids)
+        {
+            foreach (var id in ids)
+            {
+                var item = await GetByIdAsync(id);  // Виклик методу репозиторію
+                if (item != null)
+                {
+                    yield return item;
+                }
+            }
+        }
+        public async Task CreateAsync(StorageEmployee employee)
 		{
 			await _context.StorageEmployees.AddAsync(employee);
 		}

@@ -34,8 +34,12 @@ namespace HyggyBackend.Controllers
              .ForMember(dest => dest.BlogCategory1Name, opt => opt.MapFrom(src => src.BlogCategory1Name))
              .ForMember(dest => dest.BlogCategory2Id, opt => opt.MapFrom(src => src.BlogCategory2Id))
              .ForMember(dest => dest.BlogCategory2Name, opt => opt.MapFrom(src => src.BlogCategory2Name))
+             .ForMember(dest => dest.StringIds, opt => opt.MapFrom(src => src.StringIds))
+             .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Sorting))
              .ForMember(dest => dest.PageNumber, opt => opt.MapFrom(src => src.PageNumber))
-             .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize));
+             .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize))
+             .ForMember(dest => dest.QueryAny, opt => opt.MapFrom(src => src.QueryAny));
+
         });
 
         [HttpGet]
@@ -46,7 +50,7 @@ namespace HyggyBackend.Controllers
                 IEnumerable<BlogCategory1DTO> collection = null;
                 switch (query.SearchParameter)
                 {
-                    case "GetById":
+                    case "Id":
                         {
                             if (query.Id == null)
                             {
@@ -58,7 +62,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByBlogTitle":
+                    case "BlogTitle":
                         {
                             if (query.BlogTitle == null)
                             {
@@ -70,7 +74,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByKeyword":
+                    case "Keyword":
                         {
                             if (query.Keyword == null)
                             {
@@ -82,7 +86,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByFilePath":
+                    case "FilePath":
                         {
                             if (query.FilePath == null)
                             {
@@ -94,7 +98,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByPreviewImagePath":
+                    case "PreviewImagePath":
                         {
                             if (query.PreviewImagePath == null)
                             {
@@ -106,7 +110,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByBlogId":
+                    case "BlogId":
                         {
                             if (query.BlogId == null)
                             {
@@ -118,7 +122,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByBlogCategory1Name":
+                    case "Name":
                         {
                             if (query.BlogCategory1Name == null)
                             {
@@ -130,7 +134,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByBlogCategory2Id":
+                    case "BlogCategory2Id":
                         {
                             if (query.BlogCategory2Id == null)
                             {
@@ -142,7 +146,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByBlogCategory2Name":
+                    case "BlogCategory2Name":
                         {
                             if (query.BlogCategory2Name == null)
                             {
@@ -154,7 +158,27 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByQuery":
+                    case "StringIds":
+                        {
+                            if (query.StringIds == null)
+                            {
+                                throw new ValidationException("Не вказано BlogCategory1.StringIds для пошуку!", "");
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByStringIds(query.StringIds);
+                            }
+                        }
+                        break;
+                    case "Paged":
+                        {
+                            var pNumber = query.PageNumber ?? throw new ValidationException("Не вказано BlogCategory1.PageNumber для пошуку!", "");
+                            var pSize = query.PageSize ?? throw new ValidationException("Не вказано BlogCategory1.PageSize для пошуку!", "");
+                            collection = await _serv.GetPagedBlogCategories1(pNumber, pSize);
+
+                        }
+                        break;
+                    case "Query":
                         {
                             var mapper = new Mapper(config);
                             var queryBLL = mapper.Map<BlogCategory1QueryBLL>(query);
@@ -179,6 +203,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -201,6 +229,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -223,6 +255,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -241,6 +277,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -258,7 +298,10 @@ namespace HyggyBackend.Controllers
         public string? BlogCategory1Name { get; set; }
         public long? BlogCategory2Id { get; set; }
         public string? BlogCategory2Name { get; set; }
+        public string? StringIds { get; set; }
         public int? PageNumber { get; set; }
         public int? PageSize { get; set; }
+        public string? Sorting { get; set; }
+        public string? QueryAny { get; set; }
     }
 }

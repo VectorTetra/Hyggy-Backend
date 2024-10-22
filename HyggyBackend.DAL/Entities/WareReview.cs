@@ -14,6 +14,7 @@ namespace HyggyBackend.DAL.Entities
         public string Text { get; set; }
         public string Theme { get; set; }
         public string CustomerName { get; set; }
+        public string? AuthorizedCustomerId { get; set; }
         public string Email { get; set; }
         public short Rating { get; set; }
         public DateTime Date { get; set; }

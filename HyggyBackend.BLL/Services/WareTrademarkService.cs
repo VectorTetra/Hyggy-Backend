@@ -30,6 +30,12 @@ namespace HyggyBackend.BLL.Services
             var wareTrademark = await Database.WareTrademarks.GetById(id);
             return _mapper.Map<WareTrademarkDTO>(wareTrademark);
         }
+
+        public async Task<IEnumerable<WareTrademarkDTO>> GetByStringIds(string stringIds)
+        {
+            var wareTrademarks = await Database.WareTrademarks.GetByStringIds(stringIds);
+            return _mapper.Map<IEnumerable<WareTrademarkDTO>>(wareTrademarks);
+        }
         public async Task<IEnumerable<WareTrademarkDTO>> GetByName(string nameSubstr)
         {
             var wareTrademarks = await Database.WareTrademarks.GetByName(nameSubstr);

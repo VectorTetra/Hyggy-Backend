@@ -7,6 +7,7 @@ namespace HyggyBackend.DAL.Interfaces
     {
         Task<Blog> GetById(long id);
         Task<IEnumerable<Blog>> GetByKeywordSubstring(string keyword);
+        Task<IEnumerable<Blog>> GetByStringIds(string  stringIds);
         Task<IEnumerable<Blog>> GetByTitleSubstring(string title);
         Task<IEnumerable<Blog>> GetByFilePathSubstring(string FilePathSubstring);
         Task<IEnumerable<Blog>> GetByPreviewImagePathSubstring(string PreviewImagePathSubstring);

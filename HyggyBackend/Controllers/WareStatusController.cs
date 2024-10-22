@@ -30,8 +30,10 @@ namespace HyggyBackend.Controllers
              .ForMember(dest => dest.NameSubstring, opt => opt.MapFrom(src => src.NameSubstring))
              .ForMember(dest => dest.DescriptionSubstring, opt => opt.MapFrom(src => src.DescriptionSubstring))
              .ForMember(dest => dest.PageNumber, opt => opt.MapFrom(src => src.PageNumber))
-             .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize));
-
+             .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize))
+             .ForMember(dest => dest.StringIds, opt => opt.MapFrom(src => src.StringIds))
+             .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Sorting))
+             .ForMember(dest => dest.QueryAny, opt => opt.MapFrom(src => src.QueryAny));
         });
 
         [HttpGet]
@@ -44,7 +46,7 @@ namespace HyggyBackend.Controllers
                 switch (query.SearchParameter)
                 {
 
-                    case "GetById":
+                    case "Id":
                         {
                             if (query.Id == null)
                             {
@@ -56,7 +58,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                        case "GetByWareId":
+                    case "WareId":
                         {
                             if (query.WareId == null)
                             {
@@ -68,7 +70,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByWareArticle":
+                    case "WareArticle":
                         {
                             if (query.WareArticle == null)
                             {
@@ -80,7 +82,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                        case "GetPagedWareStatuses":
+                    case "Paged":
                         {
                             if (query.PageNumber == null)
                             {
@@ -93,7 +95,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetPagedWareStatuses(query.PageNumber.Value, query.PageSize.Value);
                         }
                         break;
-                    case "GetByNameSubstring":
+                    case "Name":
                         {
                             if (query.NameSubstring == null)
                             {
@@ -102,7 +104,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByNameSubstring(query.NameSubstring);
                         }
                         break;
-                    case "GetByDescriptionSubstring":
+                    case "Description":
                         {
                             if (query.DescriptionSubstring == null)
                             {
@@ -111,7 +113,16 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByDescriptionSubstring(query.DescriptionSubstring);
                         }
                         break;
-                    case "GetByQuery":
+                    case "StringIds":
+                        {
+                            if (query.StringIds == null)
+                            {
+                                throw new ValidationException("Не вказано WareStatus.StringIds для пошуку!", nameof(WareStatusQueryPL.StringIds));
+                            }
+                            collection = await _serv.GetByStringIds(query.StringIds);
+                        }
+                        break;
+                    case "Query":
                         {
                             collection = await _serv.GetByQuery(config.CreateMapper().Map<WareStatusQueryBLL>(query));
                         }
@@ -134,6 +145,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -156,6 +171,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -178,12 +197,16 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
 
-        [HttpDelete]
-        public async Task<ActionResult<WareStatusDTO>> DeleteWare([FromBody] long id)
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<WareStatusDTO>> DeleteWare(long id)
         {
             try
             {
@@ -200,6 +223,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -207,6 +234,7 @@ namespace HyggyBackend.Controllers
 
     public class WareStatusQueryPL
     {
+        public string SearchParameter { get; set; }
         public int? PageNumber { get; set; }
         public int? PageSize { get; set; }
         public long? Id { get; set; }
@@ -214,6 +242,8 @@ namespace HyggyBackend.Controllers
         public long? WareArticle { get; set; }
         public string? NameSubstring { get; set; }
         public string? DescriptionSubstring { get; set; }
-        public string SearchParameter { get; set; }
+        public string? StringIds { get; set; }
+        public string? Sorting { get; set; }
+        public string? QueryAny { get; set; }
     }
 }

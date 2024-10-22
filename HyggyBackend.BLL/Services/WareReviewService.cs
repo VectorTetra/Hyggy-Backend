@@ -24,6 +24,11 @@ namespace HyggyBackend.BLL.Services
             var wareReview = await Database.WareReviews.GetById(id);
             return _mapper.Map<WareReviewDTO>(wareReview);
         }
+        public async Task<IEnumerable<WareReviewDTO>> GetByStringIds(string StringIds)
+        {
+            var wareReviews = await Database.WareReviews.GetByStringIds(StringIds);
+            return _mapper.Map<IEnumerable<WareReviewDTO>>(wareReviews);
+        }
         public async Task<IEnumerable<WareReviewDTO>> GetByWareId(long wareId)
         {
             var wareReviews = await Database.WareReviews.GetByWareId(wareId);
@@ -42,6 +47,12 @@ namespace HyggyBackend.BLL.Services
         public async Task<IEnumerable<WareReviewDTO>> GetByCustomerNameSubstring(string customerName)
         {
             var wareReviews = await Database.WareReviews.GetByCustomerNameSubstring(customerName);
+            return _mapper.Map<IEnumerable<WareReviewDTO>>(wareReviews);
+        }
+
+        public async Task<IEnumerable<WareReviewDTO>> GetByAuthorizedCustomerId(string AuthorizedCustomerId)
+        {
+            var wareReviews = await Database.WareReviews.GetByAuthorizedCustomerId(AuthorizedCustomerId);
             return _mapper.Map<IEnumerable<WareReviewDTO>>(wareReviews);
         }
         public async Task<IEnumerable<WareReviewDTO>> GetByEmailSubstring(string email)
@@ -72,10 +83,14 @@ namespace HyggyBackend.BLL.Services
         public async Task<WareReviewDTO> Create(WareReviewDTO wareReview)
         {
 
-            var existedWare = await Database.Wares.GetById(wareReview.WareId);
+            var existedWare = await Database.Wares.GetById(wareReview.WareId.Value);
             if (existedWare == null)
             {
                 throw new ValidationException($"Товару з вказаним Id ({wareReview.WareId}) не існує!", "");
+            }
+            if(wareReview.Rating == null)
+            {
+                throw new ValidationException("Оцінка не може бути пустою!", "");
             }
             if (wareReview.Rating < 1 || wareReview.Rating > 5)
             {
@@ -102,8 +117,10 @@ namespace HyggyBackend.BLL.Services
                 Text = wareReview.Text,
                 Theme = wareReview.Theme,
                 CustomerName = wareReview.CustomerName,
+                Ware = existedWare,
+                AuthorizedCustomerId = wareReview.AuthorizedCustomerId,
                 Email = wareReview.Email,
-                Rating = wareReview.Rating,
+                Rating = wareReview.Rating.Value,
                 Date = DateTime.Now
             };
             await Database.WareReviews.Create(reviewDAL);
@@ -118,10 +135,14 @@ namespace HyggyBackend.BLL.Services
             {
                 throw new ValidationException($"Відгуку з вказаним Id ({wareReview.Id}) не існує!", "");
             }
-            var existedWare = await Database.Wares.GetById(wareReview.WareId);
+            var existedWare = await Database.Wares.GetById(wareReview.WareId.Value);
             if (existedWare == null)
             {
                 throw new ValidationException($"Товару з вказаним Id ({wareReview.WareId}) не існує!", "");
+            }
+            if (wareReview.Rating == null)
+            {
+                throw new ValidationException("Оцінка не може бути пустою!", "");
             }
             if (wareReview.Rating < 1 || wareReview.Rating > 5)
             {
@@ -147,8 +168,9 @@ namespace HyggyBackend.BLL.Services
             existedReview.Text = wareReview.Text;
             existedReview.Theme = wareReview.Theme;
             existedReview.CustomerName = wareReview.CustomerName;
+            existedReview.AuthorizedCustomerId = wareReview.AuthorizedCustomerId;
             existedReview.Email = wareReview.Email;
-            existedReview.Rating = wareReview.Rating;
+            existedReview.Rating = wareReview.Rating.Value;
             existedReview.Date = DateTime.Now;
             Database.WareReviews.Update(existedReview);
             await Database.Save();

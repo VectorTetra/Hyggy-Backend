@@ -25,6 +25,21 @@ namespace HyggyBackend.DAL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("CustomerWare", b =>
+                {
+                    b.Property<string>("CustomerFavoritesId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<long>("FavoriteWaresId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("CustomerFavoritesId", "FavoriteWaresId");
+
+                    b.HasIndex("FavoriteWaresId");
+
+                    b.ToTable("CustomerWare");
+                });
+
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Address", b =>
                 {
                     b.Property<long>("Id")
@@ -34,11 +49,9 @@ namespace HyggyBackend.DAL.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("City")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("HouseNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double?>("Latitude")
@@ -48,20 +61,92 @@ namespace HyggyBackend.DAL.Migrations
                         .HasColumnType("float");
 
                     b.Property<string>("PostalCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("State")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Street")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Addresses");
+                });
+
+            modelBuilder.Entity("HyggyBackend.DAL.Entities.Blog", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("BlogCategory2Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("BlogTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Keywords")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PreviewImagePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BlogCategory2Id");
+
+                    b.ToTable("Blogs");
+                });
+
+            modelBuilder.Entity("HyggyBackend.DAL.Entities.BlogCategory1", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BlogCategories1");
+                });
+
+            modelBuilder.Entity("HyggyBackend.DAL.Entities.BlogCategory2", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("BlogCategory1Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PreviewImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BlogCategory1Id");
+
+                    b.ToTable("BlogCategories2");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Order", b =>
@@ -118,13 +203,13 @@ namespace HyggyBackend.DAL.Migrations
                     b.Property<int>("Count")
                         .HasColumnType("int");
 
-                    b.Property<long?>("OrderId")
+                    b.Property<long>("OrderId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("PriceHistoryId")
+                    b.Property<long>("PriceHistoryId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("WareId")
+                    b.Property<long>("WareId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -186,6 +271,10 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.Property<long?>("AddressId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhotoUrl")
                         .IsRequired()
@@ -341,17 +430,21 @@ namespace HyggyBackend.DAL.Migrations
                     b.Property<float>("Price")
                         .HasColumnType("real");
 
-                    b.Property<long>("StatusId")
-                        .HasColumnType("bigint");
+                    b.Property<string>("StructureFilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<long>("WareCategory3Id")
                         .HasColumnType("bigint");
 
+                    b.Property<long?>("WareTrademarkId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("StatusId");
-
                     b.HasIndex("WareCategory3Id");
+
+                    b.HasIndex("WareTrademarkId");
 
                     b.ToTable("Wares");
                 });
@@ -363,10 +456,6 @@ namespace HyggyBackend.DAL.Migrations
                         .HasColumnType("bigint");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("JSONStructureFilePath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -384,10 +473,6 @@ namespace HyggyBackend.DAL.Migrations
                         .HasColumnType("bigint");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("JSONStructureFilePath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -410,10 +495,6 @@ namespace HyggyBackend.DAL.Migrations
                         .HasColumnType("bigint");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("JSONStructureFilePath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -472,7 +553,8 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasIndex("StorageId");
 
-                    b.HasIndex("WareId");
+                    b.HasIndex("WareId", "StorageId")
+                        .IsUnique();
 
                     b.ToTable("WareItems");
                 });
@@ -496,9 +578,53 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("WareId");
+                    b.HasIndex("WareId", "Price", "EffectiveDate")
+                        .IsUnique();
 
                     b.ToTable("WarePriceHistories");
+                });
+
+            modelBuilder.Entity("HyggyBackend.DAL.Entities.WareReview", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("AuthorizedCustomerId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<short>("Rating")
+                        .HasColumnType("smallint");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Theme")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("WareId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WareId");
+
+                    b.ToTable("WareReviews");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.WareStatus", b =>
@@ -520,6 +646,23 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("WareStatuses");
+                });
+
+            modelBuilder.Entity("HyggyBackend.DAL.Entities.WareTrademark", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WareTrademarks");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -551,13 +694,13 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "71d20b48-8aee-4185-89f1-022745a5c732",
+                            Id = "3bb5488a-d065-4b1e-96dc-980f8fa511b4",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "d5ad47c3-5fed-4931-93c9-6bc5987ddf95",
+                            Id = "c1616847-211b-49cc-b9b4-1b4dc28b45cc",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -669,6 +812,21 @@ namespace HyggyBackend.DAL.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("WareWareStatus", b =>
+                {
+                    b.Property<long>("StatusesId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("WaresId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("StatusesId", "WaresId");
+
+                    b.HasIndex("WaresId");
+
+                    b.ToTable("WareWareStatus");
+                });
+
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Customer", b =>
                 {
                     b.HasBaseType("HyggyBackend.DAL.Entities.User");
@@ -706,6 +864,43 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasIndex("StorageId");
 
                     b.HasDiscriminator().HasValue("StorageEmployee");
+                });
+
+            modelBuilder.Entity("CustomerWare", b =>
+                {
+                    b.HasOne("HyggyBackend.DAL.Entities.Customer", null)
+                        .WithMany()
+                        .HasForeignKey("CustomerFavoritesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HyggyBackend.DAL.Entities.Ware", null)
+                        .WithMany()
+                        .HasForeignKey("FavoriteWaresId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("HyggyBackend.DAL.Entities.Blog", b =>
+                {
+                    b.HasOne("HyggyBackend.DAL.Entities.BlogCategory2", "BlogCategory2")
+                        .WithMany("Blogs")
+                        .HasForeignKey("BlogCategory2Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BlogCategory2");
+                });
+
+            modelBuilder.Entity("HyggyBackend.DAL.Entities.BlogCategory2", b =>
+                {
+                    b.HasOne("HyggyBackend.DAL.Entities.BlogCategory1", "BlogCategory1")
+                        .WithMany("BlogCategories2")
+                        .HasForeignKey("BlogCategory1Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BlogCategory1");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Order", b =>
@@ -746,17 +941,20 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasOne("HyggyBackend.DAL.Entities.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("HyggyBackend.DAL.Entities.WarePriceHistory", "PriceHistory")
                         .WithMany("OrderItems")
                         .HasForeignKey("PriceHistoryId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.HasOne("HyggyBackend.DAL.Entities.Ware", "Ware")
                         .WithMany("OrderItems")
                         .HasForeignKey("WareId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("Order");
 
@@ -793,21 +991,19 @@ namespace HyggyBackend.DAL.Migrations
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Ware", b =>
                 {
-                    b.HasOne("HyggyBackend.DAL.Entities.WareStatus", "Status")
-                        .WithMany("Wares")
-                        .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("HyggyBackend.DAL.Entities.WareCategory3", "WareCategory3")
                         .WithMany("Wares")
                         .HasForeignKey("WareCategory3Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Status");
+                    b.HasOne("HyggyBackend.DAL.Entities.WareTrademark", "WareTrademark")
+                        .WithMany("Wares")
+                        .HasForeignKey("WareTrademarkId");
 
                     b.Navigation("WareCategory3");
+
+                    b.Navigation("WareTrademark");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.WareCategory2", b =>
@@ -873,6 +1069,17 @@ namespace HyggyBackend.DAL.Migrations
                     b.Navigation("Ware");
                 });
 
+            modelBuilder.Entity("HyggyBackend.DAL.Entities.WareReview", b =>
+                {
+                    b.HasOne("HyggyBackend.DAL.Entities.Ware", "Ware")
+                        .WithMany("Reviews")
+                        .HasForeignKey("WareId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ware");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -924,6 +1131,21 @@ namespace HyggyBackend.DAL.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("WareWareStatus", b =>
+                {
+                    b.HasOne("HyggyBackend.DAL.Entities.WareStatus", null)
+                        .WithMany()
+                        .HasForeignKey("StatusesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HyggyBackend.DAL.Entities.Ware", null)
+                        .WithMany()
+                        .HasForeignKey("WaresId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Employes.ShopEmployee", b =>
                 {
                     b.HasOne("HyggyBackend.DAL.Entities.Shop", "Shop")
@@ -953,6 +1175,16 @@ namespace HyggyBackend.DAL.Migrations
                     b.Navigation("Shop");
 
                     b.Navigation("Storage");
+                });
+
+            modelBuilder.Entity("HyggyBackend.DAL.Entities.BlogCategory1", b =>
+                {
+                    b.Navigation("BlogCategories2");
+                });
+
+            modelBuilder.Entity("HyggyBackend.DAL.Entities.BlogCategory2", b =>
+                {
+                    b.Navigation("Blogs");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Order", b =>
@@ -989,6 +1221,8 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.Navigation("PriceHistories");
 
+                    b.Navigation("Reviews");
+
                     b.Navigation("WareItems");
                 });
 
@@ -1012,7 +1246,7 @@ namespace HyggyBackend.DAL.Migrations
                     b.Navigation("OrderItems");
                 });
 
-            modelBuilder.Entity("HyggyBackend.DAL.Entities.WareStatus", b =>
+            modelBuilder.Entity("HyggyBackend.DAL.Entities.WareTrademark", b =>
                 {
                     b.Navigation("Wares");
                 });

@@ -15,8 +15,19 @@ namespace HyggyBackend.BLL.Helper
         {
             #region Address Mappings
             CreateMap<Address, AddressDTO>()
-                .ForMember(dest => dest.OrderIds, opts => opts.MapFrom(src => src.Orders.Select(o => o.Id)));
-            CreateMap<AddressDTO, Address>();
+             .ForMember(dest => dest.Id, opts => opts.MapFrom(src => src.Id))
+             .ForMember(dest => dest.ShopId, opts => opts.MapFrom(src => src.Shop != null ? src.Shop.Id : (long?)null))
+             .ForMember(dest => dest.StorageId, opts => opts.MapFrom(src => src.Storage != null ? src.Storage.Id : (long?)null))
+             .ForMember(dest => dest.Street, opts => opts.MapFrom(src => src.Street != null ? src.Street : null))
+             .ForMember(dest => dest.HouseNumber, opts => opts.MapFrom(src => src.HouseNumber != null ? src.HouseNumber : null))
+             .ForMember(dest => dest.City, opts => opts.MapFrom(src => src.City != null ? src.City : null))
+             .ForMember(dest => dest.State, opts => opts.MapFrom(src => src.State != null ? src.State : null))
+             .ForMember(dest => dest.PostalCode, opts => opts.MapFrom(src => src.PostalCode != null ? src.PostalCode : null))
+             .ForMember(dest => dest.Latitude, opts => opts.MapFrom(src => src.Latitude != null ? src.Latitude : null))
+             .ForMember(dest => dest.Longitude, opts => opts.MapFrom(src => src.Longitude != null ? src.Longitude : null))
+             .ForMember(dest => dest.OrderIds, opts => opts.MapFrom(src => src.Orders != null ? src.Orders.Select(o => o.Id).ToList() : new List<long>()));
+
+            CreateMap<AddressQueryBLL, AddressQueryDAL>();
             #endregion
 
             #region Blog Mappings
@@ -49,15 +60,34 @@ namespace HyggyBackend.BLL.Helper
 
             #region Customer Mappings
             CreateMap<Customer, CustomerDTO>()
-                .ForPath(dst => dst.OrderIds, opt => opt.MapFrom(src => src.Orders.Select(o => o.Id)))
-                .ForPath(dst => dst.Name, opt => opt.MapFrom(src => src.Name))
-                .ForPath(dst => dst.Surname, opt => opt.MapFrom(src => src.Surname))
-                .ForPath(dst => dst.Email, opt => opt.MapFrom(src => src.Email));
-            CreateMap<CustomerDTO, Customer>()
-                .ForPath(dst => dst.Orders, opt => opt.MapFrom(src => src.OrderIds.Select(id => new Order { Id = id })))
-                .ForPath(dst => dst.Name, opt => opt.MapFrom(src => src.Name))
-                .ForPath(dst => dst.Surname, opt => opt.MapFrom(src => src.Surname))
-                .ForPath(dst => dst.Email, opt => opt.MapFrom(src => src.Email));
+            .ForPath(dst => dst.OrderIds, opt => opt.MapFrom(src => src.Orders.Select(o => o.Id)))
+            .ForPath(dst => dst.Name, opt => opt.MapFrom(src => src.Name))
+            .ForPath(dst => dst.Surname, opt => opt.MapFrom(src => src.Surname))
+            .ForPath(dst => dst.Phone, opt => opt.MapFrom(src => src.PhoneNumber))
+            .ForPath(dst => dst.Email, opt => opt.MapFrom(src => src.Email))
+            .ForPath(dst => dst.FavoriteWareIds, opt => opt.MapFrom(src => src.FavoriteWares.Select(w => w.Id)))
+            .ForPath(dst => dst.ExecutedOrdersSum, opt => opt.MapFrom(src =>
+                src.Orders
+                    .Where(o => o.Status.Id == 3)
+                    .SelectMany(o => o.OrderItems)
+                    .Sum(oi => oi.Count * (oi.Ware.Price - (oi.Ware.Price * oi.Ware.Discount / 100)))
+            ))
+            .ForPath(dst => dst.ExecutedOrdersAvg, opt => opt.MapFrom(src =>
+                src.Orders.Where(o => o.Status.Id == 3)
+                           .SelectMany(o => o.OrderItems)
+                           .Select(oi => oi.Count * (oi.Ware.Price - (oi.Ware.Price * oi.Ware.Discount / 100)))
+                           .DefaultIfEmpty(0) // Якщо немає замовлень, повертаємо 0
+                           .Average() // Обчислюємо середнє значення
+            ));
+
+
+
+
+            //CreateMap<CustomerDTO, Customer>()
+            //    .ForPath(dst => dst.Orders, opt => opt.MapFrom(src => src.OrderIds.Select(id => new Order { Id = id })))
+            //    .ForPath(dst => dst.Name, opt => opt.MapFrom(src => src.Name))
+            //    .ForPath(dst => dst.Surname, opt => opt.MapFrom(src => src.Surname))
+            //    .ForPath(dst => dst.Email, opt => opt.MapFrom(src => src.Email));
             CreateMap<CustomerQueryBLL, CustomerQueryDAL>();
             #endregion
 
@@ -82,9 +112,26 @@ namespace HyggyBackend.BLL.Helper
             CreateMap<OrderItemQueryBLL, OrderItemQueryDAL>();
             #endregion
 
+            #region Order Mappings
+            CreateMap<Order, OrderDTO>()
+             .ForPath(dto => dto.Id, opt => opt.MapFrom(src => src.Id))
+             .ForPath(dto => dto.DeliveryAddressId, opt => opt.MapFrom(src => src.DeliveryAddress.Id))
+             .ForPath(dto => dto.OrderDate, opt => opt.MapFrom(src => src.OrderDate))
+             .ForPath(dto => dto.Phone, opt => opt.MapFrom(src => src.Phone))
+             .ForPath(dto => dto.Comment, opt => opt.MapFrom(src => src.Comment))
+             .ForPath(dto => dto.StatusId, opt => opt.MapFrom(src => src.Status.Id))
+             .ForPath(dto => dto.ShopId, opt => opt.MapFrom(src => src.ShopId))
+             .ForPath(dto => dto.CustomerId, opt => opt.MapFrom(src => src.Customer.Id))
+             .ForPath(dto => dto.OrderItemIds, opt => opt.MapFrom(src => src.OrderItems.Select(oi => oi.Id)));
+            CreateMap<OrderQueryBLL, OrderQueryDAL>();
+            #endregion
+
             #region OrderStatus Mappings
-            CreateMap<OrderStatus, OrderStatusDTO>();
-            CreateMap<OrderStatusDTO, OrderStatus>();
+            CreateMap<OrderStatus, OrderStatusDTO>()
+                .ForPath(dst => dst.OrderIds, opt => opt.MapFrom(src => src.Orders.Select(o => o.Id)))
+                .ForPath(dst => dst.Name, opt => opt.MapFrom(src => src.Name))
+                .ForPath(dst => dst.Description, opt => opt.MapFrom(src => src.Description))
+                .ForPath(dst => dst.Id, opt => opt.MapFrom(src => src.Id));
             #endregion
 
             #region Profession Mappings
@@ -97,20 +144,45 @@ namespace HyggyBackend.BLL.Helper
 
             #region Shop Mappings
             CreateMap<Shop, ShopDTO>()
+                .ForMember(dest => dest.Id, opts => opts.MapFrom(src => src.Id))
+                .ForMember(dest => dest.PhotoUrl, opts => opts.MapFrom(src => src.PhotoUrl))
+                .ForMember(dest => dest.WorkHours, opts => opts.MapFrom(src => src.WorkHours))
+                .ForMember(dest => dest.Name, opts => opts.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Street, opts => opts.MapFrom(src => src.Address.Street))
+                .ForMember(dest => dest.HouseNumber, opts => opts.MapFrom(src => src.Address.HouseNumber))
+                .ForMember(dest => dest.City, opts => opts.MapFrom(src => src.Address.City))
+                .ForMember(dest => dest.State, opts => opts.MapFrom(src => src.Address.State))
+                .ForMember(dest => dest.PostalCode, opts => opts.MapFrom(src => src.Address.PostalCode))
+                .ForMember(dest => dest.Latitude, opts => opts.MapFrom(src => src.Address.Latitude))
+                .ForMember(dest => dest.Longitude, opts => opts.MapFrom(src => src.Address.Longitude))
                 .ForMember(dest => dest.AddressId, opts => opts.MapFrom(src => src.Address.Id))
+                .ForMember(dest => dest.StorageId, opts => opts.MapFrom(src => src.Storage.Id))
+                .ForMember(dest => dest.ExecutedOrdersSum, opts => opts.MapFrom(src =>
+                    src.Orders
+                        .Where(o => o.Status.Id == 3) // Фільтруємо замовлення за статусом
+                        .SelectMany(o => o.OrderItems)
+                        .Sum(oi => oi.Count * (oi.Ware.Price - (oi.Ware.Price * oi.Ware.Discount / 100)))
+                ))
                 .ForMember(dest => dest.OrderIds, opts => opts.MapFrom(src => src.Orders.Select(ord => ord.Id)));
-            CreateMap<ShopDTO, Shop>();
+            CreateMap<ShopQueryBLL, ShopQueryDAL>();
             #endregion
-
 
             #region Storage Mappings
             CreateMap<Storage, StorageDTO>()
-                .ForMember(dst=>dst.Id, opt=>opt.MapFrom(src=>src.Id))
-                .ForMember(dst => dst.ShopId, opt => opt.MapFrom(src => src.Shop.Id))
-                .ForMember(dst => dst.AddressId, opt => opt.MapFrom(src => src.Address.Id));
+                .ForMember(dst => dst.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Street, opts => opts.MapFrom(src => src.Address != null ? src.Address.Street : null))
+                .ForMember(dest => dest.HouseNumber, opts => opts.MapFrom(src => src.Address != null ? src.Address.HouseNumber : null))
+                .ForMember(dest => dest.City, opts => opts.MapFrom(src => src.Address != null ? src.Address.City : null))
+                .ForMember(dest => dest.State, opts => opts.MapFrom(src => src.Address != null ? src.Address.State : null))
+                .ForMember(dest => dest.PostalCode, opts => opts.MapFrom(src => src.Address != null ? src.Address.PostalCode : null))
+                .ForMember(dest => dest.Latitude, opts => opts.MapFrom(src => src.Address != null ? src.Address.Latitude : (long?)null))
+                .ForMember(dest => dest.Longitude, opts => opts.MapFrom(src => src.Address != null ? src.Address.Longitude : (long?)null))
+                .ForMember(dst => dst.ShopId, opts => opts.MapFrom(src => src.Shop != null ? src.Shop.Id : (long?)null))
+                .ForMember(dst => dst.ShopName, opts => opts.MapFrom(src => src.Shop != null ? src.Shop.Name : null))
+                .ForMember(dst => dst.AddressId, opt => opt.MapFrom(src => src.Address != null ? src.Address.Id : (long?)null))
+                .ForMember(dst => dst.StoredWaresSum, opt => opt.MapFrom(src => src.WareItems != null ? src.WareItems.Sum(wi => wi.Quantity * (wi.Ware.Price * wi.Ware.Discount / 100)) : 0));
             CreateMap<StorageQueryBLL, StorageQueryDAL>();
             #endregion
-
 
             #region User Mappings
             CreateMap<UserForEditDto, Customer>()
@@ -121,21 +193,54 @@ namespace HyggyBackend.BLL.Helper
 
             #region WareCategory1 Mappings
             CreateMap<WareCategory1, WareCategory1DTO>()
-                .ForMember(dst => dst.Id, opt => opt.MapFrom(c => c.Id))
-                .ForMember(dst => dst.Name, opt => opt.MapFrom(c => c.Name))
-                .ForMember(dst => dst.JSONStructureFilePath, opt => opt.MapFrom(c => c.JSONStructureFilePath))
-                .ForMember(dst => dst.WaresCategory2Ids, opt => opt.MapFrom(c => c.WaresCategory2.Select(wc => wc.Id)));
+             .ForMember(dst => dst.Id, opt => opt.MapFrom(c => c.Id))
+             .ForMember(dst => dst.WaresCategory2Ids, opt => opt.MapFrom(c => c.WaresCategory2 != null
+                 ? c.WaresCategory2.Select(wc => wc.Id).ToList()
+                 : new List<long>()))
+             .ForMember(dst => dst.Name, opt => opt.MapFrom(c => c.Name))
+             .ForMember(dst => dst.WaresCategories2, opt => opt.MapFrom(c => c.WaresCategory2 != null
+                 ? c.WaresCategory2.Select(wc => new WareCategory2DTO
+                 {
+                     Id = wc.Id,
+                     Name = wc.Name,
+                     WareCategory1Id = wc.WareCategory1 != null ? wc.WareCategory1.Id : (long?)null,
+                     WaresCategories3 = wc.WaresCategory3 != null
+                         ? wc.WaresCategory3.Select(wc3 => new WareCategory3DTO
+                         {
+                             Id = wc3.Id,
+                             Name = wc3.Name,
+                             WareCategory2Id = wc3.WareCategory2 != null ? wc3.WareCategory2.Id : (long?)null,
+                             WareIds = new List<long>()
+                         }).ToList()
+                         : new List<WareCategory3DTO>()
+                 }).ToList()
+                 : new List<WareCategory2DTO>()));
+
+
+
 
             CreateMap<WareCategory1QueryBLL, WareCategory1QueryDAL>();
             #endregion
 
             #region WareCategory2 Mappings
             CreateMap<WareCategory2, WareCategory2DTO>()
-            .ForMember("Id", opt => opt.MapFrom(c => c.Id))
-            .ForMember("Name", opt => opt.MapFrom(c => c.Name))
-            .ForMember("JSONStructureFilePath", opt => opt.MapFrom(c => c.JSONStructureFilePath))
-            .ForPath(dst => dst.WareCategory1Id, opt => opt.MapFrom(c => c.WareCategory1.Id))
-            .ForMember(dst => dst.WaresCategory3Ids, opt => opt.MapFrom(c => c.WaresCategory3.Select(wc => wc.Id)));
+            .ForMember(dst => dst.Id, opt => opt.MapFrom(c => c.Id))
+            .ForMember(dst => dst.Name, opt => opt.MapFrom(c => c.Name))
+            .ForMember(dst => dst.WareCategory1Id, opt => opt.MapFrom(c => c.WareCategory1 != null ? c.WareCategory1.Id : (long?)null))
+            .ForMember(dst => dst.WaresCategories3, opt => opt.MapFrom(c => c.WaresCategory3 != null
+                ? c.WaresCategory3.Select(wc3 => new WareCategory3DTO
+                {
+                    Id = wc3.Id,
+                    Name = wc3.Name,
+                    WareCategory2Id = wc3.WareCategory2 != null ? wc3.WareCategory2.Id : (long?)null,
+                    WareIds = new List<long>()
+                }).ToList()
+                : new List<WareCategory3DTO>()))
+            .ForMember(dst => dst.WaresCategory3Ids, opt => opt.MapFrom(c => c.WaresCategory3 != null
+                ? c.WaresCategory3.Select(wc => wc.Id).ToList()
+                : new List<long>()));
+
+
 
             CreateMap<WareCategory2QueryBLL, WareCategory2QueryDAL>();
             #endregion
@@ -144,7 +249,6 @@ namespace HyggyBackend.BLL.Helper
             CreateMap<WareCategory3, WareCategory3DTO>()
            .ForMember("Id", opt => opt.MapFrom(c => c.Id))
            .ForMember("Name", opt => opt.MapFrom(c => c.Name))
-           .ForMember("JSONStructureFilePath", opt => opt.MapFrom(c => c.JSONStructureFilePath))
            .ForPath(dst => dst.WareCategory2Id, opt => opt.MapFrom(c => c.WareCategory2.Id));
 
             CreateMap<WareCategory3QueryBLL, WareCategory3QueryDAL>();
@@ -159,8 +263,13 @@ namespace HyggyBackend.BLL.Helper
             #endregion
 
             #region WarePriceHistory Mappings
-            CreateMap<WarePriceHistory, WarePriceHistoryDTO>();
-            CreateMap<WarePriceHistoryDTO, WarePriceHistory>();
+            CreateMap<WarePriceHistory, WarePriceHistoryDTO>()
+                .ForMember(dest => dest.Id, opts => opts.MapFrom(src => src.Id))
+                .ForMember(dest => dest.WareId, opts => opts.MapFrom(src => src.Ware.Id))
+                .ForMember(dest => dest.Price, opts => opts.MapFrom(src => src.Price))
+                .ForMember(dest => dest.EffectiveDate, opts => opts.MapFrom(src => src.EffectiveDate));
+            CreateMap<WarePriceHistoryQueryBLL, WarePriceHistoryQueryDAL>();
+
             #endregion
 
             #region Ware Mappings
@@ -169,11 +278,13 @@ namespace HyggyBackend.BLL.Helper
              .ForMember(d => d.Article, opt => opt.MapFrom(c => c.Article))
              .ForMember(d => d.Name, opt => opt.MapFrom(c => c.Name))
              .ForMember(d => d.Description, opt => opt.MapFrom(c => c.Description))
+             .ForMember(d => d.StructureFilePath, opt => opt.MapFrom(c => c.StructureFilePath))
              .ForMember(d => d.Price, opt => opt.MapFrom(c => c.Price))
              .ForMember(d => d.Discount, opt => opt.MapFrom(c => c.Discount))
+             .ForMember(d => d.FinalPrice, opt => opt.MapFrom(c => c.Price - (c.Price * c.Discount / 100)))
              .ForMember(d => d.IsDeliveryAvailable, opt => opt.MapFrom(c => c.IsDeliveryAvailable))
              .ForMember(d => d.WareCategory3Id, opt => opt.MapFrom(c => c.WareCategory3.Id))
-             .ForMember(d => d.StatusId, opt => opt.MapFrom(c => c.Status.Id))
+             .ForMember(d => d.StatusIds, opt => opt.MapFrom(c => c.Statuses.Select(st => st.Id)))
              .ForMember(d => d.ImageIds, opt => opt.MapFrom(c => c.Images.Select(image => image.Id)))
              .ForMember(d => d.PriceHistoryIds, opt => opt.MapFrom(c => c.PriceHistories.Select(price => price.Id)))
              .ForMember(d => d.WareItemIds, opt => opt.MapFrom(c => c.WareItems.Select(wareItem => wareItem.Id)))
@@ -182,7 +293,11 @@ namespace HyggyBackend.BLL.Helper
              .ForMember(d => d.TrademarkId, opt => opt.MapFrom(c => c.WareTrademark != null ? c.WareTrademark.Id : 0))
              .ForMember(d => d.AverageRating, opt => opt.MapFrom(c => c.Reviews.Any() ? c.Reviews.Average(r => (float)r.Rating) : 0))
              .ForMember(d => d.PreviewImagePath, opt => opt.MapFrom(c => c.Images != null && c.Images.Any() ? c.Images.FirstOrDefault().Path : null))
-             .ForMember(d => d.CustomerFavoriteIds, opt => opt.MapFrom(c => c.CustomerFavorites.Select(customer => customer.Id)));
+             .ForMember(d => d.CustomerFavoriteIds, opt => opt.MapFrom(c => c.CustomerFavorites.Select(customer => customer.Id)))
+             .ForMember(d => d.TrademarkName, opt => opt.MapFrom(c => c.WareTrademark != null ? c.WareTrademark.Name : null))
+             .ForMember(d => d.StatusNames, opt => opt.MapFrom(c => c.Statuses.Select(st => st.Name)))
+             .ForMember(d => d.ImagePaths, opt => opt.MapFrom(c => c.Images.Select(image => image.Path)))
+             .ForMember(d => d.WareCategory3Name, opt => opt.MapFrom(c => c.WareCategory3.Name));
 
             CreateMap<WareQueryBLL, WareQueryDAL>();
             #endregion
@@ -192,6 +307,7 @@ namespace HyggyBackend.BLL.Helper
                 .ForMember(d => d.Id, opt => opt.MapFrom(c => c.Id))
                 .ForMember(d => d.WareId, opt => opt.MapFrom(c => c.Ware.Id))
                 .ForMember(d => d.CustomerName, opt => opt.MapFrom(c => c.CustomerName))
+                .ForMember(d => d.AuthorizedCustomerId, opt => opt.MapFrom(c => c.AuthorizedCustomerId))
                 .ForMember(d => d.Rating, opt => opt.MapFrom(c => c.Rating))
                 .ForMember(d => d.Text, opt => opt.MapFrom(c => c.Text))
                 .ForMember(d => d.Theme, opt => opt.MapFrom(c => c.Theme))
@@ -212,7 +328,8 @@ namespace HyggyBackend.BLL.Helper
             CreateMap<WareStatus, WareStatusDTO>()
                 .ForMember(d => d.Id, opt => opt.MapFrom(c => c.Id))
                 .ForMember(d => d.Name, opt => opt.MapFrom(c => c.Name))
-                .ForMember(d => d.Description, opt => opt.MapFrom(c => c.Description));
+                .ForMember(d => d.Description, opt => opt.MapFrom(c => c.Description))
+                .ForMember(d => d.WareIds, opt => opt.MapFrom(c => c.Wares.Select(w => w.Id)));
             CreateMap<WareStatusQueryBLL, WareStatusQueryDAL>();
             #endregion
 

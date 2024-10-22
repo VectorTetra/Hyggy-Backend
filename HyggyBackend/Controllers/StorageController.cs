@@ -32,7 +32,12 @@ namespace HyggyBackend.Controllers
              .ForMember(dest => dest.WareItemId, opt => opt.MapFrom(src => src.WareItemId))
              .ForMember(dest => dest.StorageEmployeeId, opt => opt.MapFrom(src => src.StorageEmployeeId))
              .ForMember(dest => dest.ShopEmployeeId, opt => opt.MapFrom(src => src.ShopEmployeeId))
-             .ForMember(dest => dest.IsGlobal, opt => opt.MapFrom(src => src.IsGlobal));
+             .ForMember(dest => dest.IsGlobal, opt => opt.MapFrom(src => src.IsGlobal))
+             .ForMember(dest => dest.StringIds, opt => opt.MapFrom(src => src.StringIds))
+             .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Sorting))
+             .ForMember(dest => dest.PageNumber, opt => opt.MapFrom(src => src.PageNumber))
+             .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize))
+             .ForMember(dest => dest.QueryAny, opt => opt.MapFrom(src => src.QueryAny));
         });
 
         [HttpPost]
@@ -49,6 +54,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -66,6 +75,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -83,6 +96,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -96,7 +113,7 @@ namespace HyggyBackend.Controllers
 
                 switch (query.SearchParameter)
                 {
-                    case "GetById":
+                    case "Id":
                         {
                             if (query.Id == null)
                             {
@@ -108,7 +125,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByAddressId":
+                    case "AddressId":
                         {
                             if (query.AddressId == null)
                             {
@@ -120,7 +137,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByShopId":
+                    case "ShopId":
                         {
                             if (query.ShopId == null)
                             {
@@ -132,7 +149,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByWareItemId":
+                    case "WareItemId":
                         {
                             if (query.WareItemId == null)
                             {
@@ -144,7 +161,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByStorageEmployeeId":
+                    case "StorageEmployeeId":
                         {
                             if (query.StorageEmployeeId == null)
                             {
@@ -156,7 +173,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByShopEmployeeId":
+                    case "ShopEmployeeId":
                         {
                             if (query.ShopEmployeeId == null)
                             {
@@ -178,7 +195,25 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetNonGlobalStorages();
                         }
                         break;
-                    case "GetByQuery":
+                    case "Paged":
+                        {
+                            if (query.PageNumber == null || query.PageSize == null)
+                            {
+                                throw new ValidationException("Не вказано PageNumber або PageSize для пошуку!", nameof(StorageQueryPL.PageNumber));
+                            }
+                            collection = await _serv.GetPaged(query.PageNumber.Value, query.PageSize.Value);
+                        }
+                        break;
+                    case "StringIds":
+                        {
+                            if (query.StringIds == null)
+                            {
+                                throw new ValidationException("Не вказано StringIds для пошуку!", nameof(StorageQueryPL.StringIds));
+                            }
+                            collection = await _serv.GetByStringIds(query.StringIds);
+                        }
+                        break;
+                    case "Query":
                         {
                             var mapper = new Mapper(config);
                             var queryBLL = mapper.Map<StorageQueryBLL>(query);
@@ -203,6 +238,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -218,5 +257,10 @@ namespace HyggyBackend.Controllers
         public string? StorageEmployeeId { get; set; }
         public string? ShopEmployeeId { get; set; }
         public bool? IsGlobal { get; set; }
+        public string? StringIds { get; set; }
+        public string? Sorting { get; set; }
+        public int? PageNumber { get; set; }
+        public int? PageSize { get; set; }
+        public string? QueryAny { get; set; }
     }
 }

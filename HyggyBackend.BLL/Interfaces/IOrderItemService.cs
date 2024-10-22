@@ -1,4 +1,5 @@
 ﻿using HyggyBackend.BLL.DTO;
+using HyggyBackend.BLL.Queries;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,9 @@ namespace HyggyBackend.BLL.Interfaces
     {
         Task<OrderItemDTO?> GetById(long id);
 
+        Task<IEnumerable<OrderItemDTO>> GetByStringIds(string stringIds);
+        Task<IEnumerable<OrderItemDTO>> GetPaged(int pageNumber, int pageSize);
+        Task<IEnumerable<OrderItemDTO>> GetByQuery(OrderItemQueryBLL query);
         Task<IEnumerable<OrderItemDTO>> GetByOrderId(long orderId);
         Task<IEnumerable<OrderItemDTO>> GetByWareId(long wareId);
         Task<IEnumerable<OrderItemDTO>> GetByPriceHistoryId(long priceHistoryId);

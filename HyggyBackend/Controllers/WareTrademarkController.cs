@@ -22,7 +22,15 @@ namespace HyggyBackend.Controllers
         }
         MapperConfiguration config = new MapperConfiguration(mc =>
         {
-            mc.CreateMap<WareTramedarkQueryPL, WareTrademarkQueryBLL>();
+            mc.CreateMap<WareTramedarkQueryPL, WareTrademarkQueryBLL>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+            .ForMember(dest => dest.WareId, opt => opt.MapFrom(src => src.WareId))
+            .ForMember(dest => dest.PageNumber, opt => opt.MapFrom(src => src.PageNumber))
+            .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize))
+            .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Sorting))
+            .ForMember(dest => dest.StringIds, opt => opt.MapFrom(src => src.StringIds))
+            .ForMember(dest => dest.QueryAny, opt => opt.MapFrom(src => src.QueryAny));
         });
 
         [HttpGet]
@@ -34,7 +42,7 @@ namespace HyggyBackend.Controllers
                 IEnumerable<WareTrademarkDTO> collection = null;
                 switch (query.SearchParameter)
                 {
-                    case "GetById":
+                    case "Id":
                         {
                             if (query.Id == null)
                             {
@@ -46,7 +54,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByName":
+                    case "Name":
                         {
                             if (query.Name == null)
                             {
@@ -58,7 +66,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByWareId":
+                    case "WareId":
                         {
                             if (query.WareId == null)
                             {
@@ -70,7 +78,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetPagedWareTrademarks":
+                    case "Paged":
                         {
                             if (query.PageNumber == null)
                             {
@@ -83,7 +91,19 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetPagedWareTrademarks(query.PageNumber.Value, query.PageSize.Value);
                         }
                         break;
-                    case "GetByQuery":
+                    case "StringIds":
+                        {
+                            if (query.StringIds == null)
+                            {
+                                throw new ValidationException("Не вказано StringIds для пошуку!", nameof(WareTramedarkQueryPL.StringIds));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByStringIds(query.StringIds);
+                            }
+                        }
+                        break;
+                    case "Query":
                         {
                             var mapper = new Mapper(config);
                             var queryBLL = mapper.Map<WareTrademarkQueryBLL>(query);
@@ -109,6 +129,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -131,6 +155,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -153,6 +181,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -171,6 +203,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -186,5 +222,7 @@ namespace HyggyBackend.Controllers
         public int? PageNumber { get; set; }
         public int? PageSize { get; set; }
         public string? Sorting { get; set; }
+        public string? StringIds { get; set; }
+        public string? QueryAny { get; set; }
     }
 }

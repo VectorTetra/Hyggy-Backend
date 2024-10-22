@@ -30,6 +30,11 @@ namespace HyggyBackend.BLL.Services
             var blogs = await Database.Blogs.GetByKeywordSubstring(keyword);
             return _mapper.Map<IEnumerable<BlogDTO>>(blogs);
         }
+        public async Task<IEnumerable<BlogDTO>> GetByStringIds(string stringIds)
+        {
+            var blogs = await Database.Blogs.GetByStringIds(stringIds);
+            return _mapper.Map<IEnumerable<BlogDTO>>(blogs);
+        }
         public async Task<IEnumerable<BlogDTO>> GetByTitleSubstring(string title)
         {
             var blogs = await Database.Blogs.GetByTitleSubstring(title);

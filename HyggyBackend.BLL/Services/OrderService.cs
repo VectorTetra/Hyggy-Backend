@@ -12,27 +12,12 @@ namespace HyggyBackend.BLL.Services
     public class OrderService : IOrderService
     {
         IUnitOfWork Database;
-        public OrderService(IUnitOfWork uow)
+        IMapper _mapper;
+        public OrderService(IUnitOfWork uow, IMapper mapper)
         {
             Database = uow;
+            _mapper = mapper;
         }
-
-        MapperConfiguration config = new MapperConfiguration(cfg =>
-        {
-            cfg.CreateMap<Order, OrderDTO>()
-            .ForPath(dto=>dto.Id, opt => opt.MapFrom(src => src.Id))
-            .ForPath(dto => dto.DeliveryAddressId, opt => opt.MapFrom(src => src.DeliveryAddress.Id))
-            .ForPath(dto => dto.OrderDate, opt => opt.MapFrom(src => src.OrderDate))
-            .ForPath(dto => dto.Phone, opt => opt.MapFrom(src => src.Phone))
-            .ForPath(dto => dto.Comment, opt => opt.MapFrom(src => src.Comment))
-            .ForPath(dto => dto.StatusId, opt => opt.MapFrom(src => src.Status.Id))
-            .ForPath(dto => dto.ShopId, opt => opt.MapFrom(src => src.ShopId))
-            .ForPath(dto => dto.CustomerId, opt => opt.MapFrom(src => src.Customer.Id))
-            .ForPath(dto => dto.OrderItemIds, opt => opt.MapFrom(src =>
-                src.OrderItems.Select(oi => oi.Id)));
-        });
-
-        MapperConfiguration OrderQueryBLL_OrderQueryDALMapConfig = new MapperConfiguration(cfg => cfg.CreateMap<OrderQueryBLL, OrderQueryDAL>());
 
         public async Task<OrderDTO?> GetById(long id)
         {
@@ -41,123 +26,135 @@ namespace HyggyBackend.BLL.Services
             {
                 return null;
             }
-            var mapper = new Mapper(config);
-            return mapper.Map<OrderDTO>(order);
+            return _mapper.Map<OrderDTO>(order);
+        }
+
+        public async Task<IEnumerable<OrderDTO>> GetByStringIds(string stringIds)
+        {
+            var orders = await Database.Orders.GetByStringIds(stringIds);
+
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
+        }
+
+        public async Task<IEnumerable<OrderDTO>> GetPagedOrders(int pageNumber, int pageSize)
+        {
+            var orders = await Database.Orders.GetPagedOrders(pageNumber, pageSize);
+
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByAddressId(long addressId)
         {
             var orders = await Database.Orders.GetByAddressId(addressId);
-            var mapper = new Mapper(config);
-            return mapper.Map<IEnumerable<OrderDTO>>(orders);
+            
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByStreet(string streetSubstring)
         {
             var orders = await Database.Orders.GetByStreet(streetSubstring);
-            var mapper = new Mapper(config);
-            return mapper.Map<IEnumerable<OrderDTO>>(orders);
+            
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByHouseNumber(string houseNumber)
         {
             var orders = await Database.Orders.GetByHouseNumber(houseNumber);
-            var mapper = new Mapper(config);
-            return mapper.Map<IEnumerable<OrderDTO>>(orders);
+            
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByCity(string city)
         {
             var orders = await Database.Orders.GetByCity(city);
-            var mapper = new Mapper(config);
-            return mapper.Map<IEnumerable<OrderDTO>>(orders);
+            
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByPostalCode(string postalCode)
         {
             var orders = await Database.Orders.GetByPostalCode(postalCode);
-            var mapper = new Mapper(config);
-            return mapper.Map<IEnumerable<OrderDTO>>(orders);
+            
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByState(string state)
         {
             var orders = await Database.Orders.GetByState(state);
-            var mapper = new Mapper(config);
-            return mapper.Map<IEnumerable<OrderDTO>>(orders);
+            
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByLatitudeAndLongitude(double latitude, double longitude)
         {
             var orders = await Database.Orders.GetByLatitudeAndLongitude(latitude, longitude);
-            var mapper = new Mapper(config);
-            return mapper.Map<IEnumerable<OrderDTO>>(orders);
+            
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByOrderDateRange(DateTime minOrderDate, DateTime maxOrderDate)
         {
             var orders = await Database.Orders.GetByOrderDateRange(minOrderDate, maxOrderDate);
-            var mapper = new Mapper(config);
-            return mapper.Map<IEnumerable<OrderDTO>>(orders);
+            
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByPhoneSubstring(string phoneSubstring)
         {
             var orders = await Database.Orders.GetByPhoneSubstring(phoneSubstring);
-            var mapper = new Mapper(config);
-            return mapper.Map<IEnumerable<OrderDTO>>(orders);
+            
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByCommentSubstring(string commentSubstring)
         {
             var orders = await Database.Orders.GetByCommentSubstring(commentSubstring);
-            var mapper = new Mapper(config);
-            return mapper.Map<IEnumerable<OrderDTO>>(orders);
+            
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByStatusId(long statusId)
         {
             var orders = await Database.Orders.GetByStatusId(statusId);
-            var mapper = new Mapper(config);
-            return mapper.Map<IEnumerable<OrderDTO>>(orders);
+            
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByStatusNameSubstring(string statusNameSubstring)
         {
             var orders = await Database.Orders.GetByStatusNameSubstring(statusNameSubstring);
-            var mapper = new Mapper(config);
-            return mapper.Map<IEnumerable<OrderDTO>>(orders);
+            
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByStatusDescriptionSubstring(string statusDescriptionSubstring)
         {
             var orders = await Database.Orders.GetByStatusDescriptionSubstring(statusDescriptionSubstring);
-            var mapper = new Mapper(config);
-            return mapper.Map<IEnumerable<OrderDTO>>(orders);
+            
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByOrderItemId(long orderItemId)
         {
             var orders = await Database.Orders.GetByOrderItemId(orderItemId);
-            var mapper = new Mapper(config);
-            return mapper.Map<IEnumerable<OrderDTO>>(orders);
+            
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByWareId(long wareId)
         {
             var orders = await Database.Orders.GetByWareId(wareId);
-            var mapper = new Mapper(config);
-            return mapper.Map<IEnumerable<OrderDTO>>(orders);
+            
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByWarePriceHistoryId(long warePriceHistoryId)
         {
             var orders = await Database.Orders.GetByWarePriceHistoryId(warePriceHistoryId);
-            var mapper = new Mapper(config);
-            return mapper.Map<IEnumerable<OrderDTO>>(orders);
+            
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByCustomerId(string customerId)
         {
             var orders = await Database.Orders.GetByCustomerId(customerId);
-            var mapper = new Mapper(config);
-            return mapper.Map<IEnumerable<OrderDTO>>(orders);
+            
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByShopId(long shopId)
         {
             var orders = await Database.Orders.GetByShopId(shopId);
-            var mapper = new Mapper(config);
-            return mapper.Map<IEnumerable<OrderDTO>>(orders);
+            
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByQuery(OrderQueryBLL query)
         {
-            var mapper = new Mapper(OrderQueryBLL_OrderQueryDALMapConfig);
-            var queryDAL = mapper.Map<OrderQueryDAL>(query);
+            var queryDAL = _mapper.Map<OrderQueryDAL>(query);
             var orders = await Database.Orders.GetByQuery(queryDAL);
-            return mapper.Map<IEnumerable<OrderDTO>>(orders);
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<OrderDTO> Create(OrderDTO orderDTO)
         {
@@ -234,28 +231,25 @@ namespace HyggyBackend.BLL.Services
             }
 
             var orderItems = new List<OrderItem>();
-            foreach (var orderItemId in orderDTO.OrderItemIds)
+            await foreach (var orderItemId in Database.OrderItems.GetByIdsAsync(orderDTO.OrderItemIds))
             {
-                var orderItem = await Database.OrderItems.GetById(orderItemId);
-                if (orderItem == null)
+                if (orderItemId == null)
                 {
-                    throw new ValidationException("Товар з таким ID не знайдено!", orderItemId.ToString());
+                    throw new ValidationException($"Одна з BlogCategory2 не знайдена!", "");
                 }
-                orderItems.Add(orderItem);
+                orderItems.Add(orderItemId);
             }
             // Створення нового замовлення
-            var orderDAL = new Order();
-
-            // Присвоєння характеристик замовлення
-            orderDAL.Id = 0;
-            orderDAL.OrderDate = orderDTO.OrderDate.Value;
-            orderDAL.Phone = orderDTO.Phone;
-            orderDAL.Comment = orderDTO.Comment;
-            orderDAL.Status = ExistedStatus;
-            orderDAL.Shop = ExistedShop;
-            orderDAL.Customer = ExistedCustomer;
-            orderDAL.DeliveryAddress = deliveryAddress;
-            orderDAL.OrderItems = orderItems;
+            var orderDAL = new Order {
+                OrderDate = orderDTO.OrderDate.Value,
+                Phone = orderDTO.Phone,
+                Comment = orderDTO.Comment,
+                Status = ExistedStatus,
+                Shop = ExistedShop,
+                Customer = ExistedCustomer,
+                DeliveryAddress = deliveryAddress,
+                OrderItems = orderItems
+            };
 
             // Створення замовлення
             await Database.Orders.Create(orderDAL);
@@ -354,14 +348,13 @@ namespace HyggyBackend.BLL.Services
 
             // Оновлення товарів замовлення
             var orderItems = new List<OrderItem>();
-            foreach (var orderItemId in orderDTO.OrderItemIds)
+            await foreach (var orderItemId in Database.OrderItems.GetByIdsAsync(orderDTO.OrderItemIds))
             {
-                var orderItem = await Database.OrderItems.GetById(orderItemId);
-                if (orderItem == null)
+                if (orderItemId == null)
                 {
-                    throw new ValidationException("Товар з таким ID не знайдено!", orderItemId.ToString());
+                    throw new ValidationException($"Одна з BlogCategory2 не знайдена!", "");
                 }
-                orderItems.Add(orderItem);
+                orderItems.Add(orderItemId);
             }
 
             // Оновлення замовлення з новими значеннями
@@ -399,8 +392,8 @@ namespace HyggyBackend.BLL.Services
             await Database.Save();
 
             // Маппінг видаленого замовлення на DTO
-            var mapper = new Mapper(config);
-            return mapper.Map<OrderDTO>(existingOrder);
+            
+            return _mapper.Map<OrderDTO>(existingOrder);
         }
     }
 }

@@ -42,6 +42,43 @@ namespace HyggyBackend.BLL.Services
             var wares = await Database.Wares.GetPagedWares(pageNumber, pageSize);
             return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
         }
+
+        public async Task<IEnumerable<WareDTO>> GetByStringIds(string stringIds)
+        {
+            var wares = await Database.Wares.GetByStringIds(stringIds);
+            return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
+        }
+
+        public async Task<IEnumerable<WareDTO>> GetByStringTrademarkIds(string stringTrademarkIds)
+        {
+            var wares = await Database.Wares.GetByStringTrademarkIds(stringTrademarkIds);
+            return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
+        }
+
+        public async Task<IEnumerable<WareDTO>> GetByStringStatusIds(string stringStatusIds)
+        {
+            var wares = await Database.Wares.GetByStringStatusIds(stringStatusIds);
+            return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
+        }
+
+        public async Task<IEnumerable<WareDTO>> GetByStringCategory1Ids(string stringCategory1Ids)
+        {
+            var wares = await Database.Wares.GetByStringCategory1Ids(stringCategory1Ids);
+            return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
+        }
+
+        public async Task<IEnumerable<WareDTO>> GetByStringCategory2Ids(string stringCategory2Ids)
+        {
+            var wares = await Database.Wares.GetByStringCategory2Ids(stringCategory2Ids);
+            return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
+        }
+
+        public async Task<IEnumerable<WareDTO>> GetByStringCategory3Ids(string stringCategory3Ids)
+        {
+            var wares = await Database.Wares.GetByStringCategory3Ids(stringCategory3Ids);
+            return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
+        }   
+
         public async Task<IEnumerable<WareDTO>> GetByCategory1Id(long category1Id)
         {
             var wares = await Database.Wares.GetByCategory1Id(category1Id);
@@ -60,6 +97,12 @@ namespace HyggyBackend.BLL.Services
         public async Task<IEnumerable<WareDTO>> GetByNameSubstring(string nameSubstring)
         {
             var wares = await Database.Wares.GetByNameSubstring(nameSubstring);
+            return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
+        }
+
+        public async Task<IEnumerable<WareDTO>> GetByStructureFilePathSubstring(string StructureFilePathSubstring)
+        {
+            var wares = await Database.Wares.GetByStructureFilePathSubstring(StructureFilePathSubstring);
             return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
         }
         public async Task<IEnumerable<WareDTO>> GetByDescriptionSubstring(string descriptionSubstring)
@@ -150,11 +193,21 @@ namespace HyggyBackend.BLL.Services
             {
                 throw new ValidationException("Товар з таким артикулом вже існує!", wareDTO.Article.ToString());
             }
-            var existedNames = await Database.Wares.GetByNameSubstring(wareDTO.Name);
-            if (existedNames.Any(x => x.Name == wareDTO.Name))
+            //var existedNames = await Database.Wares.GetByNameSubstring(wareDTO.Name);
+            //if (existedNames.Any(x => x.Name == wareDTO.Name))
+            //{
+            //    throw new ValidationException("Товар з таким іменем вже існує!", wareDTO.Name);
+            //}
+            if (wareDTO.Name == null)
             {
-                throw new ValidationException("Товар з таким іменем вже існує!", wareDTO.Name);
+                throw new ValidationException("Назва не може бути пустою!", wareDTO.Name);
             }
+
+            if (wareDTO.Description == null)
+            {
+                throw new ValidationException("Опис не може бути пустим!", wareDTO.Description);
+            }
+
             if (wareDTO.Price == null)
             {
                 throw new ValidationException("Ціна не може бути пустою!", wareDTO.Price.ToString());
@@ -180,14 +233,14 @@ namespace HyggyBackend.BLL.Services
             {
                 throw new ValidationException("Доставка не може бути пустою!", "");
             }
-            if (wareDTO.StatusId == null)
+            var statuses = new List<WareStatus>();
+            await foreach (var wareImage in Database.WareStatuses.GetByIdsAsync(wareDTO.StatusIds))
             {
-                throw new ValidationException("Статус не може бути пустим!", wareDTO.StatusId.ToString());
-            }
-            var existedStatus = await Database.WareStatuses.GetById(wareDTO.StatusId.Value);
-            if (existedStatus == null)
-            {
-                throw new ValidationException("Статусу з таким Id не існує!", wareDTO.StatusId.ToString());
+                if (wareImage == null)
+                {
+                    throw new ValidationException($"Одна з WareImage не знайдена!", "");
+                }
+                statuses.Add(wareImage);
             }
             var existedTrademark = new WareTrademark();
             if (wareDTO.TrademarkId != null)
@@ -198,6 +251,7 @@ namespace HyggyBackend.BLL.Services
                     throw new ValidationException("Торгової марки з таким Id не існує!", wareDTO.TrademarkId.ToString());
                 }
             }
+            var checkStructFilePath = wareDTO.StructureFilePath ?? "";
 
 
             var wareDAL = new Ware
@@ -207,10 +261,11 @@ namespace HyggyBackend.BLL.Services
                 WareTrademark = existedTrademark.Id != 0 ? existedTrademark : null,
                 Name = wareDTO.Name,
                 Description = wareDTO.Description,
+                StructureFilePath = checkStructFilePath,
                 Price = wareDTO.Price.Value,
                 Discount = wareDTO.Discount != null ? wareDTO.Discount.Value : 0,
                 IsDeliveryAvailable = wareDTO.IsDeliveryAvailable.Value,
-                Status = existedStatus,
+                Statuses = statuses,
                 Images = new List<WareImage>(),
                 PriceHistories = new List<WarePriceHistory>(),
                 WareItems = new List<WareItem>(),
@@ -223,27 +278,33 @@ namespace HyggyBackend.BLL.Services
             await Database.Wares.Create(wareDAL);
             await Database.Save();
 
-            wareDTO.Id = wareDAL.Id;
-            return wareDTO;
+            return _mapper.Map<Ware, WareDTO>(wareDAL);
 
         }
         public async Task<WareDTO> Update(WareDTO wareDTO)
         {
             var existedWare = await Database.Wares.GetById(wareDTO.Id);
+            if (existedWare == null)
+            {
+                throw new ValidationException("Товару з таким Id не існує!", wareDTO.Id.ToString());
+            }
             if (wareDTO.Article == null)
             {
                 throw new ValidationException("Артикул не може бути пустим!", wareDTO.Article.ToString());
             }
             //Перевірка на унікальність артикулу та назви
             var existedArticle = await Database.Wares.GetByArticle(wareDTO.Article.Value);
-            if (existedArticle != null)
+            if (existedArticle != null && existedArticle.Id != wareDTO.Id)
             {
                 throw new ValidationException("Товар з таким артикулом вже існує!", wareDTO.Article.ToString());
             }
-            var existedNames = await Database.Wares.GetByNameSubstring(wareDTO.Name);
-            if (existedNames.Any(x => x.Name == wareDTO.Name))
+            if (wareDTO.Name == null)
             {
-                throw new ValidationException("Товар з таким іменем вже існує!", wareDTO.Name);
+                throw new ValidationException("Назва не може бути пустою!", wareDTO.Name);
+            }
+            if (wareDTO.Description == null)
+            {
+                throw new ValidationException("Опис не може бути пустим!", wareDTO.Description);
             }
             if (wareDTO.Price == null)
             {
@@ -270,15 +331,11 @@ namespace HyggyBackend.BLL.Services
             {
                 throw new ValidationException("Доставка не може бути пустою!", "");
             }
-            if (wareDTO.StatusId == null)
+            if (wareDTO.StatusIds == null)
             {
-                throw new ValidationException("Статус не може бути пустим!", wareDTO.StatusId.ToString());
+                throw new ValidationException("Статус не може бути пустим!", wareDTO.StatusIds.ToString());
             }
-            var existedStatus = await Database.WareStatuses.GetById(wareDTO.StatusId.Value);
-            if (existedStatus == null)
-            {
-                throw new ValidationException("Статусу з таким Id не існує!", wareDTO.StatusId.ToString());
-            }
+
             var existedTrademark = new WareTrademark();
             if (wareDTO.TrademarkId != null)
             {
@@ -296,8 +353,9 @@ namespace HyggyBackend.BLL.Services
             existedWare.Description = wareDTO.Description;
             existedWare.Price = wareDTO.Price.Value;
             existedWare.Discount = wareDTO.Discount != null ? wareDTO.Discount.Value : 0;
+            existedWare.StructureFilePath = wareDTO.StructureFilePath ?? "";
             existedWare.IsDeliveryAvailable = wareDTO.IsDeliveryAvailable.Value;
-            existedWare.Status = existedStatus;
+            existedWare.Statuses.Clear();
             existedWare.Images.Clear();
             existedWare.PriceHistories.Clear();
             existedWare.WareItems.Clear();
@@ -359,12 +417,20 @@ namespace HyggyBackend.BLL.Services
                 existedWare.CustomerFavorites.Add(customer);
             }
 
+            await foreach (var status in Database.WareStatuses.GetByIdsAsync(wareDTO.StatusIds))
+            {
+                if (status == null)
+                {
+                    throw new ValidationException($"Один з WareStatus не знайдений!", "");
+                }
+                existedWare.Statuses.Add(status);
+            }
+
 
             Database.Wares.Update(existedWare);
             await Database.Save();
 
-            var returnedDTO = await GetById(wareDTO.Id);
-            return returnedDTO;
+            return _mapper.Map<Ware, WareDTO>(existedWare);
         }
         public async Task<WareDTO> Delete(long id)
         {

@@ -7,6 +7,7 @@ namespace HyggyBackend.DAL.Interfaces
     {
         Task<BlogCategory2> GetById(long id);
         Task<BlogCategory2> GetByBlogId(long blogId);
+        Task<IEnumerable<BlogCategory2>> GetByStringIds(string stringIds);
         Task<IEnumerable<BlogCategory2>> GetByBlogCategory1Id(long blogCategory1Id);
         Task<IEnumerable<BlogCategory2>> GetByBlogTitle(string title);
         Task<IEnumerable<BlogCategory2>> GetByBlogKeyword(string keyword);

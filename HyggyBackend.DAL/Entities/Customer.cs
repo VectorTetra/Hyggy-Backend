@@ -32,8 +32,8 @@ namespace HyggyBackend.DAL.Entities
         //public long Id { get; set; }
         //public string Name { get; set; }
         //public string Surname { get; set; }
-        public virtual ICollection<Order> Orders { get; set; }
-        public virtual ICollection<Ware> FavoriteWares { get; set; }
+        public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+        public virtual ICollection<Ware> FavoriteWares { get; set; } = new List<Ware>();
 
         public override bool Equals(object obj)
         {

@@ -7,6 +7,7 @@ namespace HyggyBackend.DAL.Entities
 	{
         public long Id { get; set; }
         public string PhotoUrl { get; set; } = String.Empty;
+        public string Name { get; set; } = String.Empty;
         public string WorkHours { get; set; } = String.Empty;
 		public long? AddressId { get; set; }
 		[ForeignKey("AddressId")]

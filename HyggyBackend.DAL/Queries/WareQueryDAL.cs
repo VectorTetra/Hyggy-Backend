@@ -33,5 +33,12 @@ namespace HyggyBackend.DAL.Queries
         public string? CustomerId { get; set; }
         public string? ImagePath { get; set; }
         public string? Sorting { get; set; }
+        public string? StringIds { get; set; }
+        public string? StringTrademarkIds { get; set; }
+        public string? StringStatusIds { get; set; }
+        public string? StringCategory1Ids { get; set; }
+        public string? StringCategory2Ids { get; set; }
+        public string? StringCategory3Ids { get; set; }
+        public string? QueryAny {get;set;}
     }
 }

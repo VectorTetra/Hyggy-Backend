@@ -44,7 +44,14 @@ namespace HyggyBackend.Controllers
             .ForMember(dest => dest.WareId, opt => opt.MapFrom(src => src.WareId))
             .ForMember(dest => dest.WarePriceHistoryId, opt => opt.MapFrom(src => src.WarePriceHistoryId))
             .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.CustomerId))
-            .ForMember(dest => dest.ShopId, opt => opt.MapFrom(src => src.ShopId));
+            .ForMember(dest => dest.ShopId, opt => opt.MapFrom(src => src.ShopId))
+            .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Sorting))
+            .ForMember(dest => dest.StringIds, opt => opt.MapFrom(src => src.StringIds))
+            .ForMember(dest => dest.QueryAny, opt => opt.MapFrom(src => src.QueryAny))
+            .ForMember(dest => dest.PageNumber, opt => opt.MapFrom(src => src.PageNumber))
+            .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize));
+
+
         });
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderDTO>>> GetOrders([FromQuery] OrderQueryPL orderQueryPL)
@@ -55,7 +62,7 @@ namespace HyggyBackend.Controllers
                 switch (orderQueryPL.SearchParameter)
                 {
 
-                    case "GetById":
+                    case "Id":
                         {
                             if (orderQueryPL.Id == null)
                             {
@@ -67,8 +74,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-
-                    case "GetByAddressId":
+                    case "AddressId":
                         {
                             if (orderQueryPL.AddressId == null)
                             {
@@ -80,8 +86,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-
-                    case "GetByStreet":
+                    case "Street":
                         {
                             if (orderQueryPL.Street == null)
                             {
@@ -93,8 +98,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-
-                    case "GetByHouseNumber":
+                    case "HouseNumber":
                         {
                             if (orderQueryPL.HouseNumber == null)
                             {
@@ -106,8 +110,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-
-                    case "GetByCity":
+                    case "City":
                         {
                             if (orderQueryPL.City == null)
                             {
@@ -119,8 +122,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-
-                    case "GetByPostalCode":
+                    case "PostalCode":
                         {
                             if (orderQueryPL.PostalCode == null)
                             {
@@ -132,8 +134,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-
-                    case "GetByState":
+                    case "State":
                         {
                             if (orderQueryPL.State == null)
                             {
@@ -145,8 +146,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-
-                    case "GetByLatitudeAndLongitude":
+                    case "LatitudeAndLongitude":
                         {
                             if (orderQueryPL.Latitude == null || orderQueryPL.Longitude == null)
                             {
@@ -158,8 +158,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-
-                    case "GetByOrderDateRange":
+                    case "OrderDateRange":
                         {
                             if (orderQueryPL.MinOrderDate == null || orderQueryPL.MaxOrderDate == null)
                             {
@@ -171,8 +170,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-
-                    case "GetByPhoneSubstring":
+                    case "Phone":
                         {
                             if (orderQueryPL.Phone == null)
                             {
@@ -184,8 +182,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-
-                    case "GetByCommentSubstring":
+                    case "Comment":
                         {
                             if (orderQueryPL.Comment == null)
                             {
@@ -197,8 +194,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-
-                    case "GetByStatusId":
+                    case "StatusId":
                         {
                             if (orderQueryPL.StatusId == null)
                             {
@@ -210,8 +206,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-
-                    case "GetByStatusNameSubstring":
+                    case "StatusName":
                         {
                             if (orderQueryPL.StatusName == null)
                             {
@@ -223,8 +218,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-
-                    case "GetByStatusDescriptionSubstring":
+                    case "StatusDescription":
                         {
                             if (orderQueryPL.StatusDescription == null)
                             {
@@ -236,8 +230,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-
-                    case "GetByOrderItemId":
+                    case "OrderItemId":
                         {
                             if (orderQueryPL.OrderItemId == null)
                             {
@@ -249,8 +242,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-
-                    case "GetByWareId":
+                    case "WareId":
                         {
                             if (orderQueryPL.WareId == null)
                             {
@@ -262,8 +254,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-
-                    case "GetByWarePriceHistoryId":
+                    case "WarePriceHistoryId":
                         {
                             if (orderQueryPL.WarePriceHistoryId == null)
                             {
@@ -275,8 +266,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-
-                    case "GetByCustomerId":
+                    case "CustomerId":
                         {
                             if (orderQueryPL.CustomerId == null)
                             {
@@ -288,8 +278,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-
-                    case "GetByShopId":
+                    case "ShopId":
                         {
                             if (orderQueryPL.ShopId == null)
                             {
@@ -301,15 +290,37 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-
-                    case "GetByQuery":
+                    case "Paged":
+                        {
+                            if (orderQueryPL.PageNumber == null || orderQueryPL.PageSize == null)
+                            {
+                                throw new ValidationException("Не вказано Order.PageNumber або Order.PageSize для пошуку!", nameof(OrderQueryPL.PageNumber));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetPagedOrders(orderQueryPL.PageNumber.Value, orderQueryPL.PageSize.Value);
+                            }
+                        }
+                        break;
+                    case "StringIds":
+                        {
+                            if (orderQueryPL.StringIds == null)
+                            {
+                                throw new ValidationException("Не вказано Order.StringIds для пошуку!", nameof(OrderQueryPL.StringIds));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByStringIds(orderQueryPL.StringIds);
+                            }
+                        }
+                        break;
+                    case "Query":
                         {
                             var mapper = new Mapper(config);
                             var orderQueryBLL = mapper.Map<OrderQueryBLL>(orderQueryPL);
                             collection = await _serv.GetByQuery(orderQueryBLL);
                         }
                         break;
-
                     default:
                         {
                             throw new ValidationException("Вказано неправильний параметр tourNameQuery.SearchParameter!", nameof(orderQueryPL.SearchParameter));
@@ -327,6 +338,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -349,6 +364,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -371,11 +390,15 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<ActionResult<OrderDTO>> DeleteOrder(long id)
         {
             try
@@ -389,6 +412,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -432,5 +459,8 @@ namespace HyggyBackend.Controllers
         public long? WarePriceHistoryId { get; set; }
         public long? CustomerId { get; set; }
         public long? ShopId { get; set; }
+        public string? Sorting { get; set; }
+        public string? StringIds { get; set; }
+        public string? QueryAny { get; set; }
     }
 }
