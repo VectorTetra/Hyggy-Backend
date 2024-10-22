@@ -47,14 +47,22 @@ namespace HyggyBackend.BLL.Services.Employees
 			return _mapper.Map<IEnumerable<StorageEmployee>, IEnumerable<StorageEmployeeDTO>>(paginatedEmployees);
 		}
 
-		public Task<IEnumerable<StorageEmployeeDTO>> GetEmployeesByProfessionAsync(string professionName)
+		public async Task<IEnumerable<StorageEmployeeDTO>> GetEmployeesByProfessionAsync(string professionName)
 		{
-			throw new NotImplementedException();
-		}
+			var employees = await Database.StorageEmployees.GetEmployeesByProfessionAsync(professionName);
+            return _mapper.Map<IEnumerable<StorageEmployee>, IEnumerable<StorageEmployeeDTO>>(employees);
+        }
 
-		public Task<IEnumerable<StorageEmployeeDTO>> GetEmployeesByWorkPlaceId(long id)
+		public async Task<IEnumerable<StorageEmployeeDTO>> GetEmployeesByWorkPlaceId(long id)
 		{
-			throw new NotImplementedException();
+			var storage = await Database.Storages.GetById(id);
+			if (storage == null)
+				return null;
+
+			var employees = storage.StorageEmployees.ToList();
+
+			return _mapper.Map<IEnumerable<StorageEmployeeDTO>>(employees);
+
 		}
 
 		public async Task<IEnumerable<StorageEmployeeDTO>> GetEmployeesByDateOfBirthAsync(DateTime date)

@@ -10,9 +10,10 @@ namespace HyggyBackend.BLL.DTO
     public class WarePriceHistoryDTO
     {
         public long Id { get; set; }
-        public WareDTO? Ware { get; set; }
+        public long? WareId { get; set; }
         public float? Price { get; set; }
         public DateTime? EffectiveDate { get; set; } // Дата початку дії ціни
+        public string? StringIds { get; set; }
 
         //public ICollection<OrderItem> OrderItems { get; set; }
     }

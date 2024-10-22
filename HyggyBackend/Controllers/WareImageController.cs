@@ -26,7 +26,12 @@ namespace HyggyBackend.Controllers
              .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
              .ForMember(dest => dest.WareId, opt => opt.MapFrom(src => src.WareId))
              .ForMember(dest => dest.WareArticle, opt => opt.MapFrom(src => src.WareArticle))
-             .ForMember(dest => dest.Path, opt => opt.MapFrom(src => src.Path));
+             .ForMember(dest => dest.Path, opt => opt.MapFrom(src => src.Path))
+             .ForMember(dest => dest.PageNumber, opt => opt.MapFrom(src => src.PageNumber))
+             .ForMember(dest => dest.PageSize, opt => opt.MapFrom(src => src.PageSize))
+             .ForMember(dest => dest.StringIds, opt => opt.MapFrom(src => src.StringIds))
+             .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Sorting))
+             .ForMember(dest => dest.QueryAny, opt => opt.MapFrom(src => src.QueryAny));
         });
 
         [HttpGet]
@@ -39,7 +44,7 @@ namespace HyggyBackend.Controllers
                 switch (query.SearchParameter)
                 {
 
-                    case "GetById":
+                    case "Id":
                         {
                             if (query.Id == null)
                             {
@@ -51,7 +56,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByWareId":
+                    case "WareId":
                         {
                             if (query.WareId == null)
                             {
@@ -63,7 +68,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByWareArticle":
+                    case "WareArticle":
                         {
                             if (query.WareArticle == null)
                             {
@@ -75,7 +80,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByPath":
+                    case "Path":
                         {
                             if (query.Path == null)
                             {
@@ -85,6 +90,25 @@ namespace HyggyBackend.Controllers
                             {
                                 collection = await _serv.GetByPathSubstring(query.Path);
                             }
+                        }
+                        break;
+                    case "StringIds":
+                        {
+                            if (query.StringIds == null)
+                            {
+                                throw new ValidationException("Не вказано WareImage.StringIds для пошуку!", nameof(WareImageQueryPL.StringIds));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByStringIds(query.StringIds);
+                            }
+                        }
+                        break;
+                    case "Query":
+                        {
+                            var mapper = new Mapper(config);
+                            var queryDAL = mapper.Map<WareImageQueryBLL>(query);
+                            collection = await _serv.GetByQuery(queryDAL);
                         }
                         break;
                     default:
@@ -101,6 +125,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -119,6 +147,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -137,11 +169,15 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<ActionResult<WareImageDTO>> DeleteWare([FromBody] WareImageDTO wareImage)
         {
             try
@@ -155,6 +191,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -162,10 +202,15 @@ namespace HyggyBackend.Controllers
 
     public class WareImageQueryPL
     {
+        public string SearchParameter { get; set; }
         public long? Id { get; set; }
         public string? Path { get; set; }
         public long? WareId { get; set; }
         public long? WareArticle { get; set; }
-        public string SearchParameter { get; set; }
+        public int? PageNumber { get; set; }
+        public int? PageSize { get; set; }
+        public string? StringIds { get; set; }
+        public string? Sorting { get; set; }
+        public string? QueryAny { get; set; }
     }
 }

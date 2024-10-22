@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HyggyBackend.BLL.DTO;
+using HyggyBackend.BLL.Infrastructure;
 using HyggyBackend.BLL.Interfaces;
 using HyggyBackend.BLL.Queries;
 using HyggyBackend.DAL.Entities;
@@ -16,74 +17,13 @@ namespace HyggyBackend.BLL.Services
     public class WareCategory2Service: IWareCategory2Service
     {
         IUnitOfWork Database;
-        public WareCategory2Service(IUnitOfWork uow)
+        IMapper _mapper;
+        public WareCategory2Service(IUnitOfWork uow,IMapper mapper)
         {
             Database = uow;
+            _mapper = mapper;
         }
 
-        MapperConfiguration config = new MapperConfiguration(cfg =>
-        {
-            cfg.CreateMap<WareCategory2, WareCategory2DTO>()
-            .ForMember("Id", opt => opt.MapFrom(c => c.Id))
-            .ForMember("Name", opt => opt.MapFrom(c => c.Name))
-            .ForMember("JSONStructureFilePath", opt => opt.MapFrom(c => c.JSONStructureFilePath))
-            .ForPath(dst => dst.WareCategory1, opt => opt.MapFrom(c => new WareCategory1DTO
-            {
-                Id = c.WareCategory1.Id,
-                JSONStructureFilePath = c.WareCategory1.JSONStructureFilePath,
-                Name = c.WareCategory1.Name
-            }))
-            .ForMember(dst => dst.WaresCategory3, opt => opt.MapFrom(c => c.WaresCategory3.Select(wc => new WareCategory3DTO
-            {
-                Id = wc.Id,
-                Name = wc.Name,
-                JSONStructureFilePath = wc.JSONStructureFilePath,
-                WareCategory2 = new WareCategory2DTO
-                {
-                    Id = wc.WareCategory2.Id,
-                    JSONStructureFilePath = wc.WareCategory2.JSONStructureFilePath,
-                    Name = wc.WareCategory2.Name,
-                    WareCategory1 = new WareCategory1DTO
-                    {
-                        Id = wc.WareCategory2.WareCategory1.Id,
-                        JSONStructureFilePath = wc.WareCategory2.WareCategory1.JSONStructureFilePath,
-                        Name = wc.WareCategory2.WareCategory1.Name
-                    }
-                }
-            })));
-
-
-            cfg.CreateMap<WareCategory2DTO, WareCategory2>()
-            .ForMember("Id", opt => opt.MapFrom(c => c.Id))
-            .ForMember("Name", opt => opt.MapFrom(c => c.Name))
-            .ForMember("JSONStructureFilePath", opt => opt.MapFrom(c => c.JSONStructureFilePath))
-            .ForPath(dst => dst.WareCategory1, opt => opt.MapFrom(c => new WareCategory1
-            {
-                Id = c.WareCategory1.Id,
-                JSONStructureFilePath = c.WareCategory1.JSONStructureFilePath,
-                Name = c.WareCategory1.Name
-            }))
-            .ForMember(dst => dst.WaresCategory3, opt => opt.MapFrom(c => c.WaresCategory3.Select(wc => new WareCategory3
-            {
-                Id = wc.Id,
-                Name = wc.Name,
-                JSONStructureFilePath = wc.JSONStructureFilePath,
-                WareCategory2 = new WareCategory2
-                {
-                    Id = wc.WareCategory2.Id,
-                    JSONStructureFilePath = wc.WareCategory2.JSONStructureFilePath,
-                    Name = wc.WareCategory2.Name,
-                    WareCategory1 = new WareCategory1
-                    {
-                        Id = wc.WareCategory2.WareCategory1.Id,
-                        JSONStructureFilePath = wc.WareCategory2.WareCategory1.JSONStructureFilePath,
-                        Name = wc.WareCategory2.WareCategory1.Name
-                    }
-                }
-            })));
-        });
-
-        MapperConfiguration WareCategory2QueryBLL_WareCategory2QueryDALMapConfig = new MapperConfiguration(cfg => cfg.CreateMap<WareCategory2QueryBLL, WareCategory2QueryDAL>());
 
         public async Task<WareCategory2DTO?> GetById(long id)
         {
@@ -92,82 +32,140 @@ namespace HyggyBackend.BLL.Services
             {
                 return null;
             }
-            IMapper mapper = config.CreateMapper();
-            return mapper.Map<WareCategory2DTO>(wareCategory2);
+            
+            return _mapper.Map<WareCategory2DTO>(wareCategory2);
         }
         public async Task<IEnumerable<WareCategory2DTO>> GetPagedCategories(int pageNumber, int pageSize)
         {
-            IMapper mapper = config.CreateMapper();
+            
             var wareCategory2s = await Database.Categories2.GetPagedCategories(pageNumber, pageSize);
-            return mapper.Map<IEnumerable<WareCategory2>, IEnumerable<WareCategory2DTO>>(wareCategory2s);
+            return _mapper.Map<IEnumerable<WareCategory2>, IEnumerable<WareCategory2DTO>>(wareCategory2s);
+        }
+
+        public async Task<IEnumerable<WareCategory2DTO>> GetByStringIds(string stringIds)
+        {
+            var wareCategory2s = await Database.Categories2.GetByStringIds(stringIds);
+            return _mapper.Map<IEnumerable<WareCategory2>, IEnumerable<WareCategory2DTO>>(wareCategory2s);
         }
         public async Task<IEnumerable<WareCategory2DTO>> GetByNameSubstring(string nameSubstring)
         {
-            IMapper mapper = config.CreateMapper();
+            
             var wareCategory2s = await Database.Categories2.GetByNameSubstring(nameSubstring);
-            return mapper.Map<IEnumerable<WareCategory2>, IEnumerable<WareCategory2DTO>>(wareCategory2s);
+            return _mapper.Map<IEnumerable<WareCategory2>, IEnumerable<WareCategory2DTO>>(wareCategory2s);
         }
-        public async Task<IEnumerable<WareCategory2DTO>> GetByJSONStructureFilePathSubstring(string JSONStructureFilePathSubstring)
-        {
-            IMapper mapper = config.CreateMapper();
-            var wareCategory2s = await Database.Categories2.GetByJSONStructureFilePathSubstring(JSONStructureFilePathSubstring);
-            return mapper.Map<IEnumerable<WareCategory2>, IEnumerable<WareCategory2DTO>>(wareCategory2s);
-        }
+        
         public async Task<IEnumerable<WareCategory2DTO>> GetByWareCategory1Id(long id)
         {
-            IMapper mapper = config.CreateMapper();
+            
             var wareCategory2s = await Database.Categories2.GetByWareCategory1Id(id);
-            return mapper.Map<IEnumerable<WareCategory2>, IEnumerable<WareCategory2DTO>>(wareCategory2s);
+            return _mapper.Map<IEnumerable<WareCategory2>, IEnumerable<WareCategory2DTO>>(wareCategory2s);
         }
         public async Task<IEnumerable<WareCategory2DTO>> GetByWareCategory1NameSubstring(string WareCategory1NameSubstring)
         {
-            IMapper mapper = config.CreateMapper();
+            
             var wareCategory2s = await Database.Categories2.GetByWareCategory1NameSubstring(WareCategory1NameSubstring);
-            return mapper.Map<IEnumerable<WareCategory2>, IEnumerable<WareCategory2DTO>>(wareCategory2s);
+            return _mapper.Map<IEnumerable<WareCategory2>, IEnumerable<WareCategory2DTO>>(wareCategory2s);
         }
         public async Task<IEnumerable<WareCategory2DTO>> GetByWareCategory3Id(long id)
         {
-            IMapper mapper = config.CreateMapper();
+            
             var wareCategory2s = await Database.Categories2.GetByWareCategory3Id(id);
-            return mapper.Map<IEnumerable<WareCategory2>, IEnumerable<WareCategory2DTO>>(wareCategory2s);
+            return _mapper.Map<IEnumerable<WareCategory2>, IEnumerable<WareCategory2DTO>>(wareCategory2s);
         }
         public async Task<IEnumerable<WareCategory2DTO>> GetByWareCategory3NameSubstring(string WareCategory3NameSubstring)
         {
-            IMapper mapper = config.CreateMapper();
+            
             var wareCategory2s = await Database.Categories2.GetByWareCategory3NameSubstring(WareCategory3NameSubstring);
-            return mapper.Map<IEnumerable<WareCategory2>, IEnumerable<WareCategory2DTO>>(wareCategory2s);
+            return _mapper.Map<IEnumerable<WareCategory2>, IEnumerable<WareCategory2DTO>>(wareCategory2s);
         }
         public async Task<IEnumerable<WareCategory2DTO>> GetByQuery(WareCategory2QueryBLL query)
         {
-            IMapper mapper = config.CreateMapper();
-            var wareCategory2s = await Database.Categories2.GetByQuery(mapper.Map<WareCategory2QueryBLL, WareCategory2QueryDAL>(query));
-            return mapper.Map<IEnumerable<WareCategory2>, IEnumerable<WareCategory2DTO>>(wareCategory2s);
+            
+            var wareCategory2s = await Database.Categories2.GetByQuery(_mapper.Map<WareCategory2QueryBLL, WareCategory2QueryDAL>(query));
+            return _mapper.Map<IEnumerable<WareCategory2>, IEnumerable<WareCategory2DTO>>(wareCategory2s);
         }
         public async Task<WareCategory2DTO> Create(WareCategory2DTO category2DTO) 
         {
-            var mapper = new Mapper(config);
-            var wareCategory2 = mapper.Map<WareCategory2DTO, WareCategory2>(category2DTO);
+            if(category2DTO.WareCategory1Id == null)
+            {
+                throw new ValidationException("Не вказано WareCategory2.WareCategory1Id", "");
+            }
+            if (category2DTO.Name == null)
+            {
+                throw new ValidationException("Не вказано WareCategory2.Name", "");
+            }
+            var existingCategoryName = await Database.Categories2.GetByNameSubstring(category2DTO.Name);
+            if (existingCategoryName.Any(x => x.Name == category2DTO.Name))
+            {
+                throw new ValidationException("WareCategory2 з такою назвою вже існує", "");
+            }
+            var existedCategory1 = await Database.Categories1.GetById(category2DTO.WareCategory1Id.Value);
+            if (existedCategory1 == null)
+            {
+                throw new ValidationException("WareCategory1 з таким ідентифікатором не існує", "");
+            }
+            var wareCategory2 = new WareCategory2
+            {
+                Name = category2DTO.Name,
+                WareCategory1 = existedCategory1,
+                WaresCategory3 = new List<WareCategory3>()
+            };
+
             await Database.Categories2.Create(wareCategory2);
             await Database.Save();
             var returnedCategory = await Database.Categories2.GetById(wareCategory2.Id);
-            return mapper.Map<WareCategory2, WareCategory2DTO>(returnedCategory);
+            return _mapper.Map<WareCategory2, WareCategory2DTO>(returnedCategory);
         }
         public async Task<WareCategory2DTO> Update(WareCategory2DTO category2DTO) 
         {
-            var mapper = new Mapper(config);
-            var wareCategory2 = mapper.Map<WareCategory2DTO, WareCategory2>(category2DTO);
-            Database.Categories2.Update(wareCategory2);
+            var existingCategory2 = await Database.Categories2.GetById(category2DTO.Id);
+            if (existingCategory2 == null)
+            {
+                throw new ValidationException($"WareCategory2 з id={category2DTO.Id} не знайдено!", "");
+            }
+            if (category2DTO.WareCategory1Id == null)
+            {
+                throw new ValidationException("Не вказано WareCategory2.WareCategory1Id", "");
+            }
+            if (category2DTO.Name == null)
+            {
+                throw new ValidationException("Не вказано WareCategory2.Name", "");
+            }
+            var existingCategoryName = await Database.Categories2.GetByNameSubstring(category2DTO.Name);
+            if (existingCategoryName.Any(x => x.Name == category2DTO.Name))
+            {
+                throw new ValidationException("WareCategory2 з такою назвою вже існує", "");
+            }
+            var existedCategory1 = await Database.Categories1.GetById(category2DTO.WareCategory1Id.Value);
+            if (existedCategory1 == null)
+            {
+                throw new ValidationException("WareCategory1 з таким ідентифікатором не існує", "");
+            }
+
+            existingCategory2.WaresCategory3.Clear();
+            await foreach (var category3 in Database.Categories3.GetByIdsAsync(category2DTO.WaresCategory3Ids))
+            {
+                if (category3 == null)
+                {
+                    throw new ValidationException($"Одна з WareCategory3 не знайдена!", "");
+                }
+                existingCategory2.WaresCategory3.Add(category3);
+            }
+            existingCategory2.Name = category2DTO.Name;
+            existingCategory2.WareCategory1 = existedCategory1;
+            
+
+            Database.Categories2.Update(existingCategory2);
             await Database.Save();
-            var returnedCategory = await Database.Categories2.GetById(wareCategory2.Id);
-            return mapper.Map<WareCategory2, WareCategory2DTO>(returnedCategory);
+            var returnedCategory = await Database.Categories2.GetById(existingCategory2.Id);
+            return _mapper.Map<WareCategory2, WareCategory2DTO>(returnedCategory);
         }
         public async Task<WareCategory2DTO> Delete(long id)
         {
-            var mapper = new Mapper(config);
             var wareCategory2 = await Database.Categories2.GetById(id);
             await Database.Categories2.Delete(id);
             await Database.Save();
-            return mapper.Map<WareCategory2, WareCategory2DTO>(wareCategory2);
+            return _mapper.Map<WareCategory2, WareCategory2DTO>(wareCategory2);
         }
     }
 }

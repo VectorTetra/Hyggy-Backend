@@ -9,7 +9,7 @@ namespace HyggyBackend.BLL.DTO
     public class ProffessionDTO
     {
         public long Id { get; set; }
-        public string Name { get; set; }
-        public ICollection<int>? EmployeeIds { get; set; }
+        public string? Name { get; set; }
+        public ICollection<string>? EmployeeIds { get; set; } = new List<string>();
     }
 }

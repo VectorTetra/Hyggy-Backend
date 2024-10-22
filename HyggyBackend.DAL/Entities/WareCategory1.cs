@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HyggyBackend.DAL.Entities
+﻿namespace HyggyBackend.DAL.Entities
 {
     public class WareCategory1
     {
         public long Id { get; set; }
         public string Name { get; set; }
-        public string JSONStructureFilePath { get; set; }
-        public virtual ICollection<WareCategory2> WaresCategory2 { get; set; }
+        public virtual ICollection<WareCategory2> WaresCategory2 { get; set; } = new List<WareCategory2>();
         public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType())

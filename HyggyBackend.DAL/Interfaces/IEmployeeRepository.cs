@@ -1,4 +1,5 @@
-﻿using HyggyBackend.DAL.Entities.Employes;
+﻿using HyggyBackend.DAL.Entities;
+using HyggyBackend.DAL.Entities.Employes;
 
 namespace HyggyBackend.DAL.Interfaces
 {
@@ -9,12 +10,11 @@ namespace HyggyBackend.DAL.Interfaces
 		Task<IEnumerable<T>> GetEmployeesByProfessionAsync(string professionName);
 		Task<IEnumerable<T>> GetEmployeesByDateOfBirthAsync(DateTime date);
 		Task<IEnumerable<T>> GetBySurnameAsync(string surname);
-
 		Task<T?> GetByIdAsync(string id);
 		Task<T?> GetByEmail(string email);
 		Task<T?> GetByPhoneAsync(string phone);
-
-		Task CreateAsync(T item);
+        IAsyncEnumerable<T> GetByIdsAsync(IEnumerable<string> ids);
+        Task CreateAsync(T item);
 		void Update(T item);
 		Task DeleteAsync(string id);
 	}

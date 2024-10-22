@@ -26,13 +26,15 @@ namespace HyggyBackend.Controllers
             mc.CreateMap<WareCategory1QueryPL, WareCategory1QueryBLL>()
             .ForMember("Id", opt => opt.MapFrom(c => c.Id))
             .ForMember("NameSubstring", opt => opt.MapFrom(c => c.NameSubstring))
-            .ForMember("JSONStructureFilePathSubstring", opt => opt.MapFrom(c => c.JSONStructureFilePathSubstring))
             .ForMember("WareCategory2Id", opt => opt.MapFrom(c => c.WareCategory2Id))
             .ForMember("WareCategory2NameSubstring", opt => opt.MapFrom(c => c.WareCategory2NameSubstring))
             .ForMember("WareCategory3Id", opt => opt.MapFrom(c => c.WareCategory3Id))
             .ForMember("WareCategory3NameSubstring", opt => opt.MapFrom(c => c.WareCategory3NameSubstring))
+            .ForMember("StringIds", opt => opt.MapFrom(c => c.StringIds))
+            .ForMember("Sorting", opt => opt.MapFrom(c => c.Sorting))
             .ForMember("PageSize", opt => opt.MapFrom(c => c.PageSize))
-            .ForMember("PageNumber", opt => opt.MapFrom(c => c.PageNumber));
+            .ForMember("PageNumber", opt => opt.MapFrom(c => c.PageNumber))
+            .ForMember("QueryAny", opt => opt.MapFrom(c => c.QueryAny));
         });
 
         [HttpGet]
@@ -43,7 +45,7 @@ namespace HyggyBackend.Controllers
                 IEnumerable<WareCategory1DTO?> collection = null;
                 switch (wareCategory1Query.SearchParameter)
                 {
-                    case "GetById":
+                    case "Id":
                         {
                             if (wareCategory1Query.Id == null)
                             {
@@ -55,7 +57,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByName":
+                    case "Name":
                         {
                             if (wareCategory1Query.NameSubstring == null)
                             {
@@ -64,7 +66,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByNameSubstring(wareCategory1Query.NameSubstring);
                         }
                         break;
-                    case "GetByWareCategory3Name":
+                    case "WareCategory3Name":
                         {
                             if (wareCategory1Query.WareCategory3NameSubstring == null)
                             {
@@ -73,7 +75,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByWareCategory3NameSubstring(wareCategory1Query.WareCategory3NameSubstring);
                         }
                         break;
-                    case "GetByWareCategory3Id":
+                    case "WareCategory3Id":
                         {
                             if (wareCategory1Query.WareCategory3Id == null)
                             {
@@ -81,7 +83,7 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
-                    case "GetByWareCategory2Name":
+                    case "WareCategory2Name":
                         {
                             if (wareCategory1Query.WareCategory2NameSubstring == null)
                             {
@@ -90,7 +92,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByWareCategory2NameSubstring(wareCategory1Query.WareCategory2NameSubstring);
                         }
                         break;
-                    case "GetByWareCategory2Id":
+                    case "WareCategory2Id":
                         {
                             if (wareCategory1Query.WareCategory2Id == null)
                             {
@@ -99,16 +101,16 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetByWareCategory2Id((long)wareCategory1Query.WareCategory2Id);
                         }
                         break;
-                    case "GetByJSONStructureFilePath":
+                    case "StringIds":
                         {
-                            if (wareCategory1Query.JSONStructureFilePathSubstring == null)
+                            if (wareCategory1Query.StringIds == null)
                             {
-                                throw new ValidationException("Не вказано JSONStructureFilePathSubstring для пошуку!", nameof(wareCategory1Query.JSONStructureFilePathSubstring));
+                                throw new ValidationException("Не вказано StringIds для пошуку!", nameof(wareCategory1Query.StringIds));
                             }
-                            collection = await _serv.GetByJSONStructureFilePathSubstring(wareCategory1Query.JSONStructureFilePathSubstring);
+                            collection = await _serv.GetByStringIds(wareCategory1Query.StringIds);
                         }
                         break;
-                    case "GetPaged":
+                    case "Paged":
                         {
                             if (wareCategory1Query.PageSize == null)
                             {
@@ -121,7 +123,7 @@ namespace HyggyBackend.Controllers
                             collection = await _serv.GetPagedCategories((int)wareCategory1Query.PageNumber, (int)wareCategory1Query.PageSize);
                         }
                         break;
-                    case "GetByQuery":
+                    case "Query":
                         {
                             collection = await _serv.GetByQuery(config.CreateMapper().Map<WareCategory1QueryBLL>(wareCategory1Query));
                         }
@@ -143,6 +145,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -165,6 +171,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -187,6 +197,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -205,6 +219,10 @@ namespace HyggyBackend.Controllers
             }
             catch (Exception ex)
             {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
                 return StatusCode(500, ex.Message);
             }
         }
@@ -212,15 +230,17 @@ namespace HyggyBackend.Controllers
 
     public class WareCategory1QueryPL
     {
-        public string SearchParameter{ get; set; }
+        public string SearchParameter { get; set; }
         public long? Id { get; set; }
         public string? NameSubstring { get; set; }
-        public string? JSONStructureFilePathSubstring { get; set; }
         public long? WareCategory2Id { get; set; }
         public string? WareCategory2NameSubstring { get; set; }
         public long? WareCategory3Id { get; set; }
         public string? WareCategory3NameSubstring { get; set; }
         public int? PageSize { get; set; }
         public int? PageNumber { get; set; }
+        public string? StringIds { get; set; }
+        public string? Sorting { get; set; }
+        public string? QueryAny { get; set; }
     }
 }

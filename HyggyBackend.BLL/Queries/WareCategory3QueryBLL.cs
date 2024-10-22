@@ -10,7 +10,6 @@ namespace HyggyBackend.BLL.Queries
     {
         public long? Id { get; set; }
         public string? NameSubstring { get; set; }
-        public string? JSONStructureFilePathSubstring { get; set; }
         public long? WareCategory1Id { get; set; }
         public string? WareCategory1NameSubstring { get; set; }
         public long? WareCategory2Id { get; set; }
@@ -21,5 +20,8 @@ namespace HyggyBackend.BLL.Queries
         public string? WareDescriptionSubstring { get; set; }
         public int? PageSize { get; set; }
         public int? PageNumber { get; set; }
+        public string? StringIds { get; set; }
+        public string? Sorting { get; set; }
+        public string? QueryAny {get;set;}
     }
 }

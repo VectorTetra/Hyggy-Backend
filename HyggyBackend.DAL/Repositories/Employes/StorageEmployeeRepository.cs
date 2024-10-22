@@ -1,4 +1,5 @@
 ﻿using HyggyBackend.DAL.EF;
+using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Entities.Employes;
 using HyggyBackend.DAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +17,7 @@ namespace HyggyBackend.DAL.Repositories.Employes
 		{
 			return await _context.StorageEmployees
 				//.Include(se => se.Proffession)
-				.Include(se => se.MainStorage).ToListAsync();
+				.Include(se => se.Storage).ToListAsync();
 		}
 		public async Task<IEnumerable<StorageEmployee>> GetPaginatedEmployeesAsync(int? page)
 		{
@@ -63,7 +64,18 @@ namespace HyggyBackend.DAL.Repositories.Employes
 				.FirstOrDefault();
 		}
 
-		public async Task CreateAsync(StorageEmployee employee)
+        public async IAsyncEnumerable<StorageEmployee> GetByIdsAsync(IEnumerable<string> ids)
+        {
+            foreach (var id in ids)
+            {
+                var item = await GetByIdAsync(id);  // Виклик методу репозиторію
+                if (item != null)
+                {
+                    yield return item;
+                }
+            }
+        }
+        public async Task CreateAsync(StorageEmployee employee)
 		{
 			await _context.StorageEmployees.AddAsync(employee);
 		}
@@ -75,7 +87,7 @@ namespace HyggyBackend.DAL.Repositories.Employes
 			storageEmployee.Email = employee.Email;
 			storageEmployee.PhoneNumber = employee.PhoneNumber;
 			storageEmployee.DateOfBirth = employee.DateOfBirth;
-			storageEmployee.MainStorageId = employee.MainStorageId;
+			storageEmployee.StorageId = employee.StorageId;
 		}
 		public async Task DeleteAsync(string id)
 		{

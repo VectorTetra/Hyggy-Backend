@@ -15,5 +15,8 @@ namespace HyggyBackend.BLL.Queries
         public long? WareArticle { get; set; }
         public string? NameSubstring { get; set; }
         public string? DescriptionSubstring { get; set; }
+        public string? StringIds { get; set; }
+        public string? Sorting { get; set; }
+        public string? QueryAny {get;set;}
     }
 }

@@ -66,7 +66,19 @@ namespace HyggyBackend.DAL.Repositories.Employes
 				.FirstOrDefault();
 		}
 
-		public async Task CreateAsync(ShopEmployee employee)
+        public async IAsyncEnumerable<ShopEmployee> GetByIdsAsync(IEnumerable<string> ids)
+        {
+            foreach (var id in ids)
+            {
+                var item = await GetByIdAsync(id);  // Виклик методу репозиторію
+                if (item != null)
+                {
+                    yield return item;
+                }
+            }
+        }
+
+        public async Task CreateAsync(ShopEmployee employee)
         {
 			
 			await _context.ShopEmployees.AddAsync(employee);

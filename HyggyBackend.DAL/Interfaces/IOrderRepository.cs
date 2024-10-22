@@ -11,6 +11,7 @@ namespace HyggyBackend.DAL.Interfaces
     public interface IOrderRepository
     {
         Task<Order?> GetById(long id);
+        Task<IEnumerable<Order>> GetByStringIds(string stringIds);
         Task<IEnumerable<Order>> GetByAddressId(long addressId);
         Task<IEnumerable<Order>> GetByStreet(string streetSubstring);
         Task<IEnumerable<Order>> GetByHouseNumber(string houseNumber);
@@ -31,6 +32,7 @@ namespace HyggyBackend.DAL.Interfaces
         Task<IEnumerable<Order>> GetByCustomerId(string customerId);
         Task<IEnumerable<Order>> GetByShopId(long shopId);
         Task<IEnumerable<Order>> GetByQuery(OrderQueryDAL query);
+        IAsyncEnumerable<Order> GetByIdsAsync(IEnumerable<long> ids);
         Task Create(Order order);
         void Update(Order order);
         Task Delete(long id);

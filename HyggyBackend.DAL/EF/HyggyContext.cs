@@ -14,7 +14,7 @@ namespace HyggyBackend.DAL.EF
         public HyggyContext(DbContextOptions<HyggyContext> options)
             : base(options)
         {
-           
+
         }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Customer> Customers { get; set; }
@@ -33,18 +33,29 @@ namespace HyggyBackend.DAL.EF
         public DbSet<WareStatus> WareStatuses { get; set; }
         public DbSet<ShopEmployee> ShopEmployees { get; set; }
         public DbSet<StorageEmployee> StorageEmployees { get; set; }
-        public DbSet<MainStorage> MainStorages { get; set; }
+        //public DbSet<MainStorage> MainStorages { get; set; }
+        public DbSet<WareItem> WareItems { get; set; }
+        public DbSet<Blog> Blogs { get; set; }
+        public DbSet<BlogCategory1> BlogCategories1 { get; set; }
+        public DbSet<BlogCategory2> BlogCategories2 { get; set; }
+        public DbSet<WareTrademark> WareTrademarks { get; set; }
+        public DbSet<WareReview> WareReviews { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<Address>().HasData(
-                new Address { Id = 1, State = "Odessa", City = "Odessa", Street = "Shevchenko str.", HouseNumber = "23", PostalCode = "6600", Latitude = 48, Longitude = 38 }
-                );
+            //builder.Entity<Address>().HasData(
+            //    new Address { Id = 1, State = "Odessa", City = "Odessa", Street = "Shevchenko str.", HouseNumber = "23", PostalCode = "6600", Latitude = 48, Longitude = 38 }
+            //    );
 
-            builder.Entity<MainStorage>().HasData(
-                new MainStorage { Id = 1, AddressId = 1 }
-                );
+            //builder.Entity<MainStorage>().HasData(
+            //    new MainStorage { Id = 1, AddressId = 1 }
+            //    );            
+            //builder.Entity<Storage>().HasData(
+            //    new Storage { Id = 1, AddressId = 1 }
+            //    );
 
             builder.Entity<OrderItem>()
                 .HasOne(o => o.Ware)
@@ -64,42 +75,60 @@ namespace HyggyBackend.DAL.EF
                 //.HasForeignKey(o => o.PriceHistoryId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-			builder.Entity<Order>()
-				.HasOne(o => o.Shop)
-				.WithMany(o => o.Orders)
-				.HasForeignKey(o => o.ShopId)
-				.OnDelete(DeleteBehavior.NoAction);
+            builder.Entity<Order>()
+                .HasOne(o => o.Shop)
+                .WithMany(o => o.Orders)
+                .HasForeignKey(o => o.ShopId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Shop>()
                 .HasOne(s => s.Address)
                 .WithOne(a => a.Shop)
                 .OnDelete(DeleteBehavior.NoAction);
 
-			builder.Entity<MainStorage>()
-			   .HasOne(s => s.Address)
-			   .WithOne(a => a.MainStorage)
-			   .OnDelete(DeleteBehavior.NoAction);
+            //builder.Entity<MainStorage>()
+            //   .HasOne(s => s.Address)
+            //   .WithOne(a => a.MainStorage)
+            //   .OnDelete(DeleteBehavior.NoAction);
 
-            builder.Entity<MainStorage>()
-                .HasMany(m => m.Shops)
-                .WithOne(s => s.Storage)
-                .OnDelete(DeleteBehavior.SetNull);
+            //         builder.Entity<MainStorage>()
+            //             .HasMany(m => m.Shops)
+            //             .WithOne(s => s.Storage)
+            //             .OnDelete(DeleteBehavior.SetNull);
 
-			List <IdentityRole> roles = new List<IdentityRole>
-			{
-				new IdentityRole
-				{
-					Name = "Admin",
-					NormalizedName = "ADMIN"
-				},
-				new IdentityRole
-				{
-					Name = "User",
-					NormalizedName = "USER"
-				},
-			};
-			builder.Entity<IdentityRole>().HasData(roles);
-		}
+            builder.Entity<Storage>()
+               .HasOne(s => s.Address)
+               .WithOne(a => a.Storage)
+               .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<WareItem>()
+            .HasIndex(w => new { w.WareId, w.StorageId })
+            .IsUnique();
+
+            builder.Entity<WarePriceHistory>()
+            .HasIndex(w => new { w.WareId, w.Price, w.EffectiveDate })
+            .IsUnique();
+
+            //builder.Entity<Storage>()
+            //    .HasOne(m => m.Shop)
+            //    .WithOne(s => s.Storage)
+            //    .OnDelete(DeleteBehavior.SetNull);
+
+            List<IdentityRole> roles = new List<IdentityRole>
+            {
+                new IdentityRole
+                {
+                    Name = "Admin",
+                    NormalizedName = "ADMIN"
+                },
+                new IdentityRole
+                {
+                    Name = "User",
+                    NormalizedName = "USER"
+                },
+            };
+            builder.Entity<IdentityRole>().HasData(roles);
+        }
         public class SampleContextFactory : IDesignTimeDbContextFactory<HyggyContext>
         {
             public HyggyContext CreateDbContext(string[] args)

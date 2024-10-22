@@ -12,13 +12,14 @@ namespace HyggyBackend.DAL.Interfaces
     {
         Task<WareCategory1?> GetById(long id);
         Task<IEnumerable<WareCategory1>> GetPagedCategories(int pageNumber, int pageSize);
+        Task<IEnumerable<WareCategory1>> GetByStringIds(string stringIds);
         Task<IEnumerable<WareCategory1>> GetByNameSubstring(string nameSubstring);
-        Task<IEnumerable<WareCategory1>> GetByJSONStructureFilePathSubstring(string JSONStructureFilePathSubstring);
         Task<IEnumerable<WareCategory1>> GetByWareCategory2Id(long id);
         Task<IEnumerable<WareCategory1>> GetByWareCategory2NameSubstring(string WareCategory2NameSubstring);
         Task<IEnumerable<WareCategory1>> GetByWareCategory3Id(long id);
         Task<IEnumerable<WareCategory1>> GetByWareCategory3NameSubstring(string WareCategory3NameSubstring);        
         Task<IEnumerable<WareCategory1>> GetByQuery(WareCategory1QueryDAL query);
+        IAsyncEnumerable<WareCategory1> GetByIdsAsync(IEnumerable<long> ids);
         Task Create(WareCategory1 order);
         void Update(WareCategory1 order);
         Task Delete(long id);
