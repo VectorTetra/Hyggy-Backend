@@ -1,4 +1,5 @@
-﻿using HyggyBackend.BLL.DTO.EmployeesDTO;
+﻿using AutoMapper;
+using HyggyBackend.BLL.DTO.EmployeesDTO;
 using HyggyBackend.BLL.Interfaces;
 using HyggyBackend.BLL.Services;
 using HyggyBackend.BLL.Services.EmailService;
@@ -21,10 +22,22 @@ namespace HyggyBackend.BLL.Infrastructure
             services.AddScoped<IAddressService, AddressService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IEmailSender, EmailSender>();
-            services.AddScoped<IMainStorageService, MainStorageService>();
+            //services.AddScoped<IMainStorageService, MainStorageService>();
+            services.AddScoped<IStorageService, StorageService>();
 			services.AddScoped<IEmployeeService<StorageEmployeeDTO>, StorageEmployeeDTOService>();
             services.AddScoped<ICustomerService, CustomerService>();
 			services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IWareService, WareService>();
+            //services.AddScoped<IWareCategoryService, WareCategoryService>();
+            //services.AddScoped<IWareItemService, WareItemService>();
+            services.AddScoped<IOrderItemService, OrderItemService>();
+            services.AddScoped<IOrderStatusService, OrderStatusService>();
+            services.AddScoped<IWareStatusService, WareStatusService>();
+            services.AddScoped<IWarePriceHistoryService, WarePriceHistoryService>();
+            services.AddScoped<IWareImageService, WareImageService>();
+            services.AddScoped<IMapper,  Mapper>();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 		}
     }
 }

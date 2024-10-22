@@ -88,7 +88,7 @@ namespace HyggyBackend.BLL.Services
             }
             if (orderItemDTO.WareId != null)
             {
-                var existingWareId = await Database.Orders.GetById((long)orderItemDTO.WareId);
+                var existingWareId = await Database.Wares.GetById((long)orderItemDTO.WareId);
                 if (existingWareId == null)
                 {
                     throw new ValidationException($"Такий WareId не знайдено : {orderItemDTO.WareId.ToString()})", "");
@@ -96,14 +96,21 @@ namespace HyggyBackend.BLL.Services
             }
             if (orderItemDTO.PriceHistoryId != null)
             {
-                var existingPriceHistoryId = await Database.Orders.GetById((long)orderItemDTO.PriceHistoryId);
+                var existingPriceHistoryId = await Database.WarePriceHistories.GetById((long)orderItemDTO.PriceHistoryId);
                 if (existingPriceHistoryId == null)
                 {
                     throw new ValidationException($"Такий PriceHistoryId не знайдено : {orderItemDTO.PriceHistoryId.ToString()})", "");
                 }
             }
-            var mapper = new Mapper(OrderItem_OrderItemDTOMapConfig);
-            var orderItemDAL = mapper.Map<OrderItemDTO, OrderItem>(orderItemDTO);
+
+            var orderItemDAL = new OrderItem
+            {
+                Id = 0,
+                OrderId = orderItemDTO.OrderId,
+                WareId = orderItemDTO.WareId,
+                PriceHistoryId = orderItemDTO.PriceHistoryId,
+                Count = orderItemDTO.Count.Value
+            };
             await Database.OrderItems.Create(orderItemDAL);
             await Database.Save();
             orderItemDTO.Id = orderItemDAL.Id;
@@ -140,8 +147,8 @@ namespace HyggyBackend.BLL.Services
                     throw new ValidationException($"Такий PriceHistoryId не знайдено : {orderItemDTO.PriceHistoryId.ToString()})", "");
                 }
             }
-            var mapper = new Mapper(OrderItem_OrderItemDTOMapConfig);
-            var orderItemDAL = mapper.Map<OrderItemDTO, OrderItem>(orderItemDTO);
+
+            var orderItemDAL = _mapper.Map<OrderItemDTO, OrderItem>(orderItemDTO);
             Database.OrderItems.Update(orderItemDAL);
             await Database.Save();
             return orderItemDTO;
