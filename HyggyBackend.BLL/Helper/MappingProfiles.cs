@@ -178,7 +178,7 @@ namespace HyggyBackend.BLL.Helper
                 .ForMember(dest => dest.Latitude, opts => opts.MapFrom(src => src.Address != null ? src.Address.Latitude : (long?)null))
                 .ForMember(dest => dest.Longitude, opts => opts.MapFrom(src => src.Address != null ? src.Address.Longitude : (long?)null))
                 .ForMember(dst => dst.ShopId, opts => opts.MapFrom(src => src.Shop != null ? src.Shop.Id : (long?)null))
-                .ForMember(dst => dst.ShopName, opts => opts.MapFrom(src => src.Shop != null ? src.Shop.Name : null))
+                .ForMember(dst => dst.ShopName, opts => opts.MapFrom(src => src.Shop != null ? src.Shop.Name : "-> (Загальний склад)"))
                 .ForMember(dst => dst.AddressId, opt => opt.MapFrom(src => src.Address != null ? src.Address.Id : (long?)null))
                 .ForMember(dst => dst.StoredWaresSum, opt => opt.MapFrom(src => src.WareItems != null ? src.WareItems.Sum(wi => wi.Quantity * (wi.Ware.Price * wi.Ware.Discount / 100)) : 0));
             CreateMap<StorageQueryBLL, StorageQueryDAL>();
