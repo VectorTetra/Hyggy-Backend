@@ -24,7 +24,7 @@ namespace HyggyBackend.BLL.DTO.AccountDtos
         [Compare("Password", ErrorMessage = "Підтвердить ваш пароль.")]
         public string? ConfirmPassword { get; set; }
         [JsonIgnore]
-        public string? UserUri { get; set; } = "http://localhost:5263/api/account/emailconfirmation";
+        public string? UserUri { get; set; } = "http://www.hyggy.somee.com/api/account/emailconfirmation";
 
     }
 }
