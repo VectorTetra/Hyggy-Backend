@@ -17,6 +17,10 @@ namespace HyggyBackend.BLL.DTO
         public long? ShopId { get; set; }
         public string? CustomerId { get; set; }
         public ICollection<long>? OrderItemIds { get; set; } = new List<long>();
-        public string? StringIds { get; set; }
+        public ICollection<OrderItemDTO>? OrderItems { get; set; } = new List<OrderItemDTO>();
+        public CustomerDTO? Customer { get; set; } 
+        public ShopDTO? Shop { get; set; } 
+        public OrderStatusDTO? Status { get; set; }
+        public AddressDTO? DeliveryAddress { get; set; }
     }
 }
