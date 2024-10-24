@@ -182,6 +182,7 @@ namespace HyggyBackend.BLL.Services
         public async Task DeleteAsync(string id)
         {
             await Database.Customers.DeleteAsync(id);
+            await Database.Save();
         }
 
         private string EmailRegistrationTemplate(string name, string callback)
