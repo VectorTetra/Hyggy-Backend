@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using HyggyBackend.BLL.DTO;
 using HyggyBackend.BLL.DTO.AccountDtos;
 using HyggyBackend.BLL.DTO.EmployeesDTO;
@@ -108,7 +108,36 @@ namespace HyggyBackend.BLL.Helper
                 .ForPath(dst => dst.OrderId, opt => opt.MapFrom(src => src.Order.Id))
                 .ForPath(dst => dst.WareId, opt => opt.MapFrom(src => src.Ware.Id))
                 .ForPath(dst => dst.PriceHistoryId, opt => opt.MapFrom(src => src.PriceHistory.Id))
-                .ForPath(dst => dst.Count, opt => opt.MapFrom(src => src.Count));
+                .ForPath(dst => dst.Count, opt => opt.MapFrom(src => src.Count))
+                .ForPath(dst => dst.Ware, opt => opt.MapFrom(src => new WareDTO
+                {
+                    Id = src.Ware.Id,
+                    Article = src.Ware.Article,
+                    Name = src.Ware.Name,
+                    Description = src.Ware.Description,
+                    StructureFilePath = src.Ware.StructureFilePath,
+                    Price = src.Ware.Price,
+                    Discount = src.Ware.Discount,
+                    FinalPrice = src.Ware.Price - (src.Ware.Price * src.Ware.Discount / 100),
+                    IsDeliveryAvailable = src.Ware.IsDeliveryAvailable,
+                    WareCategory3Id = src.Ware.WareCategory3.Id,
+                    StatusIds = src.Ware.Statuses.Select(st => st.Id).ToList(),
+                    ImageIds = src.Ware.Images.Select(image => image.Id).ToList(),
+                    TrademarkId = src.Ware.WareTrademark != null ? src.Ware.WareTrademark.Id : 0,
+                    AverageRating = src.Ware.Reviews.Any() ? src.Ware.Reviews.Average(r => (float)r.Rating) : 0,
+                    PreviewImagePath = src.Ware.Images != null && src.Ware.Images.Any() ? src.Ware.Images.FirstOrDefault().Path : null,
+                    CustomerFavoriteIds = src.Ware.CustomerFavorites.Select(customer => customer.Id).ToList(),
+                    TrademarkName = src.Ware.WareTrademark != null ? src.Ware.WareTrademark.Name : null,
+                    StatusNames = src.Ware.Statuses.Select(st => st.Name).ToList(),
+                    ImagePaths = src.Ware.Images.Select(image => image.Path).ToList(),
+                    WareCategory3Name = src.Ware.WareCategory3.Name
+                }))
+                .ForPath(dst => dst.PriceHistory, opt => opt.MapFrom(src => new WarePriceHistoryDTO
+                {
+                    Id = src.PriceHistory.Id,
+                    Price = src.PriceHistory.Price,
+                    EffectiveDate = src.PriceHistory.EffectiveDate
+                }));
             CreateMap<OrderItemQueryBLL, OrderItemQueryDAL>();
             #endregion
 
@@ -121,8 +150,76 @@ namespace HyggyBackend.BLL.Helper
              .ForPath(dto => dto.Comment, opt => opt.MapFrom(src => src.Comment))
              .ForPath(dto => dto.StatusId, opt => opt.MapFrom(src => src.Status.Id))
              .ForPath(dto => dto.ShopId, opt => opt.MapFrom(src => src.ShopId))
+             .ForPath(dto => dto.Shop, opt => opt.MapFrom(src => new ShopDTO
+             {
+                 Id = src.Shop.Id,
+                 Name = src.Shop.Name,
+                 PhotoUrl = src.Shop.PhotoUrl,
+                 WorkHours = src.Shop.WorkHours,
+                 AddressId = src.Shop.Address.Id,
+                 StorageId = src.Shop.Storage.Id,
+                 Street = src.Shop.Address.Street,
+                 HouseNumber = src.Shop.Address.HouseNumber,
+                 City = src.Shop.Address.City,
+                 State = src.Shop.Address.State,
+                 PostalCode = src.Shop.Address.PostalCode,
+                 Latitude = src.Shop.Address.Latitude,
+                 Longitude = src.Shop.Address.Longitude
+
+             }))
+             .ForPath(dto => dto.Status, opt => opt.MapFrom(src => new OrderStatusDTO
+             {
+                 Id = src.Status.Id,
+                 Name = src.Status.Name,
+                 Description = src.Status.Description
+             }))
+             .ForPath(dto => dto.DeliveryAddress, opt => opt.MapFrom(src => new AddressDTO
+             {
+                 Id = src.DeliveryAddress.Id,
+                 ShopId = src.DeliveryAddress.Shop != null ? src.DeliveryAddress.Shop.Id : null,
+                 StorageId = src.DeliveryAddress.Storage != null ? src.DeliveryAddress.Storage.Id : null,
+                 Street = src.DeliveryAddress.Street,
+                 HouseNumber = src.DeliveryAddress.HouseNumber,
+                 City = src.DeliveryAddress.City,
+                 State = src.DeliveryAddress.State,
+                 PostalCode = src.DeliveryAddress.PostalCode,
+                 Latitude = src.DeliveryAddress.Latitude,
+                 Longitude = src.DeliveryAddress.Longitude
+             }))
              .ForPath(dto => dto.CustomerId, opt => opt.MapFrom(src => src.Customer.Id))
-             .ForPath(dto => dto.OrderItemIds, opt => opt.MapFrom(src => src.OrderItems.Select(oi => oi.Id)));
+             .ForPath(dto => dto.OrderItemIds, opt => opt.MapFrom(src => src.OrderItems.Select(oi => oi.Id)))
+             .ForPath(dto => dto.Customer, opt => opt.MapFrom(src => new CustomerDTO
+             {
+                 Id = src.Customer.Id,
+                 Name = src.Customer.Name,
+                 Surname = src.Customer.Surname,
+                 Email = src.Customer.Email,
+                 Phone = src.Customer.PhoneNumber
+             }))
+             .ForPath(dto => dto.OrderItems, opt => opt.MapFrom(src => src.OrderItems.Select(oi => new OrderItemDTO
+             {
+                 Ware = new WareDTO
+                 {
+                     Id = oi.Ware.Id,
+                     Name = oi.Ware.Name,
+                     Price = oi.Ware.Price,
+                     Discount = oi.Ware.Discount,
+                     FinalPrice = oi.Ware.Price - (oi.Ware.Price * oi.Ware.Discount / 100),
+                     WareCategory3Id = oi.Ware.WareCategory3.Id,
+                     PreviewImagePath = oi.Ware.Images.FirstOrDefault() != null ? oi.Ware.Images.FirstOrDefault().Path : null
+                 },
+                 Count = oi.Count,
+                 PriceHistory = new WarePriceHistoryDTO
+                 {
+                     Id = oi.PriceHistory.Id,
+                     Price = oi.PriceHistory.Price,
+                     EffectiveDate = oi.PriceHistory.EffectiveDate
+                 },
+                 Id = oi.Id,
+                 OrderId = oi.Order.Id,
+                 WareId = oi.Ware.Id,
+                 PriceHistoryId = oi.PriceHistory.Id
+             }))) ;
             CreateMap<OrderQueryBLL, OrderQueryDAL>();
             #endregion
 
@@ -178,7 +275,7 @@ namespace HyggyBackend.BLL.Helper
                 .ForMember(dest => dest.Latitude, opts => opts.MapFrom(src => src.Address != null ? src.Address.Latitude : (long?)null))
                 .ForMember(dest => dest.Longitude, opts => opts.MapFrom(src => src.Address != null ? src.Address.Longitude : (long?)null))
                 .ForMember(dst => dst.ShopId, opts => opts.MapFrom(src => src.Shop != null ? src.Shop.Id : (long?)null))
-                .ForMember(dst => dst.ShopName, opts => opts.MapFrom(src => src.Shop != null ? src.Shop.Name : null))
+                .ForMember(dst => dst.ShopName, opts => opts.MapFrom(src => src.Shop != null ? src.Shop.Name : "-> (Загальний склад)"))
                 .ForMember(dst => dst.AddressId, opt => opt.MapFrom(src => src.Address != null ? src.Address.Id : (long?)null))
                 .ForMember(dst => dst.StoredWaresSum, opt => opt.MapFrom(src => src.WareItems != null ? src.WareItems.Sum(wi => wi.Quantity * (wi.Ware.Price * wi.Ware.Discount / 100)) : 0));
             CreateMap<StorageQueryBLL, StorageQueryDAL>();

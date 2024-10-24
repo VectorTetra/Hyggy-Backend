@@ -10,7 +10,7 @@ namespace HyggyBackend.BLL.DTO.AccountDtos
         public string? Email { get; set; }
 
         [JsonIgnore]
-        public string? ClientUri { get; set; } = "http://localhost:5263/api/account/resetpassword";
+        public string? ClientUri { get; set; } = "http://www.hyggy.somee.com/api/account/resetpassword";
 
 	}
 }

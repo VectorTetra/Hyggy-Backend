@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using HyggyBackend.BLL.DTO;
 using HyggyBackend.BLL.Infrastructure;
 using HyggyBackend.BLL.Interfaces;
@@ -186,12 +186,12 @@ namespace HyggyBackend.BLL.Services
                 throw new ValidationException("Довгота повинна бути в межах від -180 до 180!", "");
             }
 
-            // Перевірка на існування адреси за координатами
-            var existedByLatLong = await GetByLatitudeAndLongitude(checkLatitude, checkLongitude);
-            if (existedByLatLong.Any(x=>x.Id != AddressDTO.Id))
-            {
-                throw new ValidationException($"Адреса з такими координатами: {AddressDTO.Latitude.Value} , {AddressDTO.Longitude.Value} вже існує!", "");
-            }
+            //// Перевірка на існування адреси за координатами
+            //var existedByLatLong = await GetByLatitudeAndLongitude(checkLatitude, checkLongitude);
+            //if (existedByLatLong.Any(x=>x.Id != AddressDTO.Id))
+            //{
+            //    throw new ValidationException($"Адреса з такими координатами: {AddressDTO.Latitude.Value} , {AddressDTO.Longitude.Value} вже існує!", "");
+            //}
 
             var addressCollections = new List<IEnumerable<AddressDTO>>
             {
