@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using HyggyBackend.BLL.DTO;
 using HyggyBackend.BLL.Infrastructure;
 using HyggyBackend.BLL.Interfaces;
