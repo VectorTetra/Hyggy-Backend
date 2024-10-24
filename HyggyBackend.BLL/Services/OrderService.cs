@@ -45,109 +45,109 @@ namespace HyggyBackend.BLL.Services
         public async Task<IEnumerable<OrderDTO>> GetByAddressId(long addressId)
         {
             var orders = await Database.Orders.GetByAddressId(addressId);
-            
+
             return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByStreet(string streetSubstring)
         {
             var orders = await Database.Orders.GetByStreet(streetSubstring);
-            
+
             return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByHouseNumber(string houseNumber)
         {
             var orders = await Database.Orders.GetByHouseNumber(houseNumber);
-            
+
             return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByCity(string city)
         {
             var orders = await Database.Orders.GetByCity(city);
-            
+
             return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByPostalCode(string postalCode)
         {
             var orders = await Database.Orders.GetByPostalCode(postalCode);
-            
+
             return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByState(string state)
         {
             var orders = await Database.Orders.GetByState(state);
-            
+
             return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByLatitudeAndLongitude(double latitude, double longitude)
         {
             var orders = await Database.Orders.GetByLatitudeAndLongitude(latitude, longitude);
-            
+
             return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByOrderDateRange(DateTime minOrderDate, DateTime maxOrderDate)
         {
             var orders = await Database.Orders.GetByOrderDateRange(minOrderDate, maxOrderDate);
-            
+
             return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByPhoneSubstring(string phoneSubstring)
         {
             var orders = await Database.Orders.GetByPhoneSubstring(phoneSubstring);
-            
+
             return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByCommentSubstring(string commentSubstring)
         {
             var orders = await Database.Orders.GetByCommentSubstring(commentSubstring);
-            
+
             return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByStatusId(long statusId)
         {
             var orders = await Database.Orders.GetByStatusId(statusId);
-            
+
             return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByStatusNameSubstring(string statusNameSubstring)
         {
             var orders = await Database.Orders.GetByStatusNameSubstring(statusNameSubstring);
-            
+
             return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByStatusDescriptionSubstring(string statusDescriptionSubstring)
         {
             var orders = await Database.Orders.GetByStatusDescriptionSubstring(statusDescriptionSubstring);
-            
+
             return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByOrderItemId(long orderItemId)
         {
             var orders = await Database.Orders.GetByOrderItemId(orderItemId);
-            
+
             return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByWareId(long wareId)
         {
             var orders = await Database.Orders.GetByWareId(wareId);
-            
+
             return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByWarePriceHistoryId(long warePriceHistoryId)
         {
             var orders = await Database.Orders.GetByWarePriceHistoryId(warePriceHistoryId);
-            
+
             return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByCustomerId(string customerId)
         {
             var orders = await Database.Orders.GetByCustomerId(customerId);
-            
+
             return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByShopId(long shopId)
         {
             var orders = await Database.Orders.GetByShopId(shopId);
-            
+
             return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByQuery(OrderQueryBLL query)
@@ -159,14 +159,14 @@ namespace HyggyBackend.BLL.Services
         public async Task<OrderDTO> Create(OrderDTO orderDTO)
         {
             // Перевірка наявності статусу замовлення
-            if(orderDTO.StatusId == null)
+            if (orderDTO.StatusId == null)
             {
                 throw new ValidationException($"Не вказано Id статусу замовлення! Id:{orderDTO.StatusId}", "");
             }
             var ExistedStatus = await Database.OrderStatuses.GetById(orderDTO.StatusId.Value);
             if (ExistedStatus == null)
             {
-                throw new ValidationException($"Статус замовлення не знайдено! StatusId: {orderDTO.StatusId}", "" );
+                throw new ValidationException($"Статус замовлення не знайдено! StatusId: {orderDTO.StatusId}", "");
             }
             // Перевірка наявності ShopId
             if (orderDTO.ShopId == null)
@@ -215,32 +215,30 @@ namespace HyggyBackend.BLL.Services
             }
 
             // Перевірка на наявність обов'язкових полів адреси
-            if (string.IsNullOrWhiteSpace(deliveryAddress.Street) ||
-                string.IsNullOrWhiteSpace(deliveryAddress.HouseNumber) ||
-                string.IsNullOrWhiteSpace(deliveryAddress.City) ||
-                string.IsNullOrWhiteSpace(deliveryAddress.State) ||
-                string.IsNullOrWhiteSpace(deliveryAddress.PostalCode))
+            if ((deliveryAddress.Longitude != null) ||
+                (deliveryAddress.Latitude != null))
             {
-                throw new ValidationException("Всі поля адреси доставки є обов'язковими!", "");
+                throw new ValidationException("В полі адреси доставки довгота і широта є обов'язковими!", "");
             }
 
-            // Перевірка наявності списку товарів у замовленні
-            if (orderDTO.OrderItemIds == null || !orderDTO.OrderItemIds.Any())
-            {
-                throw new ValidationException("Замовлення повинно містити хоча б один товар!", "");
-            }
+            //// Перевірка наявності списку товарів у замовленні
+            //if (orderDTO.OrderItemIds == null || !orderDTO.OrderItemIds.Any())
+            //{
+            //    throw new ValidationException("Замовлення повинно містити хоча б один товар!", "");
+            //}
 
-            var orderItems = new List<OrderItem>();
-            await foreach (var orderItemId in Database.OrderItems.GetByIdsAsync(orderDTO.OrderItemIds))
-            {
-                if (orderItemId == null)
-                {
-                    throw new ValidationException($"Одна з BlogCategory2 не знайдена!", "");
-                }
-                orderItems.Add(orderItemId);
-            }
+            var orderItems = new List<OrderItem>(); // -- orderItems Заповнюється в циклі
+            //await foreach (var orderItemId in Database.OrderItems.GetByIdsAsync(orderDTO.OrderItemIds))
+            //{
+            //    if (orderItemId == null)
+            //    {
+            //        throw new ValidationException($"Одна з BlogCategory2 не знайдена!", "");
+            //    }
+            //    orderItems.Add(orderItemId);
+            //}
             // Створення нового замовлення
-            var orderDAL = new Order {
+            var orderDAL = new Order
+            {
                 OrderDate = orderDTO.OrderDate.Value,
                 Phone = orderDTO.Phone,
                 Comment = orderDTO.Comment,
@@ -330,14 +328,12 @@ namespace HyggyBackend.BLL.Services
                 throw new ValidationException("Адреса доставки не знайдена!", "");
             }
 
+
             // Перевірка на наявність обов'язкових полів адреси
-            if (string.IsNullOrWhiteSpace(deliveryAddress.Street) ||
-                string.IsNullOrWhiteSpace(deliveryAddress.HouseNumber) ||
-                string.IsNullOrWhiteSpace(deliveryAddress.City) ||
-                string.IsNullOrWhiteSpace(deliveryAddress.State) ||
-                string.IsNullOrWhiteSpace(deliveryAddress.PostalCode))
+            if ((deliveryAddress.Longitude != null) ||
+                (deliveryAddress.Latitude != null))
             {
-                throw new ValidationException("Всі поля адреси доставки є обов'язковими!", "");
+                throw new ValidationException("В полі адреси доставки довгота і широта є обов'язковими!", "");
             }
 
             // Перевірка наявності списку товарів у замовленні
@@ -373,7 +369,6 @@ namespace HyggyBackend.BLL.Services
 
             // Повернення оновленого DTO
             var returnedDTO = await GetById(orderDTO.Id);
-
             return returnedDTO;
         }
 
@@ -392,7 +387,7 @@ namespace HyggyBackend.BLL.Services
             await Database.Save();
 
             // Маппінг видаленого замовлення на DTO
-            
+
             return _mapper.Map<OrderDTO>(existingOrder);
         }
     }
