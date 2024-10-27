@@ -331,10 +331,10 @@ namespace HyggyBackend.BLL.Services
             {
                 throw new ValidationException("Доставка не може бути пустою!", "");
             }
-            if (wareDTO.StatusIds == null)
-            {
-                throw new ValidationException("Статус не може бути пустим!", wareDTO.StatusIds.ToString());
-            }
+            //if (wareDTO.StatusIds == null)
+            //{
+            //    throw new ValidationException("Статус не може бути пустим!", wareDTO.StatusIds.ToString());
+            //}
 
             var existedTrademark = new WareTrademark();
             if (wareDTO.TrademarkId != null)

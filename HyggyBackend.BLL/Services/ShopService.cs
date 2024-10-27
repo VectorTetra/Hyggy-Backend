@@ -192,7 +192,7 @@ namespace HyggyBackend.BLL.Services
                 throw new ValidationException("Не вказано ідентифікатор адреси для створення магазину!", "");
             }
             var existingShopByAddress = await Database.Shops.GetByAddressId(shopDTO.AddressId.Value);
-            if (existingShopByAddress != null)
+            if (existingShopByAddress != null && existingShopByAddress.Id != shopDTO.Id)
             {
                 throw new ValidationException($"Магазин з Id адреси {shopDTO.AddressId} вже існує!", "");
             }
