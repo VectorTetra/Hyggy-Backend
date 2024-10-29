@@ -394,6 +394,28 @@ namespace HyggyBackend.BLL.Helper
              .ForMember(d => d.TrademarkName, opt => opt.MapFrom(c => c.WareTrademark != null ? c.WareTrademark.Name : null))
              .ForMember(d => d.StatusNames, opt => opt.MapFrom(c => c.Statuses.Select(st => st.Name)))
              .ForMember(d => d.ImagePaths, opt => opt.MapFrom(c => c.Images.Select(image => image.Path)))
+             .ForMember(d=>d.WareItems, opt => opt.MapFrom(c => c.WareItems.Select(wi => new WareItemDTO
+             {
+                 Id = wi.Id,
+                 WareId = wi.Ware.Id,
+                 StorageId = wi.Storage.Id,
+                 Quantity = wi.Quantity,
+                 Storage = new StorageDTO
+                 {
+                     Id = wi.Storage.Id,
+                     ShopId = wi.Storage.Shop != null ? wi.Storage.Shop.Id : (long?)null,
+                     AddressId = wi.Storage.Address != null ? wi.Storage.Address.Id : (long?)null,
+                     //Street = wi.Storage.Address != null ? wi.Storage.Address.Street : null,
+                     //HouseNumber = wi.Storage.Address != null ? wi.Storage.Address.HouseNumber : null,
+                     //City = wi.Storage.Address != null ? wi.Storage.Address.City : null,
+                     //State = wi.Storage.Address != null ? wi.Storage.Address.State : null,
+                     //PostalCode = wi.Storage.Address != null ? wi.Storage.Address.PostalCode : null,
+                     ShopName = wi.Storage.Shop != null ? wi.Storage.Shop.Name : null
+                     //Latitude = wi.Storage.Address != null ? wi.Storage.Address.Latitude : (long?)null,
+                     //Longitude = wi.Storage.Address != null ? wi.Storage.Address.Longitude : (long?)null,
+                     //StoredWaresSum = wi.Storage.WareItems != null ? wi.Storage.WareItems.Sum(w => w.Quantity * (w.Ware.Price * w.Ware.Discount / 100)) : 0
+                 }
+             })))
              .ForMember(d => d.WareCategory3Name, opt => opt.MapFrom(c => c.WareCategory3.Name));
 
             CreateMap<WareQueryBLL, WareQueryDAL>();

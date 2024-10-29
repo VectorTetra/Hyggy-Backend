@@ -35,5 +35,6 @@ namespace HyggyBackend.BLL.DTO
         public string? TrademarkName { get; set; }
         public ICollection<string>? StatusNames { get; set; } = new List<string>();
         public ICollection<string>? ImagePaths { get; set; } = new List<string>();
+        public ICollection<WareItemDTO>? WareItems { get; set; } = new List<WareItemDTO>();
     }
 }
