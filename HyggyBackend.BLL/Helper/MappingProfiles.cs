@@ -63,8 +63,10 @@ namespace HyggyBackend.BLL.Helper
             .ForPath(dst => dst.OrderIds, opt => opt.MapFrom(src => src.Orders.Select(o => o.Id)))
             .ForPath(dst => dst.Name, opt => opt.MapFrom(src => src.Name))
             .ForPath(dst => dst.Surname, opt => opt.MapFrom(src => src.Surname))
-            .ForPath(dst => dst.Phone, opt => opt.MapFrom(src => src.PhoneNumber))
+            .ForPath(dst => dst.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
             .ForPath(dst => dst.Email, opt => opt.MapFrom(src => src.Email))
+            .ForPath(dst => dst.AvatarPath, opt => opt.MapFrom(src => src.AvatarPath))
+            .ForPath(dst => dst.EmailConfirmed, opt => opt.MapFrom(src => src.EmailConfirmed))
             .ForPath(dst => dst.FavoriteWareIds, opt => opt.MapFrom(src => src.FavoriteWares.Select(w => w.Id)))
             .ForPath(dst => dst.ExecutedOrdersSum, opt => opt.MapFrom(src =>
                 src.Orders
@@ -194,7 +196,7 @@ namespace HyggyBackend.BLL.Helper
                  Name = src.Customer.Name,
                  Surname = src.Customer.Surname,
                  Email = src.Customer.Email,
-                 Phone = src.Customer.PhoneNumber
+                 PhoneNumber = src.Customer.PhoneNumber
              }))
              .ForPath(dto => dto.OrderItems, opt => opt.MapFrom(src => src.OrderItems.Select(oi => new OrderItemDTO
              {

@@ -13,12 +13,12 @@ using Org.BouncyCastle.Tsp;
 namespace HyggyBackend.Controllers
 {
     [ApiController]
-    [Route("api/employee")]
-    public class EmployeeController : Controller
+    [Route("api/shopemployee")]
+    public class ShopEmployeeController : Controller
     {
         private IEmployeeService<ShopEmployeeDTO> _service;
 
-        public EmployeeController(IEmployeeService<ShopEmployeeDTO> service)
+        public ShopEmployeeController(IEmployeeService<ShopEmployeeDTO> service)
         {
             _service = service;
         }

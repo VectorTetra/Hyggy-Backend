@@ -103,7 +103,6 @@ namespace HyggyBackend.DAL.Repositories
 
             return waress;
         }
-
         public async Task<IEnumerable<Ware>> GetByCategory1Id(long category1Id)
         {
             return await _context.Wares.Where(x => x.WareCategory3.WareCategory2.WareCategory1.Id == category1Id).ToListAsync();
@@ -281,6 +280,14 @@ namespace HyggyBackend.DAL.Repositories
                 collections.Add(await GetByNameSubstring(query.QueryAny));
                 collections.Add(await GetByDescriptionSubstring(query.QueryAny));
                 collections.Add(await GetByTrademarkNameSubstring(query.QueryAny));
+                collections.Add(await GetByCategory1NameSubstring(query.QueryAny));
+                collections.Add(await GetByCategory2NameSubstring(query.QueryAny));
+                collections.Add(await GetByCategory3NameSubstring(query.QueryAny));
+                collections.Add(await GetByStatusNameSubstring(query.QueryAny));
+                collections.Add(await GetByStatusDescriptionSubstring(query.QueryAny));
+                collections.Add(await GetByStructureFilePathSubstring(query.QueryAny));
+                collections.Add(await GetByImagePathSubstring(query.QueryAny));
+
                 // Додайте інші можливі пошукові методи
             }
             if (isAllSearch)
