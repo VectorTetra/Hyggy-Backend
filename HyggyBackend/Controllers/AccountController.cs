@@ -16,71 +16,71 @@ namespace HyggyBackend.Controllers
         {
             _service = service;
         }
-        //[HttpPost("register")]
-        //public async Task<IActionResult> Register([FromBody] UserForRegistrationDto registrationDto)
-        //{
-        //	try
-        //	{
-        //		if (registrationDto is null)
-        //			return BadRequest();
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] UserForRegistrationDto registrationDto)
+        {
+            try
+            {
+                if (registrationDto is null)
+                    return BadRequest();
 
-        //		var response = await _service.RegisterAsync(registrationDto);
-        //		if (!response.IsSuccessfullRegistration)
-        //			return BadRequest(response.Errors);
+                var response = await _service.RegisterAsync(registrationDto);
+                if (!response.IsSuccessfullRegistration)
+                    return BadRequest(response.Errors);
 
-        //		return Ok(new { message = "Будь ласка підтвердіть ваш обліковий запис" });
-        //	}
-        //          catch (Exception ex)
-        //          {
-        //              if (ex.InnerException != null)
-        //              {
-        //                  return StatusCode(500, ex.InnerException.Message);
-        //              }
-        //              return StatusCode(500, ex.Message);
-        //          }
-        //      }
-        //[HttpPost("authenticate")]
-        //public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDto authenticationDto)
-        //{
-        //	try
-        //	{
-        //		var response = await _service.AuthenticateAsync(authenticationDto);
-        //		if (!response.IsAuthSuccessfull)
-        //			return StatusCode(500, response.Error);
+                return Ok(new { message = "Будь ласка підтвердіть ваш обліковий запис" });
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpPost("authenticate")]
+        public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDto authenticationDto)
+        {
+            try
+            {
+                var response = await _service.AuthenticateAsync(authenticationDto);
+                if (!response.IsAuthSuccessfull)
+                    return StatusCode(500, response.Error);
 
-        //		return Ok(response);
-        //	}
-        //          catch (Exception ex)
-        //          {
-        //              if (ex.InnerException != null)
-        //              {
-        //                  return StatusCode(500, ex.InnerException.Message);
-        //              }
-        //              return StatusCode(500, ex.Message);
-        //          }
-        //      }
-        //[HttpGet("emailconfirmation")]
-        //public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string token)
-        //{
-        //	try
-        //	{
-        //		var result = await _service.EmailConfirmation(email, token);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpGet("emailconfirmation")]
+        public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string token)
+        {
+            try
+            {
+                var result = await _service.EmailConfirmation(email, token);
 
-        //		return Ok(result);
-        //	}
-        //	catch(ValidationException ex)
-        //	{
-        //		return StatusCode(500, ex.Message);
-        //	}
-        //          catch (Exception ex)
-        //          {
-        //              if (ex.InnerException != null)
-        //              {
-        //                  return StatusCode(500, ex.InnerException.Message);
-        //              }
-        //              return StatusCode(500, ex.Message);
-        //          }
-        //      }
+                return Ok(result);
+            }
+            catch (ValidationException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
         [HttpPost("forgotpassword")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPassword)
         {

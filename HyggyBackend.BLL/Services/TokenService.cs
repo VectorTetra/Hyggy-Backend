@@ -41,7 +41,7 @@ namespace HyggyBackend.BLL.Services
 			var tokenDescriptor = new SecurityTokenDescriptor
 			{
 				Subject = new ClaimsIdentity(claims),
-				Expires = DateTime.Now.AddMinutes(10),
+				Expires = DateTime.UtcNow.AddHours(4),
 				SigningCredentials = creds,
 				Issuer = _config["JWT:Issuer"],
 				Audience = _config["JWT:Audience"]

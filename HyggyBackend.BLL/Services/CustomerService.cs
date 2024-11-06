@@ -173,6 +173,7 @@ namespace HyggyBackend.BLL.Services
             customer.Surname = item.Surname;
             customer.Email = item.Email;
             customer.PhoneNumber = item.PhoneNumber;
+            customer.AvatarPath = item.AvatarPath;
             Database.Customers.Update(customer);
             await Database.Save();
 
