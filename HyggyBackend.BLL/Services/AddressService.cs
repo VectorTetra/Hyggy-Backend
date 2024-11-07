@@ -1,4 +1,5 @@
 using AutoMapper;
+using Castle.Core.Resource;
 using HyggyBackend.BLL.DTO;
 using HyggyBackend.BLL.Infrastructure;
 using HyggyBackend.BLL.Interfaces;
@@ -219,13 +220,24 @@ namespace HyggyBackend.BLL.Services
             address.Storage = checkStorage;
             address.Orders.Clear();
 
-            await foreach (var order in Database.Orders.GetByIdsAsync(AddressDTO.OrderIds))
+            if (AddressDTO.OrderIds != null)
             {
-                if (order == null)
+                if (!AddressDTO.OrderIds.Any())
                 {
-                    throw new ValidationException($"Один з Order не знайдений!", "");
+                    address.Orders.Clear();  // Очищаємо колекцію, якщо масив порожній
                 }
-                address.Orders.Add(order);
+                else
+                {
+                    address.Orders.Clear();  // Очищаємо старі замовлення
+                    await foreach (var order in Database.Orders.GetByIdsAsync(AddressDTO.OrderIds))
+                    {
+                        if (order == null)
+                        {
+                            throw new ValidationException($"Одне з замовлень не знайдено!", "");
+                        }
+                        address.Orders.Add(order);  // Додаємо нові замовлення
+                    }
+                }
             }
 
             Database.Addresses.Update(address);

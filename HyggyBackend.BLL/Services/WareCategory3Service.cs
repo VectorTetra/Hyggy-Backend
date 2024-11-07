@@ -147,15 +147,27 @@ namespace HyggyBackend.BLL.Services
 
 
             // Оновлення категорії
-            existingCategory3.Wares.Clear();
-            await foreach (var ware in Database.Wares.GetByIdsAsync(category3DTO.WareIds))
+
+            if (category3DTO.WareIds != null)
             {
-                if (ware == null)
+                if (!category3DTO.WareIds.Any())
                 {
-                    throw new ValidationException("Один з Ware не знайдено!", "");
+                    existingCategory3.Wares.Clear();
                 }
-                existingCategory3.Wares.Add(ware);
+                else
+                {
+                    existingCategory3.Wares.Clear();
+                    await foreach (var ware in Database.Wares.GetByIdsAsync(category3DTO.WareIds))
+                    {
+                        if (ware == null)
+                        {
+                            throw new ValidationException("Один з Ware не знайдено!", "");
+                        }
+                        existingCategory3.Wares.Add(ware);
+                    }
+                }
             }
+
             existingCategory3.Name = existingName;
             existingCategory3.WareCategory2 = existingCategory2;
 

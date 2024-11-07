@@ -92,7 +92,7 @@ namespace HyggyBackend.BLL.Services
                 Description = wareStatusDTO.Description ?? "",
                 Wares = new List<Ware>()
             };
-        
+
             await Database.WareStatuses.Create(wareStatus);
             await Database.Save();
 
@@ -103,6 +103,10 @@ namespace HyggyBackend.BLL.Services
         public async Task<WareStatusDTO?> Update(WareStatusDTO wareStatusDTO)
         {
             var existedWareStatus = await Database.WareStatuses.GetById(wareStatusDTO.Id);
+            if (existedWareStatus == null)
+            {
+                throw new ValidationException("Статус Товару з таким id не знадено!", wareStatusDTO.Id.ToString());
+            }
             var name = wareStatusDTO.Name ?? throw new ValidationException("Статус Товару не може бути з пустим іменем!", wareStatusDTO.Name);
             var existedNames = await Database.WareStatuses.GetByNameSubstring(wareStatusDTO.Name);
             if (existedNames.Any(x => (x.Name == wareStatusDTO.Name && x.Id != wareStatusDTO.Id)))
@@ -111,20 +115,28 @@ namespace HyggyBackend.BLL.Services
             }
             existedWareStatus.Name = wareStatusDTO.Name;
             existedWareStatus.Description = wareStatusDTO.Description ?? "";
-            existedWareStatus.Wares.Clear();
-            await foreach (var ware in Database.Wares.GetByIdsAsync(wareStatusDTO.WareIds))
+
+            if (wareStatusDTO.WareIds != null)
             {
-                if (ware == null)
+                existedWareStatus.Wares.Clear();
+
+                if (wareStatusDTO.WareIds.Any())
                 {
-                    throw new ValidationException("Один з Товарів не знайдено!", "");
+                    await foreach (var ware in Database.Wares.GetByIdsAsync(wareStatusDTO.WareIds))
+                    {
+                        if (ware == null)
+                        {
+                            throw new ValidationException("Один з Товарів не знайдено!", "");
+                        }
+                        existedWareStatus.Wares.Add(ware);
+                    }
                 }
-                existedWareStatus.Wares.Add(ware);
             }
 
             Database.WareStatuses.Update(existedWareStatus);
             await Database.Save();
 
-            
+
             return _mapper.Map<WareStatusDTO>(existedWareStatus);
         }
         public async Task<WareStatusDTO?> Delete(long id)

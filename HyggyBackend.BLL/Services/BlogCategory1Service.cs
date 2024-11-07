@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Castle.Core.Resource;
 using HyggyBackend.BLL.DTO;
 using HyggyBackend.BLL.Infrastructure;
 using HyggyBackend.BLL.Interfaces;
@@ -104,15 +105,26 @@ namespace HyggyBackend.BLL.Services
             {
                 throw new ValidationException($"BlogCategory1 з id={blogCategory1DTO.Id} не знайдено!", "");
             }
-            exBlCat1.BlogCategories2.Clear();
-            // Використання await foreach для перевірки та додавання категорій
-            await foreach (var category2 in Database.BlogCategories2.GetByIdsAsync(blogCategory1DTO.BlogCategory2Ids))
+            if (blogCategory1DTO.BlogCategory2Ids != null)
             {
-                if (category2 == null)
+
+                if (!blogCategory1DTO.BlogCategory2Ids.Any())
                 {
-                    throw new ValidationException($"Одна з BlogCategory2 не знайдена!","");
+                    exBlCat1.BlogCategories2.Clear();  // Очищаємо колекцію, якщо масив порожній
                 }
-                exBlCat1.BlogCategories2.Add(category2);
+                else
+                {
+                    exBlCat1.BlogCategories2.Clear();
+                    await foreach (var blCat2 in Database.BlogCategories2.GetByIdsAsync(blogCategory1DTO.BlogCategory2Ids))
+                    {
+                        if (blCat2 == null)
+                        {
+                            throw new ValidationException($"Одна з категорій товарів 2 не знайдена!", "");
+                        }
+                        exBlCat1.BlogCategories2.Add(blCat2);  // Додаємо нові замовлення
+                    }
+                }
+
             }
 
             exBlCat1.Name = blogCategory1DTO.Name;

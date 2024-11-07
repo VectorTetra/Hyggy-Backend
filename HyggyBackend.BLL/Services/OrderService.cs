@@ -6,6 +6,7 @@ using HyggyBackend.BLL.DTO;
 using HyggyBackend.BLL.Queries;
 using HyggyBackend.DAL.Queries;
 using HyggyBackend.BLL.Infrastructure;
+using Castle.Core.Resource;
 
 namespace HyggyBackend.BLL.Services
 {
@@ -344,16 +345,25 @@ namespace HyggyBackend.BLL.Services
 
             // Оновлення товарів замовлення
             var orderItems = new List<OrderItem>();
-            await foreach (var orderItemId in Database.OrderItems.GetByIdsAsync(orderDTO.OrderItemIds))
+            if (orderDTO.OrderItemIds != null)
             {
-                if (orderItemId == null)
+                if (!orderDTO.OrderItemIds.Any())
                 {
-                    throw new ValidationException($"Одна з BlogCategory2 не знайдена!", "");
+                    existingOrder.OrderItems.Clear();  // Очищаємо колекцію, якщо масив порожній
                 }
-                orderItems.Add(orderItemId);
+                else
+                {
+                    existingOrder.OrderItems.Clear();
+                    await foreach (var orderItem in Database.OrderItems.GetByIdsAsync(orderDTO.OrderItemIds))
+                    {
+                        if (orderItem == null)
+                        {
+                            throw new ValidationException($"Одна з позицій замовлення не знайдена!", "");
+                        }
+                        orderItems.Add(orderItem);  // Додаємо нові замовлення
+                    }
+                }
             }
-
-            // Оновлення замовлення з новими значеннями
             existingOrder.OrderDate = orderDTO.OrderDate.Value;
             existingOrder.Phone = orderDTO.Phone;
             existingOrder.Comment = orderDTO.Comment;

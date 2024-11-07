@@ -113,15 +113,27 @@ namespace HyggyBackend.BLL.Services
             existingOrderStatus.Name = orderStatusDTO.Name;
             existingOrderStatus.Description = orderStatusDTO.Description;
 
-            existingOrderStatus.Orders.Clear();
-            await foreach (var order in Database.Orders.GetByIdsAsync(orderStatusDTO.OrderIds))
+
+            if (orderStatusDTO.OrderIds != null)
             {
-                if (order == null)
+                if (!orderStatusDTO.OrderIds.Any())
                 {
-                    throw new ValidationException("Один з Order не знайдено!", "");
+                    existingOrderStatus.Orders.Clear();  // Очищаємо колекцію, якщо масив порожній
                 }
-                existingOrderStatus.Orders.Add(order);
+                else
+                {
+                    existingOrderStatus.Orders.Clear();
+                    await foreach (var order in Database.Orders.GetByIdsAsync(orderStatusDTO.OrderIds))
+                    {
+                        if (order == null)
+                        {
+                            throw new ValidationException("Одне з замовлень не знайдено!", "");
+                        }
+                        existingOrderStatus.Orders.Add(order);  // Додаємо нові замовлення
+                    }
+                }
             }
+
             Database.OrderStatuses.Update(existingOrderStatus);
             await Database.Save();
             return _mapper.Map<OrderStatusDTO>(existingOrderStatus);

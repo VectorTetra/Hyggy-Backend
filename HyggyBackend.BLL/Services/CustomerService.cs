@@ -148,7 +148,7 @@ namespace HyggyBackend.BLL.Services
         public async Task<CustomerDTO> Update(CustomerDTO item)
         {
             //var customer = _mapper.Map<CustomerDTO, Customer>(item);
-            if(item.Id == null)
+            if (item.Id == null)
             {
                 throw new ValidationException("Не вказано Id клієнта для оновлення!", "");
             }
@@ -174,6 +174,51 @@ namespace HyggyBackend.BLL.Services
             customer.Email = item.Email;
             customer.PhoneNumber = item.PhoneNumber;
             customer.AvatarPath = item.AvatarPath;
+
+            // Оновлюємо колекцію улюблених товарів, якщо масив FavoriteWareIds не порожній
+            if (item.FavoriteWareIds != null)
+            {
+                if (!item.FavoriteWareIds.Any())
+                {
+                    customer.FavoriteWares.Clear();  // Очищаємо колекцію, якщо масив порожній
+                }
+                else
+                {
+                    customer.FavoriteWares.Clear();  // Очищаємо старі дані
+                    await foreach (var favWare in Database.Wares.GetByIdsAsync(item.FavoriteWareIds))
+                    {
+                        if (favWare == null)
+                        {
+                            throw new ValidationException($"Один з улюблених товарів не знайдено!", "");
+                        }
+                        customer.FavoriteWares.Add(favWare);  // Додаємо нові товари
+                    }
+                }
+            }
+
+            // Оновлюємо колекцію замовлень, якщо масив OrderIds не порожній
+            if (item.OrderIds != null)
+            {
+                if (!item.OrderIds.Any())
+                {
+                    customer.Orders.Clear();  // Очищаємо колекцію, якщо масив порожній
+                }
+                else
+                {
+                    customer.Orders.Clear();  // Очищаємо старі замовлення
+                    await foreach (var order in Database.Orders.GetByIdsAsync(item.OrderIds))
+                    {
+                        if (order == null)
+                        {
+                            throw new ValidationException($"Одне з замовлень не знайдено!", "");
+                        }
+                        customer.Orders.Add(order);  // Додаємо нові замовлення
+                    }
+                }
+            }
+
+
+
             Database.Customers.Update(customer);
             await Database.Save();
 
