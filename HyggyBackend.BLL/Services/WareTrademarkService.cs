@@ -73,7 +73,7 @@ namespace HyggyBackend.BLL.Services
             var returnedTrademark = await Database.WareTrademarks.GetById(trademark.Id);
             return _mapper.Map<WareTrademarkDTO>(returnedTrademark);
         }
-        public async Task<WareTrademarkDTO> Update(WareTrademarkDTO wareTrademark) 
+        public async Task<WareTrademarkDTO> Update(WareTrademarkDTO wareTrademark)
         {
             var existedName = await Database.WareTrademarks.GetByName(wareTrademark.Name);
             if (existedName.Any())
@@ -86,21 +86,29 @@ namespace HyggyBackend.BLL.Services
                 throw new ValidationException($"Торгова марка з id {wareTrademark.Id} не знайдена", "");
             }
             trademark.Name = wareTrademark.Name;
-            trademark.Wares.Clear();
-            await foreach (var bloggy in Database.Wares.GetByIdsAsync(wareTrademark.WareIds))
+
+            if (wareTrademark.WareIds != null)
             {
-                if (bloggy == null)
+                trademark.Wares.Clear();
+                if (wareTrademark.WareIds.Any())
                 {
-                    throw new ValidationException($"Один з товарів не знайдений для копіювання в список товарів торгової марки!", "");
+                    await foreach (var bloggy in Database.Wares.GetByIdsAsync(wareTrademark.WareIds))
+                    {
+                        if (bloggy == null)
+                        {
+                            throw new ValidationException($"Один з товарів не знайдений для копіювання в список товарів торгової марки!", "");
+                        }
+                        trademark.Wares.Add(bloggy);
+                    }
                 }
-                trademark.Wares.Add(bloggy);
             }
+
             Database.WareTrademarks.Update(trademark);
             await Database.Save();
             var returnedTrademark = await Database.WareTrademarks.GetById(trademark.Id);
             return _mapper.Map<WareTrademarkDTO>(returnedTrademark);
         }
-        public async Task<WareTrademarkDTO> Delete(long id) 
+        public async Task<WareTrademarkDTO> Delete(long id)
         {
             var trademark = await Database.WareTrademarks.GetById(id);
             if (trademark == null)

@@ -142,18 +142,30 @@ namespace HyggyBackend.BLL.Services
                 throw new ValidationException("WareCategory1 з таким ідентифікатором не існує", "");
             }
 
-            existingCategory2.WaresCategory3.Clear();
-            await foreach (var category3 in Database.Categories3.GetByIdsAsync(category2DTO.WaresCategory3Ids))
+            if(category2DTO.WaresCategory3Ids != null)
             {
-                if (category3 == null)
+                if (!category2DTO.WaresCategory3Ids.Any())
                 {
-                    throw new ValidationException($"Одна з WareCategory3 не знайдена!", "");
+                    existingCategory2.WaresCategory3.Clear();
                 }
-                existingCategory2.WaresCategory3.Add(category3);
+                else
+                {
+                    existingCategory2.WaresCategory3.Clear();
+                    await foreach (var category3 in Database.Categories3.GetByIdsAsync(category2DTO.WaresCategory3Ids))
+                    {
+                        if (category3 == null)
+                        {
+                            throw new ValidationException($"Одна з WareCategory3 не знайдена!", "");
+                        }
+                        existingCategory2.WaresCategory3.Add(category3);
+                    }
+                }
             }
+
             existingCategory2.Name = category2DTO.Name;
             existingCategory2.WareCategory1 = existedCategory1;
-            
+
+
 
             Database.Categories2.Update(existingCategory2);
             await Database.Save();

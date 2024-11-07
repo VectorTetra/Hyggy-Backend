@@ -192,7 +192,7 @@ namespace HyggyBackend.BLL.Services
                 throw new ValidationException("Не вказано ідентифікатор адреси для створення магазину!", "");
             }
             var existingShopByAddress = await Database.Shops.GetByAddressId(shopDTO.AddressId.Value);
-            if (existingShopByAddress != null)
+            if (existingShopByAddress != null && existingShopByAddress.Id != shopDTO.Id)
             {
                 throw new ValidationException($"Магазин з Id адреси {shopDTO.AddressId} вже існує!", "");
             }
@@ -222,23 +222,43 @@ namespace HyggyBackend.BLL.Services
             {
                 throw new ValidationException($"Склад з Id {shopDTO.StorageId} не існує!", "");
             }
-			existingShop.Orders.Clear();
-            existingShop.ShopEmployees.Clear();
-            await foreach (var order in Database.Orders.GetByIdsAsync(shopDTO.OrderIds))
+            if (shopDTO.OrderIds != null)
             {
-                if (order == null)
+                if (!shopDTO.OrderIds.Any())
                 {
-                    throw new ValidationException("Один з Order не знайдено!", "");
+                    existingShop.Orders.Clear();  // Очищаємо колекцію, якщо масив порожній
                 }
-                existingShop.Orders.Add(order);
+                else
+                {
+                    existingShop.Orders.Clear();
+                    await foreach (var order in Database.Orders.GetByIdsAsync(shopDTO.OrderIds))
+                    {
+                        if (order == null)
+                        {
+                            throw new ValidationException("Один з Order не знайдено!", "");
+                        }
+                        existingShop.Orders.Add(order);
+                    }
+                }
             }
-            await foreach (var order in Database.ShopEmployees.GetByIdsAsync(shopDTO.ShopEmployeeIds))
+            if (shopDTO.ShopEmployeeIds != null)
             {
-                if (order == null)
+                if (!shopDTO.ShopEmployeeIds.Any())
                 {
-                    throw new ValidationException("Один з Order не знайдено!", "");
+                    existingShop.ShopEmployees.Clear();  // Очищаємо колекцію, якщо масив порожній
                 }
-                existingShop.ShopEmployees.Add(order);
+                else
+                {
+                    existingShop.ShopEmployees.Clear();
+                    await foreach (var order in Database.ShopEmployees.GetByIdsAsync(shopDTO.ShopEmployeeIds))
+                    {
+                        if (order == null)
+                        {
+                            throw new ValidationException("Один з Order не знайдено!", "");
+                        }
+                        existingShop.ShopEmployees.Add(order);
+                    }
+                }
             }
             existingShop.Address = existingAddress;
             existingShop.WorkHours = shopDTO.WorkHours;
