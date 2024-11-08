@@ -168,7 +168,8 @@ namespace HyggyBackend.Controllers
                         break;
                     case "Query":
                         {
-                            WareCategory3QueryBLL queryBLL = config.CreateMapper().Map<WareCategory3QueryBLL>(query);
+                            var mapper = new Mapper(config);
+                            var queryBLL = mapper.Map<WareCategory3QueryBLL>(query);
                             collection = await _serv.GetByQuery(queryBLL);
                         }
                         break;
