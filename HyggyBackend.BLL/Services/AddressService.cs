@@ -1,5 +1,4 @@
 using AutoMapper;
-using Castle.Core.Resource;
 using HyggyBackend.BLL.DTO;
 using HyggyBackend.BLL.Infrastructure;
 using HyggyBackend.BLL.Interfaces;
