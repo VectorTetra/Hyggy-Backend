@@ -178,11 +178,11 @@ namespace HyggyBackend.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<WareImageDTO>> DeleteWare([FromBody] WareImageDTO wareImage)
+        public async Task<ActionResult<WareImageDTO>> DeleteWare(long id)
         {
             try
             {
-                var result = await _serv.Delete(wareImage.Id);
+                var result = await _serv.Delete(id);
                 return result;
             }
             catch (ValidationException ex)
