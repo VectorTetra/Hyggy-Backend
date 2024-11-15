@@ -19,6 +19,5 @@ namespace HyggyBackend.BLL.DTO
         public string? Email { get; set; }
         public short? Rating { get; set; }
         public DateTime? Date { get; set; }
-        public string? StringIds { get; set; }
     }
 }

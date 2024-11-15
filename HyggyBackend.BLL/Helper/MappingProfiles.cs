@@ -53,6 +53,7 @@ namespace HyggyBackend.BLL.Helper
             CreateMap<BlogCategory2, BlogCategory2DTO>()
                 .ForMember(dest => dest.Id, opts => opts.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Name, opts => opts.MapFrom(src => src.Name))
+                .ForMember(dest => dest.BlogCategory1Name, opts => opts.MapFrom(src => src.BlogCategory1.Name))
                 .ForMember(dest => dest.PreviewImagePath, opts => opts.MapFrom(src => src.PreviewImagePath))
                 .ForMember(dest => dest.BlogCategory1Id, opts => opts.MapFrom(src => src.BlogCategory1.Id));
             CreateMap<BlogCategory2QueryBLL, BlogCategory2QueryDAL>();
