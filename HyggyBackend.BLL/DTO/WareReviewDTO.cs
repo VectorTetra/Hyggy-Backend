@@ -19,5 +19,9 @@ namespace HyggyBackend.BLL.DTO
         public string? Email { get; set; }
         public short? Rating { get; set; }
         public DateTime? Date { get; set; }
+
+        // Дані від Get-запиту
+        public string? WarePreviewImagePath { get; set; }
+        public string? WareName { get; set; }
     }
 }
