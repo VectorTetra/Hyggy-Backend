@@ -23,5 +23,8 @@ namespace HyggyBackend.BLL.DTO
         // Дані від Get-запиту
         public string? WarePreviewImagePath { get; set; }
         public string? WareName { get; set; }
+        public string? WareDescription { get; set; }
+
+
     }
 }

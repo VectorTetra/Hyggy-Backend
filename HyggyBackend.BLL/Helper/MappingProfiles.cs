@@ -441,6 +441,7 @@ namespace HyggyBackend.BLL.Helper
                 .ForMember(d => d.Email, opt => opt.MapFrom(c => c.Email))
                 .ForMember(d => d.WarePreviewImagePath, opt => opt.MapFrom(c => c.Ware.Images.Count() > 0? c.Ware.Images.First().Path : null))
                 .ForMember(d => d.WareName, opt => opt.MapFrom(c => c.Ware.Name))
+                .ForMember(d => d.WareDescription, opt => opt.MapFrom(c => c.Ware.Description))
                 .ForMember(d => d.Date, opt => opt.MapFrom(c => c.Date));
             CreateMap<WareReviewQueryBLL, WareReviewQueryDAL>();
             #endregion
