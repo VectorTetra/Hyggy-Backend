@@ -28,10 +28,13 @@ namespace HyggyBackend.BLL.DTO
         public ICollection<long>? ReviewIds { get; set; } = new List<long>();
         public ICollection<string>? CustomerFavoriteIds { get; set; } = new List<string>();
 
-        // Отримуєтьмя в результаті запиту
+        // Отримується в результаті запиту
         public string? WareCategory3Name { get; set; }
         public string? WareCategory2Name { get; set; }
         public string? WareCategory1Name { get; set; }
+
+        public long? WareCategory2Id { get; set; }
+        public long? WareCategory1Id { get; set; }
         public string? PreviewImagePath { get; set; }
         public float? FinalPrice { get; set; }
         public string? TrademarkName { get; set; }
