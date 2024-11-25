@@ -1,4 +1,5 @@
-﻿using HyggyBackend.BLL.DTO.EmployeesDTO;
+﻿using AutoMapper;
+using HyggyBackend.BLL.DTO.EmployeesDTO;
 using HyggyBackend.BLL.Interfaces;
 using HyggyBackend.BLL.Services;
 using HyggyBackend.BLL.Services.EmailService;

@@ -287,93 +287,9 @@ namespace HyggyBackend.BLL.Helper
             CreateMap<StorageQueryBLL, StorageQueryDAL>();
             #endregion
 
-            #region User Mappings
-            CreateMap<UserForEditDto, Customer>()
-                .ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email));
-            CreateMap<UserForRegistrationDto, Customer>()
-                .ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email));
-            #endregion
+			CreateMap<UserForRegistrationDto, Customer>()
+				.ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email));
 
-            #region WareCategory1 Mappings
-            CreateMap<WareCategory1, WareCategory1DTO>()
-             .ForMember(dst => dst.Id, opt => opt.MapFrom(c => c.Id))
-             .ForMember(dst => dst.WaresCategory2Ids, opt => opt.MapFrom(c => c.WaresCategory2 != null
-                 ? c.WaresCategory2.Select(wc => wc.Id).ToList()
-                 : new List<long>()))
-             .ForMember(dst => dst.Name, opt => opt.MapFrom(c => c.Name))
-             .ForMember(dst => dst.WaresCategories2, opt => opt.MapFrom(c => c.WaresCategory2 != null
-                 ? c.WaresCategory2.Select(wc => new WareCategory2DTO
-                 {
-                     Id = wc.Id,
-                     Name = wc.Name,
-                     WareCategory1Id = wc.WareCategory1 != null ? wc.WareCategory1.Id : (long?)null,
-                     WaresCategories3 = wc.WaresCategory3 != null
-                         ? wc.WaresCategory3.Select(wc3 => new WareCategory3DTO
-                         {
-                             Id = wc3.Id,
-                             Name = wc3.Name,
-                             WareCategory2Id = wc3.WareCategory2 != null ? wc3.WareCategory2.Id : (long?)null,
-                             WareIds = new List<long>()
-                         }).ToList()
-                         : new List<WareCategory3DTO>()
-                 }).ToList()
-                 : new List<WareCategory2DTO>()));
-
-
-
-
-            CreateMap<WareCategory1QueryBLL, WareCategory1QueryDAL>();
-            #endregion
-
-            #region WareCategory2 Mappings
-            CreateMap<WareCategory2, WareCategory2DTO>()
-            .ForMember(dst => dst.Id, opt => opt.MapFrom(c => c.Id))
-            .ForMember(dst => dst.Name, opt => opt.MapFrom(c => c.Name))
-            .ForMember(dst => dst.WareCategory1Id, opt => opt.MapFrom(c => c.WareCategory1 != null ? c.WareCategory1.Id : (long?)null))
-            .ForMember(dst => dst.WaresCategories3, opt => opt.MapFrom(c => c.WaresCategory3 != null
-                ? c.WaresCategory3.Select(wc3 => new WareCategory3DTO
-                {
-                    Id = wc3.Id,
-                    Name = wc3.Name,
-                    WareCategory2Id = wc3.WareCategory2 != null ? wc3.WareCategory2.Id : (long?)null,
-                    WareIds = new List<long>()
-                }).ToList()
-                : new List<WareCategory3DTO>()))
-            .ForMember(dst => dst.WaresCategory3Ids, opt => opt.MapFrom(c => c.WaresCategory3 != null
-                ? c.WaresCategory3.Select(wc => wc.Id).ToList()
-                : new List<long>()));
-
-
-
-            CreateMap<WareCategory2QueryBLL, WareCategory2QueryDAL>();
-            #endregion
-
-            #region WareCategory3 Mappings
-            CreateMap<WareCategory3, WareCategory3DTO>()
-           .ForMember("Id", opt => opt.MapFrom(c => c.Id))
-           .ForMember("Name", opt => opt.MapFrom(c => c.Name))
-           .ForPath(dst => dst.WareCategory2Id, opt => opt.MapFrom(c => c.WareCategory2.Id));
-
-            CreateMap<WareCategory3QueryBLL, WareCategory3QueryDAL>();
-            #endregion
-
-            #region WareImage Mappings
-            CreateMap<WareImage, WareImageDTO>()
-                .ForMember(dest => dest.Id, opts => opts.MapFrom(src => src.Id))
-                .ForMember(dest => dest.Path, opts => opts.MapFrom(src => src.Path))
-                .ForMember(dest => dest.WareId, opts => opts.MapFrom(src => src.Ware.Id));
-            CreateMap<WareImageQueryBLL, WareImageQueryDAL>();
-            #endregion
-
-            #region WarePriceHistory Mappings
-            CreateMap<WarePriceHistory, WarePriceHistoryDTO>()
-                .ForMember(dest => dest.Id, opts => opts.MapFrom(src => src.Id))
-                .ForMember(dest => dest.WareId, opts => opts.MapFrom(src => src.Ware.Id))
-                .ForMember(dest => dest.Price, opts => opts.MapFrom(src => src.Price))
-                .ForMember(dest => dest.EffectiveDate, opts => opts.MapFrom(src => src.EffectiveDate));
-            CreateMap<WarePriceHistoryQueryBLL, WarePriceHistoryQueryDAL>();
-
-            #endregion
 
             #region Ware Mappings
             CreateMap<Ware, WareDTO>()

@@ -318,6 +318,13 @@ namespace HyggyBackend.DAL.Migrations
                         .HasFilter("[AddressId] IS NOT NULL");
 
                     b.ToTable("Storages");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            AddressId = 1L
+                        });
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.User", b =>
