@@ -187,7 +187,6 @@ namespace HyggyBackend.BLL.Helper
 			CreateMap<UserForRegistrationDto, Customer>()
 				.ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email));
 
-            #endregion
 
             #region Ware Mappings
             CreateMap<Ware, WareDTO>()

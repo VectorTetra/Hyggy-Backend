@@ -16,8 +16,8 @@ namespace HyggyBackend.BLL.Services
 {
 	public class TokenService : ITokenService
 	{
-		private readonly IConfiguration _config;
 		private readonly UserManager<User> _userManager;
+		private readonly IConfiguration _config;
 		private readonly SymmetricSecurityKey _key;
         public TokenService(IConfiguration config, UserManager<User> userManager)
         {
@@ -44,8 +44,7 @@ namespace HyggyBackend.BLL.Services
 				Expires = DateTime.Now.AddDays(7),
 				SigningCredentials = creds,
 				Issuer = _config["JWT:Issuer"],
-				Audience = _config["JWT:Audience"]
-				
+				Audience = _config["JWT:Audience"]				
 			};
 
 			var tokenHandler = new JwtSecurityTokenHandler();

@@ -9,8 +9,8 @@ namespace HyggyBackend.Controllers
     [Route("api/Image")]
     public class ImageController : ControllerBase
     {
-        ImagekitClient imagekit = new ImagekitClient("public_M7rp5a+A03bMXqAwHwTbXJozb2Q=",
-          "private_XDeaQHKGVMyTnXaAJfkHZuGc+nQ=", "https://ik.imagekit.io/viktochonov/");
+        ImagekitClient imagekit = new ImagekitClient("public_0O6fWt547b835DVrknwauJAFZpQ=",
+			"private_Ik1bzDk1h5m3KMW4v5bZw8pmQzk=", "https://ik.imagekit.io/aoy2r8vra7/");
 
         [HttpPost]
         [Route("upload")]
