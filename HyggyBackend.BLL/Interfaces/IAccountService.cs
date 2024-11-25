@@ -4,7 +4,6 @@ namespace HyggyBackend.BLL.Interfaces
 {
 	public interface IAccountService
 	{
-		Task<RegistrationResponseDto> RegisterAsync(UserForRegistrationDto registrationDto);
 		Task<AuthResponseDto> AuthenticateAsync(UserForAuthenticationDto authenticationDto);
 		Task<string> EmailConfirmation(string email, string code);
 		Task<string> ForgotPassword(ForgotPasswordDto passwordDto);
