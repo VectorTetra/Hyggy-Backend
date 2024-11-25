@@ -221,7 +221,7 @@ namespace HyggyBackend.BLL.Helper
                  OrderId = oi.Order.Id,
                  WareId = oi.Ware.Id,
                  PriceHistoryId = oi.PriceHistory.Id
-             }))) ;
+             })));
             CreateMap<OrderQueryBLL, OrderQueryDAL>();
             #endregion
 
@@ -396,7 +396,10 @@ namespace HyggyBackend.BLL.Helper
              .ForMember(d => d.TrademarkName, opt => opt.MapFrom(c => c.WareTrademark != null ? c.WareTrademark.Name : null))
              .ForMember(d => d.StatusNames, opt => opt.MapFrom(c => c.Statuses.Select(st => st.Name)))
              .ForMember(d => d.ImagePaths, opt => opt.MapFrom(c => c.Images.Select(image => image.Path)))
-             .ForMember(d=>d.WareItems, opt => opt.MapFrom(c => c.WareItems.Select(wi => new WareItemDTO
+             .ForMember(d => d.WareCategory3Name, opt => opt.MapFrom(c => c.WareCategory3.Name))
+             .ForMember(d => d.WareCategory2Id, opt => opt.MapFrom(c => c.WareCategory3.WareCategory2.Id))
+             .ForMember(d => d.WareCategory1Id, opt => opt.MapFrom(c => c.WareCategory3.WareCategory2.WareCategory1.Id))
+             .ForMember(d => d.WareItems, opt => opt.MapFrom(c => c.WareItems.Select(wi => new WareItemDTO
              {
                  Id = wi.Id,
                  WareId = wi.Ware.Id,
@@ -417,8 +420,7 @@ namespace HyggyBackend.BLL.Helper
                      //Longitude = wi.Storage.Address != null ? wi.Storage.Address.Longitude : (long?)null,
                      //StoredWaresSum = wi.Storage.WareItems != null ? wi.Storage.WareItems.Sum(w => w.Quantity * (w.Ware.Price * w.Ware.Discount / 100)) : 0
                  }
-             })))
-             .ForMember(d => d.WareCategory3Name, opt => opt.MapFrom(c => c.WareCategory3.Name));
+             })));
 
             CreateMap<WareQueryBLL, WareQueryDAL>();
             #endregion

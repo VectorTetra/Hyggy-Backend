@@ -30,6 +30,8 @@ namespace HyggyBackend.BLL.DTO
 
         // Отримуєтьмя в результаті запиту
         public string? WareCategory3Name { get; set; }
+        public long? WareCategory2Id { get; set; }
+        public long? WareCategory1Id { get; set; }
         public string? PreviewImagePath { get; set; }
         public float? FinalPrice { get; set; }
         public string? TrademarkName { get; set; }
