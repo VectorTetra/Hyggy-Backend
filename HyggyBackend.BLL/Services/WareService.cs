@@ -77,7 +77,7 @@ namespace HyggyBackend.BLL.Services
         {
             var wares = await Database.Wares.GetByStringCategory3Ids(stringCategory3Ids);
             return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
-        }   
+        }
 
         public async Task<IEnumerable<WareDTO>> GetByCategory1Id(long category1Id)
         {
@@ -331,10 +331,10 @@ namespace HyggyBackend.BLL.Services
             {
                 throw new ValidationException("Доставка не може бути пустою!", "");
             }
-            if (wareDTO.StatusIds == null)
-            {
-                throw new ValidationException("Статус не може бути пустим!", wareDTO.StatusIds.ToString());
-            }
+            //if (wareDTO.StatusIds == null)
+            //{
+            //    throw new ValidationException("Статус не може бути пустим!", wareDTO.StatusIds.ToString());
+            //}
 
             var existedTrademark = new WareTrademark();
             if (wareDTO.TrademarkId != null)
@@ -345,7 +345,7 @@ namespace HyggyBackend.BLL.Services
                     throw new ValidationException("Торгової марки з таким Id не існує!", wareDTO.TrademarkId.ToString());
                 }
             }
-            
+
             existedWare.Article = wareDTO.Article.Value;
             existedWare.WareCategory3 = existedCategory;
             existedWare.WareTrademark = existedTrademark.Id != 0 ? existedTrademark : null;
@@ -355,77 +355,114 @@ namespace HyggyBackend.BLL.Services
             existedWare.Discount = wareDTO.Discount != null ? wareDTO.Discount.Value : 0;
             existedWare.StructureFilePath = wareDTO.StructureFilePath ?? "";
             existedWare.IsDeliveryAvailable = wareDTO.IsDeliveryAvailable.Value;
-            existedWare.Statuses.Clear();
-            existedWare.Images.Clear();
-            existedWare.PriceHistories.Clear();
-            existedWare.WareItems.Clear();
-            existedWare.OrderItems.Clear();
-            existedWare.Reviews.Clear();
-            existedWare.CustomerFavorites.Clear();
 
-            await foreach (var wareImage in Database.WareImages.GetByIdsAsync(wareDTO.ImageIds))
+            if (wareDTO.ImageIds != null)
             {
-                if (wareImage == null)
+                existedWare.Images.Clear();
+                if (wareDTO.ImageIds.Any())
                 {
-                    throw new ValidationException($"Одна з WareImage не знайдена!", "");
+                    await foreach (var wareImage in Database.WareImages.GetByIdsAsync(wareDTO.ImageIds))
+                    {
+                        if (wareImage == null)
+                        {
+                            throw new ValidationException($"Одна з WareImage не знайдена!", "");
+                        }
+                        existedWare.Images.Add(wareImage);
+                    }
                 }
-                existedWare.Images.Add(wareImage);
             }
-
-            await foreach (var priceHistory in Database.WarePriceHistories.GetByIdsAsync(wareDTO.PriceHistoryIds))
+            if (wareDTO.StatusIds != null)
             {
-                if (priceHistory == null)
+                existedWare.Statuses.Clear();
+                if (wareDTO.StatusIds.Any())
                 {
-                    throw new ValidationException($"Один з WarePriceHistory не знайдений!", "");
+                    await foreach (var status in Database.WareStatuses.GetByIdsAsync(wareDTO.StatusIds))
+                    {
+                        if (status == null)
+                        {
+                            throw new ValidationException($"Один з WareStatus не знайдений!", "");
+                        }
+                        existedWare.Statuses.Add(status);
+                    }
                 }
-                existedWare.PriceHistories.Add(priceHistory);
             }
-
-            await foreach (var wareItem in Database.WareItems.GetByIdsAsync(wareDTO.WareItemIds))
+            if (wareDTO.PriceHistoryIds != null)
             {
-                if (wareItem == null)
+                existedWare.PriceHistories.Clear();
+                if (wareDTO.PriceHistoryIds.Any())
                 {
-                    throw new ValidationException($"Один з WareItem не знайдений!", "");
+                    await foreach (var priceHistory in Database.WarePriceHistories.GetByIdsAsync(wareDTO.PriceHistoryIds))
+                    {
+                        if (priceHistory == null)
+                        {
+                            throw new ValidationException($"Один з WarePriceHistory не знайдений!", "");
+                        }
+                        existedWare.PriceHistories.Add(priceHistory);
+                    }
                 }
-                existedWare.WareItems.Add(wareItem);
             }
-
-            await foreach (var orderItem in Database.OrderItems.GetByIdsAsync(wareDTO.OrderItemIds))
+            if (wareDTO.WareItemIds != null)
             {
-                if (orderItem == null)
+                existedWare.WareItems.Clear();
+                if (wareDTO.WareItemIds.Any())
                 {
-                    throw new ValidationException($"Один з OrderItem не знайдений!", "");
+                    await foreach (var wareItem in Database.WareItems.GetByIdsAsync(wareDTO.WareItemIds))
+                    {
+                        if (wareItem == null)
+                        {
+                            throw new ValidationException($"Один з WareItem не знайдений!", "");
+                        }
+                        existedWare.WareItems.Add(wareItem);
+                    }
                 }
-                existedWare.OrderItems.Add(orderItem);
-            }
 
-            await foreach (var review in Database.WareReviews.GetByIdsAsync(wareDTO.ReviewIds))
+            }
+            if (wareDTO.OrderItemIds != null)
             {
-                if (review == null)
+                existedWare.OrderItems.Clear();
+                if (wareDTO.OrderItemIds.Any())
                 {
-                    throw new ValidationException($"Один з WareReview не знайдений!", "");
+                    await foreach (var orderItem in Database.OrderItems.GetByIdsAsync(wareDTO.OrderItemIds))
+                    {
+                        if (orderItem == null)
+                        {
+                            throw new ValidationException($"Один з OrderItem не знайдений!", "");
+                        }
+                        existedWare.OrderItems.Add(orderItem);
+                    }
                 }
-                existedWare.Reviews.Add(review);
             }
-
-            await foreach (var customer in Database.Customers.GetByIdsAsync(wareDTO.CustomerFavoriteIds))
+            if (wareDTO.ReviewIds != null)
             {
-                if (customer == null)
+                existedWare.Reviews.Clear();
+                if (wareDTO.ReviewIds.Any())
                 {
-                    throw new ValidationException($"Один з Customer не знайдений!", "");
+                    await foreach (var review in Database.WareReviews.GetByIdsAsync(wareDTO.ReviewIds))
+                    {
+                        if (review == null)
+                        {
+                            throw new ValidationException($"Один з WareReview не знайдений!", "");
+                        }
+                        existedWare.Reviews.Add(review);
+                    }
                 }
-                existedWare.CustomerFavorites.Add(customer);
             }
-
-            await foreach (var status in Database.WareStatuses.GetByIdsAsync(wareDTO.StatusIds))
+            if (wareDTO.CustomerFavoriteIds != null)
             {
-                if (status == null)
+                existedWare.CustomerFavorites.Clear();
+                if (wareDTO.CustomerFavoriteIds.Any())
                 {
-                    throw new ValidationException($"Один з WareStatus не знайдений!", "");
-                }
-                existedWare.Statuses.Add(status);
-            }
+                    await foreach (var customer in Database.Customers.GetByIdsAsync(wareDTO.CustomerFavoriteIds))
+                    {
+                        if (customer == null)
+                        {
+                            throw new ValidationException($"Один з Customer не знайдений!", "");
+                        }
+                        existedWare.CustomerFavorites.Add(customer);
+                    }
 
+                }
+            }
 
             Database.Wares.Update(existedWare);
             await Database.Save();

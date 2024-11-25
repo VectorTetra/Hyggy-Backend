@@ -14,8 +14,7 @@ namespace HyggyBackend.BLL.DTO
         public long? WareId { get; set; }
         public long? PriceHistoryId { get; set; }
         public int? Count { get; set; }
-        //public WareDTO? Ware { get; set; }
-        //public WarePriceHistoryDTO? PriceHistory { get; set; }
-        public string? StringIds { get; set; }
+        public WareDTO? Ware { get; set; }
+        public WarePriceHistoryDTO? PriceHistory { get; set; }
     }
 }

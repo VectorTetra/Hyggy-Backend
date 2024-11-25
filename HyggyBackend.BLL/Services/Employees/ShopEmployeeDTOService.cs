@@ -107,7 +107,8 @@ namespace HyggyBackend.BLL.Services.Employees
 				{"email", user.Email }
 			};
 
-			registrationDto.UserUri = "http://localhost:5263/api/employee/emailconfirmation";
+			registrationDto.UserUri = "http://www.hyggy.somee.com/api/shopemployee/emailconfirmation";
+
 			var callback = QueryHelpers.AddQueryString(registrationDto.UserUri, param);
 
 

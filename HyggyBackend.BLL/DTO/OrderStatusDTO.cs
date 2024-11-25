@@ -13,6 +13,5 @@ namespace HyggyBackend.BLL.DTO
         public string? Name { get; set; }
         public string? Description { get; set; } = string.Empty;
         public ICollection<long> OrderIds { get; set; } = new List<long>();
-        public string? StringIds { get; set; }
     }
 }

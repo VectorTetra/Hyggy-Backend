@@ -7,11 +7,11 @@ namespace HyggyBackend.Controllers
 {
 	[ApiController]
 	[Route("api/storageemployee")]
-	public class MainStorageEmployeeController : Controller
+	public class StorageEmployeeController : Controller
 	{
 		private IEmployeeService<StorageEmployeeDTO> _service;
 
-		public MainStorageEmployeeController(IEmployeeService<StorageEmployeeDTO> service)
+		public StorageEmployeeController(IEmployeeService<StorageEmployeeDTO> service)
 		{
 			_service = service;
 		}

@@ -19,15 +19,17 @@ namespace HyggyBackend.BLL.Services
 		private readonly ITokenService _tokenService;
 		private readonly IEmailSender _emailSender;
 		private readonly UserManager<User> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-		public AccountService(IMapper mapper,ITokenService tokenService, 
-			IEmailSender emailSender, UserManager<User> userManager)
+        public AccountService(IMapper mapper,ITokenService tokenService, 
+			IEmailSender emailSender, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
 		{
 			_mapper = mapper;
 			_userManager = userManager;
 			_tokenService = tokenService;
 			_emailSender = emailSender;
-		}
+            _roleManager = roleManager;
+        }
 		public async Task<RegistrationResponseDto> RegisterAsync(UserForRegistrationDto registrationDto)
 		{
 			var user = _mapper.Map<Customer>(registrationDto);
@@ -38,7 +40,7 @@ namespace HyggyBackend.BLL.Services
 
 				return new RegistrationResponseDto { IsSuccessfullRegistration = false, Errors = errors };
 			}
-			await _userManager.AddToRoleAsync(user, "User");
+            await _userManager.AddToRoleAsync(user, "User");
 
 			var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 			var param = new Dictionary<string, string?>
@@ -134,16 +136,26 @@ namespace HyggyBackend.BLL.Services
 			{
 				var errors = result.Errors.Select(e => e.Description);
 				throw new ValidationException(String.Join(',', errors), userDto.Id!);
-
 			}
 
 			return "Ваш аккаунт оновлено";
 		}
 
-		public Task<string> Delete(string id)
+		public async Task<string> Delete(string id)
 		{
-			throw new NotImplementedException();
-		}
+            var user = await _userManager.FindByIdAsync(id!);
+            if (user is null)
+                throw new ValidationException("Ваш аккаунт не знайдено", id!);
+
+			var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description);
+                throw new ValidationException(String.Join(',', errors), id!);
+            }
+
+            return "Ваш аккаунт видалено";
+        }
 		private string EmailRegistrationTemplate(string name, string callback)
 		{
 			
@@ -223,7 +235,7 @@ namespace HyggyBackend.BLL.Services
 						 border-radius: 5px;
 						 margin-top: 20px;
 						 font-weight:bolder;
-						 color: white;
+						 color: white !important;
 					}}
 					.buttonlink>p{{
 						margin: auto;    

@@ -83,11 +83,11 @@ namespace HyggyBackend.Controllers
             }
         }
         [HttpDelete("{id}")]
-        public async Task<ActionResult<StorageDTO>> DeleteStorage(long storageId)
+        public async Task<ActionResult<StorageDTO>> DeleteStorage(long id)
 		{
             try
             {
-                var result = await _serv.Delete(storageId);
+                var result = await _serv.Delete(id);
                 return result;
             }
             catch (ValidationException ex)

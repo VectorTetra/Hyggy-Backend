@@ -12,5 +12,7 @@ namespace HyggyBackend.BLL.DTO.AccountDtos
 		public string? Surname { get; set; }
 		[Required(ErrorMessage = "Необхідно ввести пошту.")]
 		public string? Email { get; set; }
+		public string? PhoneNumber { get; set; }
+		public string? AvatarPath { get; set; }
 	}
 }

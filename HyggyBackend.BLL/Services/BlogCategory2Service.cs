@@ -112,7 +112,7 @@ namespace HyggyBackend.BLL.Services
             {
                 Name = blogCategory2.Name,
                 BlogCategory1 = exBlCat1,
-                PreviewImagePath = blogCategory2.PreviewImagePath,
+                PreviewImagePath = blogCategory2.PreviewImagePath ?? "",
                 Blogs = new List<Blog>()
             };
 
@@ -142,19 +142,31 @@ namespace HyggyBackend.BLL.Services
                 throw new ValidationException($"Не вказано BlogCategory2.Name!", "");
             }
 
-            exBlCat2.Blogs.Clear();
-            await foreach (var bloggy in Database.Blogs.GetByIdsAsync(blogCategory2.BlogIds))
+            if (blogCategory2.BlogIds != null)
             {
-                if (bloggy == null)
+
+                if (!blogCategory2.BlogIds.Any())
                 {
-                    throw new ValidationException($"Одна з BlogCategory2 не знайдена!", "");
+                    exBlCat2.Blogs.Clear();  // Очищаємо колекцію, якщо масив порожній
                 }
-                exBlCat2.Blogs.Add(bloggy);
+                else
+                {
+                    exBlCat2.Blogs.Clear();
+                    await foreach (var blCat2 in Database.Blogs.GetByIdsAsync(blogCategory2.BlogIds))
+                    {
+                        if (blCat2 == null)
+                        {
+                            throw new ValidationException($"Один з блогів не знайдено!", "");
+                        }
+                        exBlCat2.Blogs.Add(blCat2);  // Додаємо нові замовлення
+                    }
+                }
+
             }
 
             exBlCat2.Name = blogCategory2.Name;
             exBlCat2.BlogCategory1 = exBlCat1;
-            exBlCat2.PreviewImagePath = blogCategory2.PreviewImagePath;
+            exBlCat2.PreviewImagePath = blogCategory2.PreviewImagePath ?? "";
 
             Database.BlogCategories2.UpdateBlogCategory2(exBlCat2);
             await Database.Save();
