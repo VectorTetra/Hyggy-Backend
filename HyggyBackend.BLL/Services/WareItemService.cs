@@ -150,7 +150,6 @@ namespace HyggyBackend.BLL.Services
 
             var wareItem = new WareItem
             {
-                Id = WareItemDTO.Id,
                 Ware = ExistedWare,
                 Storage = ExistedStorage,
                 Quantity = WareItemDTO.Quantity

@@ -167,7 +167,7 @@ namespace HyggyBackend.DAL.Repositories
                 // Об'єднання результатів за QueryAny
                 result = collections.SelectMany(x => x).Distinct().ToList();
             }
-            else
+            else if (query.QueryAny == null && collections.Any())
             {
                 // Знаходження перетину
                 result = collections.Aggregate(new List<WareCategory3>(), (previousList, nextList) =>

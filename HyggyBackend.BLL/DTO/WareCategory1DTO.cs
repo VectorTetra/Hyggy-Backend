@@ -13,6 +13,5 @@ namespace HyggyBackend.BLL.DTO
         public string? Name { get; set; }
         public ICollection<long>? WaresCategory2Ids { get; set; } = new List<long>();
         public ICollection<WareCategory2DTO>? WaresCategories2 { get; set; } = new List<WareCategory2DTO>();
-        public string? StringIds { get; set; }
     }
 }

@@ -49,53 +49,49 @@ namespace HyggyBackend.BLL.Services
         }
         public async Task<WareImageDTO> Create(WareImageDTO wareImage)
         {
-            var existedWareId = await Database.Wares.GetById(wareImage.WareId);
-            if (existedWareId == null)
+            var existedWare = await Database.Wares.GetById(wareImage.WareId);
+            if (existedWare == null)
             {
                 throw new ValidationException("Товару з таким Id не існує!", wareImage.WareId.ToString());
             }
 
+            var wareImageDAL = new WareImage
+            {
+                Path = wareImage.Path,
+                Ware = existedWare
+            };
 
-            var wareImageDAL = _mapper.Map<WareImage>(wareImage);
             await Database.WareImages.Create(wareImageDAL);
             await Database.Save();
-            var returnedDTO = await GetById(wareImageDAL.Id);
-            if (returnedDTO == null)
-            {
-                throw new ValidationException("Помилка при створенні зображення товару!", wareImageDAL.Id.ToString());
-            }
-            return returnedDTO;
+            return _mapper.Map<WareImageDTO>(wareImageDAL);
 
         }
         public async Task<WareImageDTO> Update(WareImageDTO wareImage)
         {
-            var existedWareId = await Database.Wares.GetById(wareImage.WareId);
-            if (existedWareId == null)
+            var existedWare = await Database.Wares.GetById(wareImage.WareId);
+            if (existedWare == null)
             {
                 throw new ValidationException("Товару з таким Id не існує!", wareImage.WareId.ToString());
             }
 
-            var existedWareImageId = await Database.WareImages.GetById(wareImage.Id);
-            if (existedWareImageId == null)
+            var existedWareImage = await Database.WareImages.GetById(wareImage.Id);
+            if (existedWareImage == null)
             {
                 throw new ValidationException("Зображення товару з таким Id не існує!", wareImage.Id.ToString());
             }
 
+            existedWareImage.Path = wareImage.Path;
+            existedWareImage.Ware = existedWare;
 
-            var wareImageDAL = _mapper.Map<WareImage>(wareImage);
-            Database.WareImages.Update(wareImageDAL);
-            await Database.Save();
-            var returnedDTO = await GetById(wareImageDAL.Id);
-            if (returnedDTO == null)
-            {
-                throw new ValidationException("Помилка при оновленні зображення товару!", wareImageDAL.Id.ToString());
-            }
-            return returnedDTO;
+            //var wareImageDAL = _mapper.Map<WareImage>(wareImage);
+            Database.WareImages.Update(existedWareImage);
+            await Database.Save();           
+            return _mapper.Map<WareImageDTO>(existedWareImage);
         }
         public async Task<WareImageDTO> Delete(long id)
         {
-            var existedWareImageId = await Database.WareImages.GetById(id);
-            if (existedWareImageId == null)
+            var existedWareImage = await Database.WareImages.GetById(id);
+            if (existedWareImage == null)
             {
                 throw new ValidationException("Зображення товару з таким Id не існує!", id.ToString());
             }

@@ -33,6 +33,9 @@ namespace HyggyBackend.BLL.Helper
             #region Blog Mappings
             CreateMap<Blog, BlogDTO>()
                 .ForMember(dest => dest.BlogCategory2Id, opts => opts.MapFrom(src => src.BlogCategory2.Id))
+                .ForMember(dest => dest.BlogCategory1Id, opts => opts.MapFrom(src => src.BlogCategory2.BlogCategory1.Id))
+                .ForMember(dest => dest.BlogCategory2Name, opts => opts.MapFrom(src => src.BlogCategory2.Name))
+                .ForMember(dest => dest.BlogCategory1Name, opts => opts.MapFrom(src => src.BlogCategory2.BlogCategory1.Name))
                 .ForMember(dest => dest.Id, opts => opts.MapFrom(src => src.Id))
                 .ForMember(dest => dest.BlogTitle, opts => opts.MapFrom(src => src.BlogTitle))
                 .ForMember(dest => dest.Keywords, opts => opts.MapFrom(src => src.Keywords))
@@ -53,6 +56,7 @@ namespace HyggyBackend.BLL.Helper
             CreateMap<BlogCategory2, BlogCategory2DTO>()
                 .ForMember(dest => dest.Id, opts => opts.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Name, opts => opts.MapFrom(src => src.Name))
+                .ForMember(dest => dest.BlogCategory1Name, opts => opts.MapFrom(src => src.BlogCategory1.Name))
                 .ForMember(dest => dest.PreviewImagePath, opts => opts.MapFrom(src => src.PreviewImagePath))
                 .ForMember(dest => dest.BlogCategory1Id, opts => opts.MapFrom(src => src.BlogCategory1.Id));
             CreateMap<BlogCategory2QueryBLL, BlogCategory2QueryDAL>();
@@ -389,14 +393,13 @@ namespace HyggyBackend.BLL.Helper
              .ForMember(d => d.WareItemIds, opt => opt.MapFrom(c => c.WareItems.Select(wareItem => wareItem.Id)))
              .ForMember(d => d.OrderItemIds, opt => opt.MapFrom(c => c.OrderItems.Select(orderItem => orderItem.Id)))
              .ForMember(d => d.ReviewIds, opt => opt.MapFrom(c => c.Reviews.Select(review => review.Id)))
-             .ForMember(d => d.TrademarkId, opt => opt.MapFrom(c => c.WareTrademark != null ? c.WareTrademark.Id : 0))
+             .ForMember(d => d.TrademarkId, opt => opt.MapFrom(c => c.WareTrademark != null ? c.WareTrademark.Id : (long?)null))
              .ForMember(d => d.AverageRating, opt => opt.MapFrom(c => c.Reviews.Any() ? c.Reviews.Average(r => (float)r.Rating) : 0))
              .ForMember(d => d.PreviewImagePath, opt => opt.MapFrom(c => c.Images != null && c.Images.Any() ? c.Images.FirstOrDefault().Path : null))
              .ForMember(d => d.CustomerFavoriteIds, opt => opt.MapFrom(c => c.CustomerFavorites.Select(customer => customer.Id)))
              .ForMember(d => d.TrademarkName, opt => opt.MapFrom(c => c.WareTrademark != null ? c.WareTrademark.Name : null))
              .ForMember(d => d.StatusNames, opt => opt.MapFrom(c => c.Statuses.Select(st => st.Name)))
              .ForMember(d => d.ImagePaths, opt => opt.MapFrom(c => c.Images.Select(image => image.Path)))
-             .ForMember(d => d.WareCategory3Name, opt => opt.MapFrom(c => c.WareCategory3.Name))
              .ForMember(d => d.WareCategory2Id, opt => opt.MapFrom(c => c.WareCategory3.WareCategory2.Id))
              .ForMember(d => d.WareCategory1Id, opt => opt.MapFrom(c => c.WareCategory3.WareCategory2.WareCategory1.Id))
              .ForMember(d => d.WareItems, opt => opt.MapFrom(c => c.WareItems.Select(wi => new WareItemDTO
@@ -420,7 +423,11 @@ namespace HyggyBackend.BLL.Helper
                      //Longitude = wi.Storage.Address != null ? wi.Storage.Address.Longitude : (long?)null,
                      //StoredWaresSum = wi.Storage.WareItems != null ? wi.Storage.WareItems.Sum(w => w.Quantity * (w.Ware.Price * w.Ware.Discount / 100)) : 0
                  }
-             })));
+
+             })))
+             .ForMember(d => d.WareCategory3Name, opt => opt.MapFrom(c => c.WareCategory3.Name))
+             .ForMember(d => d.WareCategory2Name, opt => opt.MapFrom(c => c.WareCategory3.WareCategory2.Name))
+             .ForMember(d => d.WareCategory1Name, opt => opt.MapFrom(c => c.WareCategory3.WareCategory2.WareCategory1.Name));
 
             CreateMap<WareQueryBLL, WareQueryDAL>();
             #endregion
@@ -435,6 +442,9 @@ namespace HyggyBackend.BLL.Helper
                 .ForMember(d => d.Text, opt => opt.MapFrom(c => c.Text))
                 .ForMember(d => d.Theme, opt => opt.MapFrom(c => c.Theme))
                 .ForMember(d => d.Email, opt => opt.MapFrom(c => c.Email))
+                .ForMember(d => d.WarePreviewImagePath, opt => opt.MapFrom(c => c.Ware.Images.Count() > 0? c.Ware.Images.First().Path : null))
+                .ForMember(d => d.WareName, opt => opt.MapFrom(c => c.Ware.Name))
+                .ForMember(d => d.WareDescription, opt => opt.MapFrom(c => c.Ware.Description))
                 .ForMember(d => d.Date, opt => opt.MapFrom(c => c.Date));
             CreateMap<WareReviewQueryBLL, WareReviewQueryDAL>();
             #endregion

@@ -23,8 +23,7 @@ namespace HyggyBackend.BLL.DTO
         // Географічні координати
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
-		public ICollection<long>? OrderIds { get; set; } = new List<long>();	
-		public string? StringIds { get; set; }
+		public ICollection<long>? OrderIds { get; set; } = new List<long>();
 
 		//public virtual StorageDTO? Storage { get; set; }
     }
