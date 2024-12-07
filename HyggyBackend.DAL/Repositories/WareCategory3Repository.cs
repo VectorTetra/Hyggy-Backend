@@ -215,6 +215,12 @@ namespace HyggyBackend.DAL.Repositories
                     case "WareCategory2NameDesc":
                         result = result.OrderByDescending(ware => ware.WareCategory2.Name).ToList();
                         break;
+                    case "WareCategory2NameThenCategory3NameAsc":
+                        result = result.OrderBy(ware => ware.WareCategory2.Name).ThenBy(ware => ware.Name).ToList();
+                        break;
+                    case "WareCategory2NameThenCategory3NameDesc":
+                        result = result.OrderByDescending(ware => ware.WareCategory2.Name).ThenByDescending(ware => ware.Name).ToList();
+                        break;
                     default:
                         break;
                 }
