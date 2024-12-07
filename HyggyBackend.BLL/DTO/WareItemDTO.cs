@@ -13,7 +13,7 @@ namespace HyggyBackend.BLL.DTO
         public long WareId { get; set; }
         public long StorageId { get; set; }
         public long Quantity { get; set; }
-        public WareDTO? Ware { get; set; }
-        public StorageDTO? Storage { get; set; }
+        //public WareDTO? Ware { get; set; }
+        //public StorageDTO? Storage { get; set; }
     }
 }

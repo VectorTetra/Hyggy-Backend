@@ -16,29 +16,29 @@ namespace HyggyBackend.Controllers
         {
             _service = service;
         }
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] UserForRegistrationDto registrationDto)
-        {
-            try
-            {
-                if (registrationDto is null)
-                    return BadRequest();
+        //[HttpPost("register")]
+        //public async Task<IActionResult> Register([FromBody] UserForRegistrationDto registrationDto)
+        //{
+        //    try
+        //    {
+        //        if (registrationDto is null)
+        //            return BadRequest();
 
-                var response = await _service.RegisterAsync(registrationDto);
-                if (!response.IsSuccessfullRegistration)
-                    return BadRequest(response.Errors);
+        //        var response = await _service.RegisterAsync(registrationDto);
+        //        if (!response.IsSuccessfullRegistration)
+        //            return BadRequest(response.Errors);
 
-                return Ok(new { message = "Будь ласка підтвердіть ваш обліковий запис" });
-            }
-            catch (Exception ex)
-            {
-                if (ex.InnerException != null)
-                {
-                    return StatusCode(500, ex.InnerException.Message);
-                }
-                return StatusCode(500, ex.Message);
-            }
-        }
+        //        return Ok(new { message = "Будь ласка підтвердіть ваш обліковий запис" });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        if (ex.InnerException != null)
+        //        {
+        //            return StatusCode(500, ex.InnerException.Message);
+        //        }
+        //        return StatusCode(500, ex.Message);
+        //    }
+        //}
         [HttpPost("authenticate")]
         public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDto authenticationDto)
         {
