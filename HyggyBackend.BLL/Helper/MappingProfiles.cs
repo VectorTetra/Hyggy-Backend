@@ -352,6 +352,9 @@ namespace HyggyBackend.BLL.Helper
             CreateMap<WareCategory3, WareCategory3DTO>()
            .ForMember("Id", opt => opt.MapFrom(c => c.Id))
            .ForMember("Name", opt => opt.MapFrom(c => c.Name))
+           .ForMember("WareCategory2Id", opt => opt.MapFrom(c => c.WareCategory2.Id))
+           .ForMember("WareCategory1Name", opt => opt.MapFrom(c => c.WareCategory2.WareCategory1.Name))
+           .ForMember("WareCategory2Name", opt => opt.MapFrom(c => c.WareCategory2.Name))
            .ForPath(dst => dst.WareCategory2Id, opt => opt.MapFrom(c => c.WareCategory2.Id));
 
             CreateMap<WareCategory3QueryBLL, WareCategory3QueryDAL>();
