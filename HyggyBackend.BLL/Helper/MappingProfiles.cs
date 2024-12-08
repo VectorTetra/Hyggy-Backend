@@ -425,11 +425,14 @@ namespace HyggyBackend.BLL.Helper
                      //Latitude = wi.Storage.Address != null ? wi.Storage.Address.Latitude : (long?)null,
                      //Longitude = wi.Storage.Address != null ? wi.Storage.Address.Longitude : (long?)null,
                      //StoredWaresSum = wi.Storage.WareItems != null ? wi.Storage.WareItems.Sum(w => w.Quantity * (w.Ware.Price * w.Ware.Discount / 100)) : 0
-                 }
+                 },
+                 TotalSum = wi.Quantity * (wi.Ware.Price - (wi.Ware.Price * wi.Ware.Discount / 100))
 
              })))
              .ForMember(d => d.WareCategory3Name, opt => opt.MapFrom(c => c.WareCategory3.Name))
              .ForMember(d => d.WareCategory2Name, opt => opt.MapFrom(c => c.WareCategory3.WareCategory2.Name))
+             .ForMember(d => d.TotalWareItemsQuantity, opt => opt.MapFrom(c => c.WareItems.Sum(item => item.Quantity)))
+             .ForMember(d => d.TotalWareItemsSum, opt => opt.MapFrom(c => c.WareItems.Sum(item => item.Quantity * (c.Price - (c.Price * c.Discount / 100)))))
              .ForMember(d => d.WareCategory1Name, opt => opt.MapFrom(c => c.WareCategory3.WareCategory2.WareCategory1.Name));
 
             CreateMap<Ware, WareDTO2>()

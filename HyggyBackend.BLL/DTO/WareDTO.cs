@@ -41,5 +41,7 @@ namespace HyggyBackend.BLL.DTO
         public ICollection<string>? StatusNames { get; set; } = new List<string>();
         public ICollection<string>? ImagePaths { get; set; } = new List<string>();
         public ICollection<WareItemDTO>? WareItems { get; set; } = new List<WareItemDTO>();
+        public long? TotalWareItemsQuantity { get; set; }
+        public double? TotalWareItemsSum { get; set; }
     }
 }
