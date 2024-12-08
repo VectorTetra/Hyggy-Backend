@@ -64,13 +64,13 @@ namespace HyggyBackend.Controllers
         });
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<WareDTO>>> GetWares([FromQuery] WareQueryPL query)
+        public async Task<ActionResult<IEnumerable<object>>> GetWares([FromQuery] WareQueryPL query)
         {
             try
             {
-                IEnumerable<WareDTO> collection = null;
+                IEnumerable<object> collection = null;
 
-                switch (query.SearchParameter)  
+                switch (query.SearchParameter)
                 {
                     case "Id":
                         {
@@ -218,7 +218,7 @@ namespace HyggyBackend.Controllers
                         break;
                     case "Price":
                         {
-                            if (query.MinPrice == null )
+                            if (query.MinPrice == null)
                             {
                                 throw new ValidationException("Не вказано Ware.MinPrice для пошуку!", nameof(WareQueryPL.MinPrice));
                             }
@@ -406,7 +406,17 @@ namespace HyggyBackend.Controllers
                         {
                             var mapper = new Mapper(config);
                             var queryBLL = mapper.Map<WareQueryBLL>(query);
-                            collection = await _serv.GetByQuery(queryBLL);
+                            switch (query.DTOType)
+                            {
+                                case "WareDTO":
+                                    collection = await _serv.GetByQuery<WareDTO>(queryBLL);
+                                    break;
+                                case "WareDTO2":
+                                    collection = await _serv.GetByQuery<WareDTO2>(queryBLL);
+                                    break;
+                                default:
+                                    throw new ValidationException("Неправильно вказано WareQuery.DTOType для пошуку!", nameof(WareQueryPL.DTOType));
+                            }
                         }
                         break;
                     default:
@@ -669,6 +679,7 @@ namespace HyggyBackend.Controllers
         public string? StringCategory1Ids { get; set; }
         public string? StringCategory2Ids { get; set; }
         public string? StringCategory3Ids { get; set; }
+        public string? DTOType { get; set; } = "WareDTO";
         public string? QueryAny { get; set; }
     }
 

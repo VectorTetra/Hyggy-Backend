@@ -175,12 +175,37 @@ namespace HyggyBackend.BLL.Services
             var wares = await Database.Wares.GetFavoritesByCustomerId(customerId);
             return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
         }
-        public async Task<IEnumerable<WareDTO>> GetByQuery(WareQueryBLL queryDAL)
+        //public async Task<IEnumerable<WareDTO>> GetByQuery(WareQueryBLL queryDAL)
+        //{
+        //    var query = _mapper.Map<WareQueryBLL, WareQueryDAL>(queryDAL);
+        //    var wares = await Database.Wares.GetByQuery(query);
+        //    return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
+        //}
+        public async Task<IEnumerable<T>> GetByQuery<T>(WareQueryBLL queryDAL)
         {
             var query = _mapper.Map<WareQueryBLL, WareQueryDAL>(queryDAL);
             var wares = await Database.Wares.GetByQuery(query);
-            return _mapper.Map<IEnumerable<Ware>, IEnumerable<WareDTO>>(wares);
+            return _mapper.Map<IEnumerable<Ware>, IEnumerable<T>>(wares);
         }
+        //public async Task<IEnumerable<T>> GetByQuery<T>(WareQueryBLL queryDAL)
+        //{
+        //    var query = _mapper.Map<WareQueryBLL, WareQueryDAL>(queryDAL);
+        //    var wares = await Database.Wares.GetByQuery(query);
+
+        //    // Отримання типу з назви у властивості DTOType
+        //    var targetType = Type.GetType($"HyggyBackend.BLL.DTO.{queryDAL.DTOType}");
+        //    if (targetType == null)
+        //    {
+        //        throw new ArgumentException($"Тип {queryDAL.DTOType} не знайдено");
+        //    }
+
+        //    // Використання AutoMapper для мапінгу
+        //    var mappedResult = _mapper.Map(wares, typeof(IEnumerable<Ware>), typeof(IEnumerable<>).MakeGenericType(targetType));
+
+        //    return (IEnumerable<object>)mappedResult;
+        //}
+
+
         public async Task<WareDTO> Create(WareDTO wareDTO)
         {
             if (wareDTO.Article == null)

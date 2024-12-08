@@ -432,6 +432,39 @@ namespace HyggyBackend.BLL.Helper
              .ForMember(d => d.WareCategory2Name, opt => opt.MapFrom(c => c.WareCategory3.WareCategory2.Name))
              .ForMember(d => d.WareCategory1Name, opt => opt.MapFrom(c => c.WareCategory3.WareCategory2.WareCategory1.Name));
 
+            CreateMap<Ware, WareDTO2>()
+            .ForMember(d => d.Id, opt => opt.MapFrom(c => c.Id))
+            .ForMember(d => d.Article, opt => opt.MapFrom(c => c.Article))
+            .ForMember(d => d.Name, opt => opt.MapFrom(c => c.Name))
+            .ForMember(d => d.Description, opt => opt.MapFrom(c => c.Description))
+            .ForMember(d => d.StructureFilePath, opt => opt.MapFrom(c => c.StructureFilePath))
+            .ForMember(d => d.Price, opt => opt.MapFrom(c => c.Price))
+            .ForMember(d => d.Discount, opt => opt.MapFrom(c => c.Discount))
+            .ForMember(d => d.FinalPrice, opt => opt.MapFrom(c => c.Price - (c.Price * c.Discount / 100)))
+            .ForMember(d => d.IsDeliveryAvailable, opt => opt.MapFrom(c => c.IsDeliveryAvailable))
+            .ForMember(d => d.WareCategory3Id, opt => opt.MapFrom(c => c.WareCategory3.Id))
+            .ForMember(d => d.StatusIds, opt => opt.MapFrom(c => c.Statuses.Select(st => st.Id)))
+            .ForMember(d => d.ImageIds, opt => opt.MapFrom(c => c.Images.Select(image => image.Id)))
+            .ForMember(d => d.PriceHistoryIds, opt => opt.MapFrom(c => c.PriceHistories.Select(price => price.Id)))
+            .ForMember(d => d.WareItemIds, opt => opt.MapFrom(c => c.WareItems.Select(wareItem => wareItem.Id)))
+            .ForMember(d => d.OrderItemIds, opt => opt.MapFrom(c => c.OrderItems.Select(orderItem => orderItem.Id)))
+            .ForMember(d => d.ReviewIds, opt => opt.MapFrom(c => c.Reviews.Select(review => review.Id)))
+            .ForMember(d => d.TrademarkId, opt => opt.MapFrom(c => c.WareTrademark != null ? c.WareTrademark.Id : (long?)null))
+            .ForMember(d => d.AverageRating, opt => opt.MapFrom(c => c.Reviews.Any() ? c.Reviews.Average(r => (float)r.Rating) : 0))
+            .ForMember(d => d.PreviewImagePath, opt => opt.MapFrom(c => c.Images != null && c.Images.Any() ? c.Images.FirstOrDefault().Path : null))
+            .ForMember(d => d.CustomerFavoriteIds, opt => opt.MapFrom(c => c.CustomerFavorites.Select(customer => customer.Id)))
+            .ForMember(d => d.TrademarkName, opt => opt.MapFrom(c => c.WareTrademark != null ? c.WareTrademark.Name : null))
+            .ForMember(d => d.StatusNames, opt => opt.MapFrom(c => c.Statuses.Select(st => st.Name)))
+            .ForMember(d => d.ImagePaths, opt => opt.MapFrom(c => c.Images.Select(image => image.Path)))
+            .ForMember(d => d.WareCategory2Id, opt => opt.MapFrom(c => c.WareCategory3.WareCategory2.Id))
+            .ForMember(d => d.WareCategory1Id, opt => opt.MapFrom(c => c.WareCategory3.WareCategory2.WareCategory1.Id))
+            .ForMember(d => d.WareCategory3Name, opt => opt.MapFrom(c => c.WareCategory3.Name))
+            .ForMember(d => d.WareCategory2Name, opt => opt.MapFrom(c => c.WareCategory3.WareCategory2.Name))
+            .ForMember(d => d.WareCategory1Name, opt => opt.MapFrom(c => c.WareCategory3.WareCategory2.WareCategory1.Name))
+            .ForMember(d => d.TotalWareItemsQuantity, opt => opt.MapFrom(c => c.WareItems.Sum(item => item.Quantity)))
+            .ForMember(d => d.TotalWareItemsSum, opt => opt.MapFrom(c => c.WareItems.Sum(item => item.Quantity * (c.Price - (c.Price * c.Discount / 100)))));
+
+
             CreateMap<WareQueryBLL, WareQueryDAL>();
             #endregion
 
