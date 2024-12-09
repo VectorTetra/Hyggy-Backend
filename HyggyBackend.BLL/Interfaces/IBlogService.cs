@@ -1,5 +1,6 @@
 ﻿using HyggyBackend.BLL.DTO;
 using HyggyBackend.BLL.Queries;
+using HyggyBackend.DAL.Entities;
 
 namespace HyggyBackend.BLL.Interfaces
 {
@@ -9,6 +10,8 @@ namespace HyggyBackend.BLL.Interfaces
         Task<IEnumerable<BlogDTO>> GetByKeywordSubstring(string keyword);
         Task<IEnumerable<BlogDTO>> GetByTitleSubstring(string title);
         Task<IEnumerable<BlogDTO>> GetByStringIds(string stringIds);
+        Task<IEnumerable<BlogDTO>> GetByBlogCategory1StringIds(string stringIds);
+        Task<IEnumerable<BlogDTO>> GetByBlogCategory2StringIds(string stringIds);
         Task<IEnumerable<BlogDTO>> GetByFilePathSubstring(string FilePathSubstring);
         Task<IEnumerable<BlogDTO>> GetByPreviewImagePathSubstring(string PreviewImagePathSubstring);
         Task<IEnumerable<BlogDTO>> GetByBlogCategory1Id(long blogCategory1Id);

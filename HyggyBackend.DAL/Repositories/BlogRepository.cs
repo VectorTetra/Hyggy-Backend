@@ -38,6 +38,31 @@ namespace HyggyBackend.DAL.Repositories
             }
             return waress;
         }
+
+        public async Task<IEnumerable<Blog>> GetByBlogCategory1StringIds(string stringIds)
+        {
+            // Розділяємо рядок за символом '|' та конвертуємо в список long
+            List<long> ids = stringIds.Split('|').Select(long.Parse).ToList();
+
+            // Виконуємо запит до контексту для отримання товарів, у яких ідентифікатор категорії 1 міститься у списку
+            var blogs = await _context.Blogs
+                .Where(bl => bl.BlogCategory2.BlogCategory1 != null && ids.Contains(bl.BlogCategory2.BlogCategory1.Id))
+                .ToListAsync();
+
+            return blogs;
+        }
+
+        public async Task<IEnumerable<Blog>> GetByBlogCategory2StringIds(string stringIds)
+        {
+            // Розділяємо рядок за символом '|' та конвертуємо в список long
+            List<long> ids = stringIds.Split('|').Select(long.Parse).ToList();
+            // Виконуємо запит до контексту для отримання товарів, у яких ідентифікатор категорії 2 міститься у списку
+            var blogs = await _context.Blogs
+                .Where(bl => bl.BlogCategory2 != null && ids.Contains(bl.BlogCategory2.Id))
+                .ToListAsync();
+            return blogs;
+        }
+
         public async Task<IEnumerable<Blog>> GetByTitleSubstring(string title)
         {
             return await _context.Blogs
@@ -161,6 +186,14 @@ namespace HyggyBackend.DAL.Repositories
                 if (!string.IsNullOrEmpty(query.StringIds))
                 {
                     collections.Add(await GetByStringIds(query.StringIds));
+                }
+                if (!string.IsNullOrEmpty(query.StringBlogCategory1Ids))
+                {
+                    collections.Add(await GetByBlogCategory1StringIds(query.StringBlogCategory1Ids));
+                }
+                if (!string.IsNullOrEmpty(query.StringBlogCategory2Ids))
+                {
+                    collections.Add(await GetByBlogCategory2StringIds(query.StringBlogCategory2Ids));
                 }
             }
 

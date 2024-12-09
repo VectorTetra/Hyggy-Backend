@@ -13,7 +13,7 @@ namespace HyggyBackend.Controllers
 {
     [ApiController]
     [Route("api/Blog")]
-    public class BlogController :ControllerBase
+    public class BlogController : ControllerBase
     {
         private readonly IBlogService _serv;
         IWebHostEnvironment _appEnvironment;
@@ -36,6 +36,8 @@ namespace HyggyBackend.Controllers
              .ForMember(dest => dest.BlogCategory1Name, opt => opt.MapFrom(src => src.BlogCategory1Name))
              .ForMember(dest => dest.BlogCategory2Id, opt => opt.MapFrom(src => src.BlogCategory2Id))
              .ForMember(dest => dest.BlogCategory2Name, opt => opt.MapFrom(src => src.BlogCategory2Name))
+             .ForMember(dest => dest.StringBlogCategory1Ids, opt => opt.MapFrom(src => src.StringBlogCategory1Ids))
+             .ForMember(dest => dest.StringBlogCategory2Ids, opt => opt.MapFrom(src => src.StringBlogCategory2Ids))
              .ForMember(dest => dest.StringIds, opt => opt.MapFrom(src => src.StringIds))
              .ForMember(dest => dest.Sorting, opt => opt.MapFrom(src => src.Sorting))
              .ForMember(dest => dest.PageNumber, opt => opt.MapFrom(src => src.PageNumber))
@@ -172,11 +174,35 @@ namespace HyggyBackend.Controllers
                             }
                         }
                         break;
+                    case "StringBlogCategory1Ids":
+                        {
+                            if (query.StringBlogCategory1Ids == null)
+                            {
+                                throw new ValidationException("Не вказано StringBlogCategory1Ids для пошуку!", "");
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByBlogCategory1StringIds(query.StringBlogCategory1Ids);
+                            }
+                        }
+                        break;
+                    case "StringBlogCategory2Ids":
+                        {
+                            if (query.StringBlogCategory2Ids == null)
+                            {
+                                throw new ValidationException("Не вказано StringBlogCategory2Ids для пошуку!", "");
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByBlogCategory2StringIds(query.StringBlogCategory2Ids);
+                            }
+                        }
+                        break;
                     case "Paged":
                         {
-                            if(query.PageNumber == null)
+                            if (query.PageNumber == null)
                             {
-                               throw new ValidationException("Не вказано PageNumber для пошуку!", "");
+                                throw new ValidationException("Не вказано PageNumber для пошуку!", "");
                             }
                             if (query.PageSize == null)
                             {
@@ -434,60 +460,6 @@ namespace HyggyBackend.Controllers
                 return StatusCode(500, ex.InnerException?.Message ?? ex.Message);
             }
         }
-
-
-        //[HttpPost]
-        //[Route("PostBlogImage")]
-        //public async Task<ActionResult<ICollection<string>>> PostBlogImage([FromForm] IFormFileCollection FormFiles)
-        //{
-        //    try
-        //    {
-        //        if (FormFiles is null || FormFiles.Count == 0)
-        //        {
-        //            throw new ValidationException("Файли не було завантажено!", nameof(FormFiles));
-        //        }
-        //        List<string> paths = new List<string>();
-        //        foreach (var FormFile in FormFiles)
-        //        {
-        //            // получаем имя файла
-        //            string fileName = System.IO.Path.GetFileNameWithoutExtension(FormFile.FileName);
-        //            fileName = fileName.Replace(" ", "_");
-
-        //            // генерируем новый GUID
-        //            string guid = Guid.NewGuid().ToString();
-
-        //            // добавляем GUID к имени файла
-        //            string newFileName = $"{fileName}_{guid}{Path.GetExtension(FormFile.FileName)}";
-
-        //            // Путь к папке Files
-        //            string path = "/BlogImages/" + newFileName; // новое имя файла
-
-        //            // Сохраняем файл в папку Files в каталоге wwwroot
-        //            // Для получения полного пути к каталогу wwwroot
-        //            // применяется свойство WebRootPath объекта IWebHostEnvironment
-        //            using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
-        //            {
-        //                await FormFile.CopyToAsync(fileStream); // копируем файл в поток
-        //            }
-        //            //return new ObjectResult(_appEnvironment.WebRootPath + path);
-        //            path = "http://www.hyggy.somee.com" + path;
-        //            paths.Add(path);
-        //        }
-        //        return new ObjectResult(paths);
-        //    }
-        //    catch (ValidationException ex)
-        //    {
-        //        return StatusCode(500, ex.Message);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        if (ex.InnerException != null)
-        //        {
-        //            return StatusCode(500, ex.InnerException.Message);
-        //        }
-        //        return StatusCode(500, ex.Message);
-        //    }
-        //}
     }
 
     public class BlogQueryPL
@@ -505,6 +477,8 @@ namespace HyggyBackend.Controllers
         public int? PageNumber { get; set; }
         public int? PageSize { get; set; }
         public string? StringIds { get; set; }
+        public string? StringBlogCategory1Ids { get; set; }
+        public string? StringBlogCategory2Ids { get; set; }
         public string? Sorting { get; set; }
         public string? QueryAny { get; set; }
     }

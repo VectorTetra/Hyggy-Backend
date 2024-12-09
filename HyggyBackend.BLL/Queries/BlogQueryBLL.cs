@@ -18,9 +18,11 @@ namespace HyggyBackend.BLL.Queries
         public long? BlogCategory2Id { get; set; }
         public string? BlogCategory2Name { get; set; }
         public int? PageNumber { get; set; }
-        public int? PageSize { get; set; }
         public string? StringIds { get; set; }
+        public string? StringBlogCategory1Ids { get; set; }
+        public string? StringBlogCategory2Ids { get; set; }
+        public int? PageSize { get; set; }
         public string? Sorting { get; set; }
-        public string? QueryAny {get;set;}
+        public string? QueryAny { get; set; }
     }
 }
