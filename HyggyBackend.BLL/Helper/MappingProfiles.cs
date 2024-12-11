@@ -235,6 +235,7 @@ namespace HyggyBackend.BLL.Helper
                 .ForPath(dst => dst.Name, opt => opt.MapFrom(src => src.Name))
                 .ForPath(dst => dst.Description, opt => opt.MapFrom(src => src.Description))
                 .ForPath(dst => dst.Id, opt => opt.MapFrom(src => src.Id));
+            CreateMap<OrderStatusQueryBLL, OrderStatusQueryDAL>();
             #endregion
 
             #region Profession Mappings
