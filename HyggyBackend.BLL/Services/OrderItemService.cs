@@ -75,12 +75,6 @@ namespace HyggyBackend.BLL.Services
 
         public async Task<OrderItemDTO> Create(OrderItemDTO orderItemDTO)
         {
-            var existingId = await Database.OrderItems.GetById(orderItemDTO.Id);
-            if (existingId != null)
-            {
-                throw new ValidationException($"Такий ID вже зайнято! (Id : {existingId.Id.ToString()})", "");
-            }
-
             if (orderItemDTO.OrderId == null)
             {
                 throw new ValidationException("OrderId не може бути пустим!", "");
