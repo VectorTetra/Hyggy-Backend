@@ -1,5 +1,6 @@
 ﻿using HyggyBackend.BLL.DTO;
 using HyggyBackend.BLL.Queries;
+using HyggyBackend.DAL.Entities;
 
 namespace HyggyBackend.BLL.Interfaces
 {
@@ -21,6 +22,11 @@ namespace HyggyBackend.BLL.Interfaces
         Task<IEnumerable<OrderDTO>> GetByStatusId(long statusId);
         Task<IEnumerable<OrderDTO>> GetByStatusNameSubstring(string statusNameSubstring);
         Task<IEnumerable<OrderDTO>> GetByStatusDescriptionSubstring(string statusDescriptionSubstring);
+        Task<IEnumerable<OrderDTO>> GetByDeliveryTypeId(long deliveryTypeId);
+        Task<IEnumerable<OrderDTO>> GetByDeliveryTypeName(string DeliveryTypeName);
+        Task<IEnumerable<OrderDTO>> GetByDeliveryTypeDescription(string DeliveryTypeDescription);
+        Task<IEnumerable<OrderDTO>> GetByDeliveryTypePriceRange(float minPrice, float maxPrice);
+        Task<IEnumerable<OrderDTO>> GetByDeliveryTypeDeliveryTimeInDaysRange(int minDeliveryTimeInDays, int maxDeliveryTimeInDays);
         Task<IEnumerable<OrderDTO>> GetByOrderItemId(long orderItemId);
         Task<IEnumerable<OrderDTO>> GetByWareId(long wareId);
         Task<IEnumerable<OrderDTO>> GetByWarePriceHistoryId(long warePriceHistoryId);

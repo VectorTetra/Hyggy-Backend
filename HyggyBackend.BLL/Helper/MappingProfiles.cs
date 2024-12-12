@@ -230,6 +230,19 @@ namespace HyggyBackend.BLL.Helper
             CreateMap<OrderQueryBLL, OrderQueryDAL>();
             #endregion
 
+            #region OrderDeliveryType Mappings
+            CreateMap<OrderDeliveryType, OrderDeliveryTypeDTO>()
+                .ForMember(dst => dst.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dst => dst.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dst => dst.Description, opt => opt.MapFrom(src => src.Description)) 
+                .ForMember(dst => dst.Price, opt => opt.MapFrom(src => src.Price))
+                .ForMember(dst => dst.MinDeliveryTimeInDays, opt => opt.MapFrom(src => src.MinDeliveryTimeInDays))
+                .ForMember(dst => dst.MaxDeliveryTimeInDays, opt => opt.MapFrom(src => src.MaxDeliveryTimeInDays))
+                .ForMember(dst => dst.OrderIds, opt => opt.MapFrom(src => src.Orders.Select(o => o.Id)));
+
+            CreateMap<OrderDeliveryTypeQueryBLL, OrderDeliveryTypeQueryDAL>();
+            #endregion
+
             #region OrderStatus Mappings
             CreateMap<OrderStatus, OrderStatusDTO>()
                 .ForPath(dst => dst.OrderIds, opt => opt.MapFrom(src => src.Orders.Select(o => o.Id)))

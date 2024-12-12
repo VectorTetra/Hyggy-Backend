@@ -121,6 +121,32 @@ namespace HyggyBackend.BLL.Services
 
             return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
+        public async Task<IEnumerable<OrderDTO>> GetByDeliveryTypeId(long deliveryTypeId)
+        {
+            var orders = await Database.Orders.GetByDeliveryTypeId(deliveryTypeId);
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
+        }
+        public async Task<IEnumerable<OrderDTO>> GetByDeliveryTypeName(string DeliveryTypeName)
+        {
+            var orders = await Database.Orders.GetByDeliveryTypeName(DeliveryTypeName);
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
+        }
+        public async Task<IEnumerable<OrderDTO>> GetByDeliveryTypeDescription(string DeliveryTypeDescription)
+        {
+            var orders = await Database.Orders.GetByDeliveryTypeDescription(DeliveryTypeDescription);
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
+        }
+        public async Task<IEnumerable<OrderDTO>> GetByDeliveryTypePriceRange(float minPrice, float maxPrice)
+        {
+            var orders = await Database.Orders.GetByDeliveryTypePriceRange(minPrice, maxPrice);
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
+        }
+        public async Task<IEnumerable<OrderDTO>> GetByDeliveryTypeDeliveryTimeInDaysRange(int minDeliveryTimeInDays, int maxDeliveryTimeInDays)
+        {
+            var orders = await Database.Orders.GetByDeliveryTypeDeliveryTimeInDaysRange(minDeliveryTimeInDays, maxDeliveryTimeInDays);
+            return _mapper.Map<IEnumerable<OrderDTO>>(orders);
+        }
+
         public async Task<IEnumerable<OrderDTO>> GetByOrderItemId(long orderItemId)
         {
             var orders = await Database.Orders.GetByOrderItemId(orderItemId);
@@ -189,6 +215,15 @@ namespace HyggyBackend.BLL.Services
             {
                 throw new ValidationException($"Клієнт з таким ID не знайдено! CustomerId: {orderDTO.CustomerId}", "");
             }
+            if(orderDTO.DeliveryTypeId == null)
+            {
+                throw new ValidationException($"Id типу доставки не може бути пустим! Id:{orderDTO.DeliveryTypeId}", "");
+            }
+            var ExistedDeliveryType = await Database.OrderDeliveryTypes.GetById(orderDTO.DeliveryTypeId.Value);
+            if (ExistedDeliveryType == null)
+            {
+                throw new ValidationException($"Тип доставки з таким ID не знайдено! DeliveryTypeId: {orderDTO.DeliveryTypeId}", "");
+            }
             // Перевірка наявності дати замовлення
             if (orderDTO.OrderDate == null)
             {
@@ -247,6 +282,7 @@ namespace HyggyBackend.BLL.Services
                 Shop = ExistedShop,
                 Customer = ExistedCustomer,
                 DeliveryAddress = deliveryAddress,
+                DeliveryType = ExistedDeliveryType,
                 OrderItems = orderItems
             };
 
@@ -301,7 +337,15 @@ namespace HyggyBackend.BLL.Services
             {
                 throw new ValidationException($"Клієнт з таким ID не знайдено! CustomerId: {orderDTO.CustomerId}", "");
             }
-
+            if (orderDTO.DeliveryTypeId == null)
+            {
+                throw new ValidationException($"Id типу доставки не може бути пустим! Id:{orderDTO.DeliveryTypeId}", "");
+            }
+            var ExistedDeliveryType = await Database.OrderDeliveryTypes.GetById(orderDTO.DeliveryTypeId.Value);
+            if (ExistedDeliveryType == null)
+            {
+                throw new ValidationException($"Тип доставки з таким ID не знайдено! DeliveryTypeId: {orderDTO.DeliveryTypeId}", "");
+            }
             // Перевірка наявності дати замовлення
             if (orderDTO.OrderDate == null)
             {
@@ -371,6 +415,7 @@ namespace HyggyBackend.BLL.Services
             existingOrder.Shop = ExistedShop;
             existingOrder.Customer = ExistedCustomer;
             existingOrder.DeliveryAddress = deliveryAddress;
+            existingOrder.DeliveryType = ExistedDeliveryType;
             existingOrder.OrderItems = orderItems;
 
             // Оновлення замовлення в базі даних

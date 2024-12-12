@@ -19,6 +19,7 @@ namespace HyggyBackend.DAL.UnitOfWork
         private StorageEmployeeRepository _storageEmployees;
         private IProffessionRepository _proffessions;
         private IOrderRepository _orders;
+        private IOrderDeliveryTypeRepository _orderDeliveryTypes;
         private IWareCategory1Repository _categories1;
         private IWareCategory2Repository _categories2;
         private IWareCategory3Repository _categories3;
@@ -137,6 +138,16 @@ namespace HyggyBackend.DAL.UnitOfWork
                 if (_orders == null)
                     _orders = new OrderRepository(_context);
                 return _orders;
+            }
+        }
+
+        public IOrderDeliveryTypeRepository OrderDeliveryTypes
+        {
+            get
+            {
+                if (_orderDeliveryTypes == null)
+                    _orderDeliveryTypes = new OrderDeliveryTypeRepository(_context);
+                return _orderDeliveryTypes;
             }
         }
         public ICustomerRepository Customers

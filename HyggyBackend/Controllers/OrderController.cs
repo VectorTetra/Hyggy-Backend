@@ -40,6 +40,13 @@ namespace HyggyBackend.Controllers
             .ForMember(dest => dest.StatusId, opt => opt.MapFrom(src => src.StatusId))
             .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.StatusName))
             .ForMember(dest => dest.StatusDescription, opt => opt.MapFrom(src => src.StatusDescription))
+            .ForMember(dest => dest.DeliveryTypeId, opt => opt.MapFrom(src => src.DeliveryTypeId))
+            .ForMember(dest => dest.DeliveryTypeName, opt => opt.MapFrom(src => src.DeliveryTypeName))
+            .ForMember(dest => dest.DeliveryTypeDescription, opt => opt.MapFrom(src => src.DeliveryTypeDescription))
+            .ForMember(dest => dest.MinDeliveryTypePrice, opt => opt.MapFrom(src => src.MinDeliveryTypePrice))
+            .ForMember(dest => dest.MaxDeliveryTypePrice, opt => opt.MapFrom(src => src.MaxDeliveryTypePrice))
+            .ForMember(dest => dest.MinDeliveryTimeInDays, opt => opt.MapFrom(src => src.MinDeliveryTimeInDays))
+            .ForMember(dest => dest.MaxDeliveryTimeInDays, opt => opt.MapFrom(src => src.MaxDeliveryTimeInDays))
             .ForMember(dest => dest.OrderItemId, opt => opt.MapFrom(src => src.OrderItemId))
             .ForMember(dest => dest.WareId, opt => opt.MapFrom(src => src.WareId))
             .ForMember(dest => dest.WarePriceHistoryId, opt => opt.MapFrom(src => src.WarePriceHistoryId))
@@ -227,6 +234,66 @@ namespace HyggyBackend.Controllers
                             else
                             {
                                 collection = await _serv.GetByStatusDescriptionSubstring(orderQueryPL.StatusDescription);
+                            }
+                        }
+                        break;
+                    case "DeliveryTypeId":
+                        {
+                            if (orderQueryPL.DeliveryTypeId == null)
+                            {
+                                throw new ValidationException("Не вказано Order.DeliveryTypeId для пошуку!", nameof(OrderQueryPL.DeliveryTypeId));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByDeliveryTypeId((long)orderQueryPL.DeliveryTypeId);
+                            }
+                        }
+                        break;
+                    case "DeliveryTypeName":
+                        {
+                            if (orderQueryPL.DeliveryTypeName == null)
+                            {
+                                throw new ValidationException("Не вказано Order.DeliveryTypeName для пошуку!", nameof(OrderQueryPL.DeliveryTypeName));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByDeliveryTypeName(orderQueryPL.DeliveryTypeName);
+                            }
+                        }
+                        break;
+                    case "DeliveryTypeDescription":
+                        {
+                            if (orderQueryPL.DeliveryTypeDescription == null)
+                            {
+                                throw new ValidationException("Не вказано Order.DeliveryTypeDescription для пошуку!", nameof(OrderQueryPL.DeliveryTypeDescription));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByDeliveryTypeDescription(orderQueryPL.DeliveryTypeDescription);
+                            }
+                        }
+                        break;
+                    case "DeliveryTypePriceRange":
+                        {
+                            if (orderQueryPL.MinDeliveryTypePrice == null || orderQueryPL.MaxDeliveryTypePrice == null)
+                            {
+                                throw new ValidationException("Не вказано Order.MinDeliveryTypePrice або Order.MaxDeliveryTypePrice для пошуку!", nameof(OrderQueryPL.MinDeliveryTypePrice));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByDeliveryTypePriceRange((float)orderQueryPL.MinDeliveryTypePrice, (float)orderQueryPL.MaxDeliveryTypePrice);
+                            }
+                        }
+                        break;
+                    case "DeliveryTimeInDaysRange":
+                        {
+                            if (orderQueryPL.MinDeliveryTimeInDays == null || orderQueryPL.MaxDeliveryTimeInDays == null)
+                            {
+                                throw new ValidationException("Не вказано Order.MinDeliveryTimeInDays або Order.MaxDeliveryTimeInDays для пошуку!", nameof(OrderQueryPL.MinDeliveryTimeInDays));
+                            }
+                            else
+                            {
+                                collection = await _serv.GetByDeliveryTypeDeliveryTimeInDaysRange((int)orderQueryPL.MinDeliveryTimeInDays, (int)orderQueryPL.MaxDeliveryTimeInDays);
                             }
                         }
                         break;
@@ -454,6 +521,13 @@ namespace HyggyBackend.Controllers
         public long? StatusId { get; set; }
         public string? StatusName { get; set; }
         public string? StatusDescription { get; set; }
+        public long? DeliveryTypeId { get; set; }
+        public string? DeliveryTypeName { get; set; }
+        public string? DeliveryTypeDescription { get; set; }
+        public float? MinDeliveryTypePrice { get; set; }
+        public float? MaxDeliveryTypePrice { get; set; }
+        public int? MinDeliveryTimeInDays { get; set; }
+        public int? MaxDeliveryTimeInDays { get; set; }
         public long? OrderItemId { get; set; }
         public long? WareId { get; set; }
         public long? WarePriceHistoryId { get; set; }

@@ -119,6 +119,30 @@ namespace HyggyBackend.DAL.Repositories
         {
             return await _context.Orders.Where(x => x.Shop.Id == shopId).ToListAsync();
         }
+        public async Task<IEnumerable<Order>> GetByDeliveryTypeId(long deliveryTypeId)
+        {
+            return await _context.Orders.Where(x => x.DeliveryType.Id == deliveryTypeId).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Order>> GetByDeliveryTypeName(string DeliveryTypeName)
+        {
+            return await _context.Orders.Where(x => x.DeliveryType.Name.Contains(DeliveryTypeName)).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Order>> GetByDeliveryTypeDescription(string DeliveryTypeDescription)
+        {
+            return await _context.Orders.Where(x => x.DeliveryType.Description.Contains(DeliveryTypeDescription)).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Order>> GetByDeliveryTypePriceRange(float minPrice, float maxPrice)
+        {
+            return await _context.Orders.Where(x => x.DeliveryType.Price >= minPrice && x.DeliveryType.Price <= maxPrice).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Order>> GetByDeliveryTypeDeliveryTimeInDaysRange(int minDeliveryTimeInDays, int maxDeliveryTimeInDays)
+        {
+            return await _context.Orders.Where(x => x.DeliveryType.MinDeliveryTimeInDays >= minDeliveryTimeInDays && x.DeliveryType.MaxDeliveryTimeInDays <= maxDeliveryTimeInDays).ToListAsync();
+        }
 
         public async IAsyncEnumerable<Order> GetByIdsAsync(IEnumerable<long> ids)
         {
@@ -144,7 +168,16 @@ namespace HyggyBackend.DAL.Repositories
                     collections.Add(await GetByOrderItemId(id));
                     collections.Add(await GetByWareId(id));
                     collections.Add(await GetByShopId(id));
+                    collections.Add(await GetByDeliveryTypeId(id));
                     collections.Add(new List<Order> { await GetById(id) });
+                }
+                if (float.TryParse(query.QueryAny, out float price))
+                {
+                    collections.Add(await GetByDeliveryTypePriceRange(price, price));
+                }
+                if (int.TryParse(query.QueryAny, out int deliveryTimeInDays))
+                {
+                    collections.Add(await GetByDeliveryTypeDeliveryTimeInDaysRange(deliveryTimeInDays, deliveryTimeInDays));
                 }
                 else
                 {
@@ -152,6 +185,8 @@ namespace HyggyBackend.DAL.Repositories
                     collections.Add(await GetByCommentSubstring(query.QueryAny));
                     collections.Add(await GetByStatusNameSubstring(query.QueryAny));
                     collections.Add(await GetByStatusDescriptionSubstring(query.QueryAny));
+                    collections.Add(await GetByDeliveryTypeName(query.QueryAny));
+                    collections.Add(await GetByDeliveryTypeDescription(query.QueryAny));
                 }
             }
             else
@@ -251,6 +286,31 @@ namespace HyggyBackend.DAL.Repositories
                     collections.Add(await GetByShopId(query.ShopId.Value));
                 }
 
+                if (query.DeliveryTypeId != null)
+                {
+                    collections.Add(await GetByDeliveryTypeId(query.DeliveryTypeId.Value));
+                }
+
+                if (query.DeliveryTypeName != null)
+                {
+                    collections.Add(await GetByDeliveryTypeName(query.DeliveryTypeName));
+                }
+
+                if (query.DeliveryTypeDescription != null)
+                {
+                    collections.Add(await GetByDeliveryTypeDescription(query.DeliveryTypeDescription));
+                }
+
+                if (query.MinDeliveryTypePrice != null && query.MaxDeliveryTypePrice != null)
+                {
+                    collections.Add(await GetByDeliveryTypePriceRange(query.MinDeliveryTypePrice.Value, query.MaxDeliveryTypePrice.Value));
+                }
+
+                if (query.MinDeliveryTimeInDays != null && query.MaxDeliveryTimeInDays != null)
+                {
+                    collections.Add(await GetByDeliveryTypeDeliveryTimeInDaysRange(query.MinDeliveryTimeInDays.Value, query.MaxDeliveryTimeInDays.Value));
+                }
+
                 if (!string.IsNullOrEmpty(query.StringIds))
                 {
                     collections.Add(await GetByStringIds(query.StringIds));
@@ -328,6 +388,42 @@ namespace HyggyBackend.DAL.Repositories
                         break;
                     case "DeliveryAddressIdDesc":
                         result = result.OrderByDescending(x => x.DeliveryAddress.Id).ToList();
+                        break;
+                    case "DeliveryTypeIdAsc":
+                        result = result.OrderBy(x => x.DeliveryType.Id).ToList();
+                        break;
+                    case "DeliveryTypeIdDesc":
+                        result = result.OrderByDescending(x => x.DeliveryType.Id).ToList();
+                        break;
+                    case "DeliveryTypeNameAsc":
+                        result = result.OrderBy(x => x.DeliveryType.Name).ToList();
+                        break;
+                    case "DeliveryTypeNameDesc":
+                        result = result.OrderByDescending(x => x.DeliveryType.Name).ToList();
+                        break;
+                    case "DeliveryTypeDescriptionAsc":
+                        result = result.OrderBy(x => x.DeliveryType.Description).ToList();
+                        break;
+                    case "DeliveryTypeDescriptionDesc":
+                        result = result.OrderByDescending(x => x.DeliveryType.Description).ToList();
+                        break;
+                    case "DeliveryTypePriceAsc":
+                        result = result.OrderBy(x => x.DeliveryType.Price).ToList();
+                        break;
+                    case "DeliveryTypePriceDesc":
+                        result = result.OrderByDescending(x => x.DeliveryType.Price).ToList();
+                        break;
+                    case "DeliveryTypeMinDeliveryTimeInDaysAsc":
+                        result = result.OrderBy(x => x.DeliveryType.MinDeliveryTimeInDays).ToList();
+                        break;
+                    case "DeliveryTypeMinDeliveryTimeInDaysDesc":
+                        result = result.OrderByDescending(x => x.DeliveryType.MinDeliveryTimeInDays).ToList();
+                        break;
+                    case "DeliveryTypeMaxDeliveryTimeInDaysAsc":
+                        result = result.OrderBy(x => x.DeliveryType.MaxDeliveryTimeInDays).ToList();
+                        break;
+                    case "DeliveryTypeMaxDeliveryTimeInDaysDesc":
+                        result = result.OrderByDescending(x => x.DeliveryType.MaxDeliveryTimeInDays).ToList();
                         break;
                     default:
                         break;

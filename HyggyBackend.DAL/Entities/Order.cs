@@ -11,6 +11,7 @@
         public string Phone { get; set; }
         public string? Comment { get; set; }
         public virtual OrderStatus Status { get; set; }
+        public virtual OrderDeliveryType DeliveryType { get; set; }
         public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
         public virtual Customer Customer { get; set; }
         public long ShopId { get; set; }

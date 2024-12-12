@@ -36,6 +36,13 @@ namespace HyggyBackend.BLL.Queries
         public long? StatusId { get; set; }
         public string? StatusName { get; set; }
         public string? StatusDescription { get; set; }
+        public long? DeliveryTypeId { get; set; }
+        public string? DeliveryTypeName { get; set; }
+        public string? DeliveryTypeDescription { get; set; }
+        public float? MinDeliveryTypePrice { get; set; }
+        public float? MaxDeliveryTypePrice { get; set; }
+        public int? MinDeliveryTimeInDays { get; set; }
+        public int? MaxDeliveryTimeInDays { get; set; }
         public long? OrderItemId { get; set; }
         public long? WareId { get; set; }
         public long? WarePriceHistoryId { get; set; }
@@ -43,6 +50,6 @@ namespace HyggyBackend.BLL.Queries
         public long? ShopId { get; set; }
         public string? Sorting { get; set; }
         public string? StringIds { get; set; }
-        public string? QueryAny {get;set;}
+        public string? QueryAny { get; set; }
     }
 }

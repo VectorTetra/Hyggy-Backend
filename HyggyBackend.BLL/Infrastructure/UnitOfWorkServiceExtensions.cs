@@ -27,6 +27,7 @@ namespace HyggyBackend.BLL.Infrastructure
             services.AddScoped<IEmployeeService<StorageEmployeeDTO>, StorageEmployeeDTOService>();
             services.AddScoped<IOrderItemService, OrderItemService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IOrderDeliveryTypeService, OrderDeliveryTypeService>();
             services.AddScoped<IOrderStatusService, OrderStatusService>();
             services.AddScoped<IProffessionService, ProffessionService>();
             services.AddScoped<IShopService, ShopService>();

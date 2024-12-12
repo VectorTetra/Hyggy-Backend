@@ -15,6 +15,7 @@ namespace HyggyBackend.BLL.DTO
         public string? Comment { get; set; }
         public long? StatusId { get; set; }
         public long? ShopId { get; set; }
+        public long? DeliveryTypeId { get; set; }
         public string? CustomerId { get; set; }
         public ICollection<long>? OrderItemIds { get; set; } = new List<long>();
         public ICollection<OrderItemDTO>? OrderItems { get; set; } = new List<OrderItemDTO>();

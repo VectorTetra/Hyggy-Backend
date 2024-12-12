@@ -1,10 +1,5 @@
 ﻿using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Queries;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HyggyBackend.DAL.Interfaces
 {
@@ -31,6 +26,11 @@ namespace HyggyBackend.DAL.Interfaces
         Task<IEnumerable<Order>> GetByWarePriceHistoryId(long warePriceHistoryId);
         Task<IEnumerable<Order>> GetByCustomerId(string customerId);
         Task<IEnumerable<Order>> GetByShopId(long shopId);
+        Task<IEnumerable<Order>> GetByDeliveryTypeId(long deliveryTypeId);
+        Task<IEnumerable<Order>> GetByDeliveryTypeName(string DeliveryTypeName);
+        Task<IEnumerable<Order>> GetByDeliveryTypeDescription(string DeliveryTypeDescription);
+        Task<IEnumerable<Order>> GetByDeliveryTypePriceRange(float minPrice, float maxPrice);
+        Task<IEnumerable<Order>> GetByDeliveryTypeDeliveryTimeInDaysRange(int minDeliveryTimeInDays, int maxDeliveryTimeInDays);
         Task<IEnumerable<Order>> GetByQuery(OrderQueryDAL query);
         IAsyncEnumerable<Order> GetByIdsAsync(IEnumerable<long> ids);
         Task Create(Order order);
