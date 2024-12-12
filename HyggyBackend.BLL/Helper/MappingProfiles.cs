@@ -209,6 +209,7 @@ namespace HyggyBackend.BLL.Helper
                      Id = oi.Ware.Id,
                      Name = oi.Ware.Name,
                      Price = oi.Ware.Price,
+                     Description = oi.Ware.Description,
                      Discount = oi.Ware.Discount,
                      FinalPrice = oi.Ware.Price - (oi.Ware.Price * oi.Ware.Discount / 100),
                      WareCategory3Id = oi.Ware.WareCategory3.Id,

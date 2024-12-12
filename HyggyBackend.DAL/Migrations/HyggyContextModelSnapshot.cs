@@ -318,13 +318,6 @@ namespace HyggyBackend.DAL.Migrations
                         .HasFilter("[AddressId] IS NOT NULL");
 
                     b.ToTable("Storages");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            AddressId = 1L
-                        });
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.User", b =>
@@ -334,6 +327,9 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
+
+                    b.Property<string>("AvatarPath")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -701,15 +697,45 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "3bb5488a-d065-4b1e-96dc-980f8fa511b4",
+                            Id = "4a799564-32e2-48a7-b65c-9eef8e2615c7",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "c1616847-211b-49cc-b9b4-1b4dc28b45cc",
+                            Id = "8883774f-29cd-4497-a8f8-589ba52a66fe",
                             Name = "User",
                             NormalizedName = "USER"
+                        },
+                        new
+                        {
+                            Id = "13fc1aff-8761-4594-a831-b058bd2e1c04",
+                            Name = "Storekeeper",
+                            NormalizedName = "STOREKEEPER"
+                        },
+                        new
+                        {
+                            Id = "f1fd6ed5-2c3e-4add-834a-34b0b7de4505",
+                            Name = "Saler",
+                            NormalizedName = "SALER"
+                        },
+                        new
+                        {
+                            Id = "10020c32-477f-4587-a6ce-8521845a4bbd",
+                            Name = "Accountant",
+                            NormalizedName = "ACCOUNTANT"
+                        },
+                        new
+                        {
+                            Id = "74e1b791-b59a-4ac4-a5da-e53118e1c430",
+                            Name = "General Accountant",
+                            NormalizedName = "GENERAL ACCOUNTANT"
+                        },
+                        new
+                        {
+                            Id = "35ff5a78-68cc-4b7c-9e0b-f35faf45c32f",
+                            Name = "Owner",
+                            NormalizedName = "OWNER"
                         });
                 });
 

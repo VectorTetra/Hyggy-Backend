@@ -86,40 +86,44 @@ namespace HyggyBackend.BLL.Services
         }
         public async Task<AddressDTO?> CreateAsync(AddressDTO AddressDTO)
         {
-            var checkLatitude = AddressDTO.Latitude ?? throw new ValidationException("В адресі повинна бути вказана широта!", "");
-            var checkLongitude = AddressDTO.Longitude ?? throw new ValidationException("В адресі повинна бути вказана довгота!", "");
-            var checkHouseNumber = AddressDTO.HouseNumber ?? throw new ValidationException("В адресі повинен бути вказаний номер будинку!", "");
-            var checkCity = AddressDTO.City ?? throw new ValidationException("В адресі повинно бути вказано місто!", "");
-            var checkStreet = AddressDTO.Street ?? throw new ValidationException("В адресі повинно бути вказано вулицю!", "");
-            var checkState = AddressDTO.State ?? throw new ValidationException("В адресі повинно бути вказано область!", "");
-            var checkPostalCode = AddressDTO.PostalCode ?? throw new ValidationException("В адресі повинно бути вказано поштовий індекс!", "");
-            if (checkLatitude < -90 || checkLatitude > 90)
+            //var checkLatitude = AddressDTO.Latitude ?? throw new ValidationException("В адресі повинна бути вказана широта!", "");
+            //var checkLongitude = AddressDTO.Longitude ?? throw new ValidationException("В адресі повинна бути вказана довгота!", "");
+            //var checkHouseNumber = AddressDTO.HouseNumber ?? throw new ValidationException("В адресі повинен бути вказаний номер будинку!", "");
+            //var checkCity = AddressDTO.City ?? throw new ValidationException("В адресі повинно бути вказано місто!", "");
+            //var checkStreet = AddressDTO.Street ?? throw new ValidationException("В адресі повинно бути вказано вулицю!", "");
+            //var checkState = AddressDTO.State ?? throw new ValidationException("В адресі повинно бути вказано область!", "");
+            //var checkPostalCode = AddressDTO.PostalCode ?? throw new ValidationException("В адресі повинно бути вказано поштовий індекс!", "");
+            if (AddressDTO.Latitude !=null && (AddressDTO.Latitude < -90 || AddressDTO.Latitude > 90))
             {
                 throw new ValidationException("Широта повинна бути в межах від -90 до 90!", "");
             }
 
-            if (checkLongitude < -180 || checkLongitude > 180)
+            if (AddressDTO.Longitude !=null && (AddressDTO.Longitude < -180 || AddressDTO.Longitude > 180))
             {
                 throw new ValidationException("Довгота повинна бути в межах від -180 до 180!", "");
             }
-
-            // Перевірка на існування адреси за координатами
-            var existedByLatLong = await GetByLatitudeAndLongitude(checkLatitude, checkLongitude);
-            if (existedByLatLong.Any())
+            if (AddressDTO.Longitude != null && AddressDTO.Latitude != null)
             {
-                throw new ValidationException($"Адреса з такими координатами: {AddressDTO.Latitude.Value} , {AddressDTO.Longitude.Value} вже існує!", "");
+                // Перевірка на існування адреси за координатами
+                var existedByLatLong = await GetByLatitudeAndLongitude(AddressDTO.Latitude.Value, AddressDTO.Longitude.Value);
+                if (existedByLatLong.Any())
+                {
+                    return existedByLatLong.First();
+                }
             }
 
-            var addressCollections = new List<IEnumerable<AddressDTO>>
-            {
-                await GetByCity(AddressDTO.City),
-                await GetByState(AddressDTO.State),
-                await GetByStreet(AddressDTO.Street),
-                await GetByPostalCode(AddressDTO.PostalCode),
-                await GetByHouseNumber(AddressDTO.HouseNumber)
-            };
+            var tasks = new List<Task<IEnumerable<AddressDTO>>>();
+            if (AddressDTO.City != null) tasks.Add(GetByCity(AddressDTO.City));
+            if (AddressDTO.State != null) tasks.Add(GetByState(AddressDTO.State));
+            if (AddressDTO.Street != null) tasks.Add(GetByStreet(AddressDTO.Street));
+            if (AddressDTO.PostalCode != null) tasks.Add(GetByPostalCode(AddressDTO.PostalCode));
+            if (AddressDTO.HouseNumber != null) tasks.Add(GetByHouseNumber(AddressDTO.HouseNumber));
 
-            var existedAddresses = addressCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+            var results = await Task.WhenAll(tasks);
+            var addressCollections = results.ToList();
+
+            var existedAddresses = addressCollections
+                .Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
             if (existedAddresses.Any())
             {
                 throw new ValidationException($"Адреса з такими параметрами вже існує!", "");
@@ -169,43 +173,48 @@ namespace HyggyBackend.BLL.Services
                     throw new ValidationException($"Магазину з таким Id : {AddressDTO.ShopId.Value} не існує!", "");
                 }
             }
-            var checkLatitude = AddressDTO.Latitude ?? throw new ValidationException("В адресі повинна бути вказана широта!", "");
-            var checkLongitude = AddressDTO.Longitude ?? throw new ValidationException("В адресі повинна бути вказана довгота!", "");
-            var checkHouseNumber = AddressDTO.HouseNumber ?? throw new ValidationException("В адресі повинен бути вказаний номер будинку!", "");
-            var checkCity = AddressDTO.City ?? throw new ValidationException("В адресі повинно бути вказано місто!", "");
-            var checkStreet = AddressDTO.Street ?? throw new ValidationException("В адресі повинно бути вказано вулицю!", "");
-            var checkState = AddressDTO.State ?? throw new ValidationException("В адресі повинно бути вказано область!", "");
-            var checkPostalCode = AddressDTO.PostalCode ?? throw new ValidationException("В адресі повинно бути вказано поштовий індекс!", "");
-            if (checkLatitude < -90 || checkLatitude > 90)
+            //var checkLatitude = AddressDTO.Latitude ?? throw new ValidationException("В адресі повинна бути вказана широта!", "");
+            //var checkLongitude = AddressDTO.Longitude ?? throw new ValidationException("В адресі повинна бути вказана довгота!", "");
+            //var checkHouseNumber = AddressDTO.HouseNumber ?? throw new ValidationException("В адресі повинен бути вказаний номер будинку!", "");
+            //var checkCity = AddressDTO.City ?? throw new ValidationException("В адресі повинно бути вказано місто!", "");
+            //var checkStreet = AddressDTO.Street ?? throw new ValidationException("В адресі повинно бути вказано вулицю!", "");
+            //var checkState = AddressDTO.State ?? throw new ValidationException("В адресі повинно бути вказано область!", "");
+            //var checkPostalCode = AddressDTO.PostalCode ?? throw new ValidationException("В адресі повинно бути вказано поштовий індекс!", "");
+            if (AddressDTO.Latitude != null && (AddressDTO.Latitude < -90 || AddressDTO.Latitude > 90))
             {
                 throw new ValidationException("Широта повинна бути в межах від -90 до 90!", "");
             }
 
-            if (checkLongitude < -180 || checkLongitude > 180)
+            if (AddressDTO.Longitude != null && (AddressDTO.Longitude < -180 || AddressDTO.Longitude > 180))
             {
                 throw new ValidationException("Довгота повинна бути в межах від -180 до 180!", "");
             }
-
-            //// Перевірка на існування адреси за координатами
-            //var existedByLatLong = await GetByLatitudeAndLongitude(checkLatitude, checkLongitude);
-            //if (existedByLatLong.Any(x=>x.Id != AddressDTO.Id))
-            //{
-            //    throw new ValidationException($"Адреса з такими координатами: {AddressDTO.Latitude.Value} , {AddressDTO.Longitude.Value} вже існує!", "");
-            //}
-
-            var addressCollections = new List<IEnumerable<AddressDTO>>
+            if (AddressDTO.Longitude != null && AddressDTO.Latitude != null)
             {
-                await GetByCity(AddressDTO.City),
-                await GetByState(AddressDTO.State),
-                await GetByStreet(AddressDTO.Street),
-                await GetByPostalCode(AddressDTO.PostalCode),
-                await GetByHouseNumber(AddressDTO.HouseNumber)
-            };
+                // Перевірка на існування адреси за координатами
+                var existedByLatLong = await GetByLatitudeAndLongitude(AddressDTO.Latitude.Value, AddressDTO.Longitude.Value);
+                if (existedByLatLong.Any(x => x.Id != AddressDTO.Id))
+                {
+                    throw new ValidationException($"Адреса з такими координатами: {AddressDTO.Latitude.Value} , {AddressDTO.Longitude.Value} вже існує!", "");
+                }
+            }
 
-            var existedAddresses = addressCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+            var tasks = new List<Task<IEnumerable<AddressDTO>>>();
+            if (AddressDTO.City != null) tasks.Add(GetByCity(AddressDTO.City));
+            if (AddressDTO.State != null) tasks.Add(GetByState(AddressDTO.State));
+            if (AddressDTO.Street != null) tasks.Add(GetByStreet(AddressDTO.Street));
+            if (AddressDTO.PostalCode != null) tasks.Add(GetByPostalCode(AddressDTO.PostalCode));
+            if (AddressDTO.HouseNumber != null) tasks.Add(GetByHouseNumber(AddressDTO.HouseNumber));
+
+            var results = await Task.WhenAll(tasks);
+            var addressCollections = results.ToList();
+
+            var existedAddresses = addressCollections
+                .Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
+
             if (existedAddresses.Any(x => x.Id != AddressDTO.Id))
             {
-                throw new ValidationException($"Адреса з такими параметрами вже існує!", "");
+                return existedAddresses.First();
             }
 
             address.HouseNumber = AddressDTO.HouseNumber;
