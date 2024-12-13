@@ -104,7 +104,8 @@ namespace HyggyBackend.BLL.Services
                 Name = item.Name,
                 Surname = item.Surname,
                 Email = item.Email,
-                PhoneNumber = item.PhoneNumber
+                PhoneNumber = item.PhoneNumber,
+                UserName = item.Email,
             };
 
             var creationResult = await _userManager.CreateAsync(newCustomer);
