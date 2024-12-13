@@ -112,21 +112,11 @@ namespace HyggyBackend.BLL.Services
                 }
             }
 
-            var tasks = new List<Task<IEnumerable<AddressDTO>>>();
-            if (AddressDTO.City != null) tasks.Add(GetByCity(AddressDTO.City));
-            if (AddressDTO.State != null) tasks.Add(GetByState(AddressDTO.State));
-            if (AddressDTO.Street != null) tasks.Add(GetByStreet(AddressDTO.Street));
-            if (AddressDTO.PostalCode != null) tasks.Add(GetByPostalCode(AddressDTO.PostalCode));
-            if (AddressDTO.HouseNumber != null) tasks.Add(GetByHouseNumber(AddressDTO.HouseNumber));
-
-            var results = await Task.WhenAll(tasks);
-            var addressCollections = results.ToList();
-
-            var existedAddresses = addressCollections
-                .Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
-            if (existedAddresses.Any())
+            var addressCollection = await GetByQuery(new AddressQueryBLL { City = AddressDTO.City, State = AddressDTO.State, Street = AddressDTO.Street, PostalCode = AddressDTO.PostalCode, HouseNumber = AddressDTO.HouseNumber });
+           
+            if (addressCollection.Any())
             {
-                return existedAddresses.First();
+                return addressCollection.First();
             }
 
             var address = new Address
@@ -199,20 +189,14 @@ namespace HyggyBackend.BLL.Services
                 }
             }
 
-            var tasks = new List<Task<IEnumerable<AddressDTO>>>();
-            if (AddressDTO.City != null) tasks.Add(GetByCity(AddressDTO.City));
-            if (AddressDTO.State != null) tasks.Add(GetByState(AddressDTO.State));
-            if (AddressDTO.Street != null) tasks.Add(GetByStreet(AddressDTO.Street));
-            if (AddressDTO.PostalCode != null) tasks.Add(GetByPostalCode(AddressDTO.PostalCode));
-            if (AddressDTO.HouseNumber != null) tasks.Add(GetByHouseNumber(AddressDTO.HouseNumber));
+            var addressCollection = await GetByQuery(new AddressQueryBLL 
+            { City = AddressDTO.City, 
+                State = AddressDTO.State, 
+                Street = AddressDTO.Street, 
+                PostalCode = AddressDTO.PostalCode, 
+                HouseNumber = AddressDTO.HouseNumber });
 
-            var results = await Task.WhenAll(tasks);
-            var addressCollections = results.ToList();
-
-            var existedAddresses = addressCollections
-                .Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
-
-            if (existedAddresses.Any(x => x.Id != AddressDTO.Id))
+            if (addressCollection.Any(x => x.Id != AddressDTO.Id))
             {
                 throw new ValidationException($"Адреса з такими параметрами вже існує!", "");
             }
