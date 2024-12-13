@@ -194,6 +194,17 @@ namespace HyggyBackend.BLL.Helper
              }))
              .ForPath(dto => dto.CustomerId, opt => opt.MapFrom(src => src.Customer.Id))
              .ForPath(dto => dto.OrderItemIds, opt => opt.MapFrom(src => src.OrderItems.Select(oi => oi.Id)))
+             .ForPath(dto => dto.TotalPrice, opt => opt.MapFrom(src => src.OrderItems.Sum(oi => oi.Count * (oi.Ware.Price - (oi.Ware.Price * oi.Ware.Discount / 100))) + src.DeliveryType.Price))
+             .ForPath(dto => dto.DeliveryTypeId, opt => opt.MapFrom(src => src.DeliveryType.Id))
+             .ForPath(dto => dto.DeliveryType, opt => opt.MapFrom(src => new OrderDeliveryTypeDTO
+            {
+                Id = src.DeliveryType.Id,
+                Name = src.DeliveryType.Name,
+                Description = src.DeliveryType.Description,
+                Price = src.DeliveryType.Price,
+                MinDeliveryTimeInDays = src.DeliveryType.MinDeliveryTimeInDays,
+                MaxDeliveryTimeInDays = src.DeliveryType.MaxDeliveryTimeInDays
+            }))
              .ForPath(dto => dto.Customer, opt => opt.MapFrom(src => new CustomerDTO
              {
                  Id = src.Customer.Id,
@@ -234,7 +245,7 @@ namespace HyggyBackend.BLL.Helper
             CreateMap<OrderDeliveryType, OrderDeliveryTypeDTO>()
                 .ForMember(dst => dst.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dst => dst.Name, opt => opt.MapFrom(src => src.Name))
-                .ForMember(dst => dst.Description, opt => opt.MapFrom(src => src.Description)) 
+                .ForMember(dst => dst.Description, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dst => dst.Price, opt => opt.MapFrom(src => src.Price))
                 .ForMember(dst => dst.MinDeliveryTimeInDays, opt => opt.MapFrom(src => src.MinDeliveryTimeInDays))
                 .ForMember(dst => dst.MaxDeliveryTimeInDays, opt => opt.MapFrom(src => src.MaxDeliveryTimeInDays))

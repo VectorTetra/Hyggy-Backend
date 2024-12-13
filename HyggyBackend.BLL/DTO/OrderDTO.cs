@@ -17,11 +17,13 @@ namespace HyggyBackend.BLL.DTO
         public long? ShopId { get; set; }
         public long? DeliveryTypeId { get; set; }
         public string? CustomerId { get; set; }
+        public float? TotalPrice { get; set; }
         public ICollection<long>? OrderItemIds { get; set; } = new List<long>();
         public ICollection<OrderItemDTO>? OrderItems { get; set; } = new List<OrderItemDTO>();
         public CustomerDTO? Customer { get; set; } 
         public ShopDTO? Shop { get; set; } 
         public OrderStatusDTO? Status { get; set; }
         public AddressDTO? DeliveryAddress { get; set; }
+        public OrderDeliveryTypeDTO? DeliveryType { get; set; }
     }
 }
