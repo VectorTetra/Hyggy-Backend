@@ -251,11 +251,11 @@ namespace HyggyBackend.BLL.Services
             }
 
             // Перевірка на наявність обов'язкових полів адреси
-            if ((deliveryAddress.Longitude != null) ||
-                (deliveryAddress.Latitude != null))
-            {
-                throw new ValidationException("В полі адреси доставки довгота і широта є обов'язковими!", "");
-            }
+            //if ((deliveryAddress.Longitude != null) ||
+            //    (deliveryAddress.Latitude != null))
+            //{
+            //    throw new ValidationException("В полі адреси доставки довгота і широта є обов'язковими!", "");
+            //}
 
             //// Перевірка наявності списку товарів у замовленні
             //if (orderDTO.OrderItemIds == null || !orderDTO.OrderItemIds.Any())
@@ -374,12 +374,12 @@ namespace HyggyBackend.BLL.Services
             }
 
 
-            // Перевірка на наявність обов'язкових полів адреси
-            if ((deliveryAddress.Longitude != null) ||
-                (deliveryAddress.Latitude != null))
-            {
-                throw new ValidationException("В полі адреси доставки довгота і широта є обов'язковими!", "");
-            }
+            //// Перевірка на наявність обов'язкових полів адреси
+            //if ((deliveryAddress.Longitude != null) ||
+            //    (deliveryAddress.Latitude != null))
+            //{
+            //    throw new ValidationException("В полі адреси доставки довгота і широта є обов'язковими!", "");
+            //}
 
             // Перевірка наявності списку товарів у замовленні
             if (orderDTO.OrderItemIds == null || !orderDTO.OrderItemIds.Any())
