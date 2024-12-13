@@ -10,7 +10,7 @@ namespace HyggyBackend.BLL.Interfaces
         Task<AuthResponseDto> AuthenticateAsync(UserForAuthenticationDto authenticationDto);
         Task<string> EmailConfirmation(string email, string code);
         Task<IEnumerable<CustomerDTO>> GetPagedCustomers(int pageNumber, int pageSize);
-
+        Task<CustomerDTO> CreateOrFindGuestCustomerAsync(CustomerDTO item);
         Task<IEnumerable<CustomerDTO>> GetByStringIds(string StringIds);
         Task<IEnumerable<CustomerDTO>> GetByOrderId(long orderId);
         Task<IEnumerable<CustomerDTO>> GetByNameSubstring(string nameSubstring);

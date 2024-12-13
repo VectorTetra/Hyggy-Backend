@@ -79,20 +79,82 @@ namespace HyggyBackend.BLL.Services
             return _mapper.Map<IEnumerable<Customer>, IEnumerable<CustomerDTO>>(customers);
         }
 
-        //      public async Task<CustomerDTO> CreateAsync(CustomerDTO item) 
-        //     {
+        public async Task<CustomerDTO> CreateOrFindGuestCustomerAsync(CustomerDTO item)
+        {
+            if (string.IsNullOrWhiteSpace(item.Name))
+                throw new ValidationException("Не вказано ім'я гостьового клієнта для створення!","");
+            if (string.IsNullOrWhiteSpace(item.Surname))
+                throw new ValidationException("Не вказано прізвище гостьового клієнта для створення!", "");
+            if (string.IsNullOrWhiteSpace(item.Email))
+                throw new ValidationException("Не вказано email гостьового клієнта для створення!", "");
+            if (string.IsNullOrWhiteSpace(item.PhoneNumber))
+                throw new ValidationException("Не вказано телефон гостьового клієнта для створення!", "");
 
-        //         var customer = _mapper.Map<CustomerDTO, Customer>(item);
-        //         await Database.Customers.CreateAsync(customer);
-        //         await Database.Save();
-        //var token = await _tokenService.CreateToken(customer);
-        //         item.Token = token;
-        //item.Id = customer.Id;
-        //         return item;
-        //     }
+            var checkIfExistedByEmail = await GetByEmailSubstring(item.Email);
+            if (checkIfExistedByEmail.Any(x => x.Email == item.Email))
+            {
+                var ExistedGuestToReturn = checkIfExistedByEmail.First(x => x.Email == item.Email);
+                return ExistedGuestToReturn;
+            }
+
+            // Створення нового клієнта
+            var newCustomer = new Customer
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = item.Name,
+                Surname = item.Surname,
+                Email = item.Email,
+                PhoneNumber = item.PhoneNumber
+            };
+
+            var creationResult = await _userManager.CreateAsync(newCustomer);
+            if (!creationResult.Succeeded)
+            {
+                var errors = string.Join(", ", creationResult.Errors.Select(e => e.Description));
+                throw new ValidationException($"Помилка при створенні гостьового клієнта: {errors}","");
+            }
+
+            // Додавання ролі
+            await _userManager.AddToRoleAsync(newCustomer, "Guest");
+
+            return _mapper.Map<Customer, CustomerDTO>(newCustomer);
+        }
+
 
         public async Task<RegistrationResponseDto> RegisterAsync(UserForRegistrationDto registrationDto)
         {
+            // Перевірка існування користувача з таким email
+            var existingUser = await _userManager.FindByEmailAsync(registrationDto.Email!);
+            if (existingUser != null)
+            {
+                // Перевіряємо, чи є цей користувач гостьовим
+                var isGuest = await _userManager.IsInRoleAsync(existingUser, "Guest");
+                if (isGuest)
+                {
+                    // Видаляємо гостьового користувача
+                    var deletionResult = await _userManager.DeleteAsync(existingUser);
+                    if (!deletionResult.Succeeded)
+                    {
+                        var errors = deletionResult.Errors.Select(e => e.Description);
+                        return new RegistrationResponseDto
+                        {
+                            IsSuccessfullRegistration = false,
+                            Errors = new[] { "Не вдалося видалити акаунт гостьового користувача: " + string.Join(", ", errors) }
+                        };
+                    }
+                }
+                else
+                {
+                    // Якщо користувач не гостьовий, повертаємо помилку
+                    return new RegistrationResponseDto
+                    {
+                        IsSuccessfullRegistration = false,
+                        Errors = new[] { "Користувач із таким email вже зареєстрований." }
+                    };
+                }
+            }
+
+
             var user = _mapper.Map<Customer>(registrationDto);
             var result = await _userManager.CreateAsync(user, registrationDto.Password!);
             if (!result.Succeeded)

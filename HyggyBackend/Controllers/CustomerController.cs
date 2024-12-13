@@ -219,7 +219,29 @@ namespace HyggyBackend.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-		[HttpPost("authenticate")]
+
+        [HttpPost("createOrFindGuest")]
+        public async Task<IActionResult> CreateOrFindGuest([FromBody] CustomerDTO GuestDTO)
+        {
+            try
+            {
+                if (GuestDTO is null)
+                    return BadRequest();
+
+                var response = await _serv.CreateOrFindGuestCustomerAsync(GuestDTO);
+               
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpPost("authenticate")]
 		public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDto authenticationDto)
 		{
 			try
