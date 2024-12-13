@@ -68,7 +68,7 @@ namespace HyggyBackend.DAL.EF
                  .HasOne(o => o.Order)
                  .WithMany(o => o.OrderItems)
                  .HasForeignKey(o => o.OrderId)
-                 .OnDelete(DeleteBehavior.NoAction);
+                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<OrderItem>()
                 .HasOne(o => o.PriceHistory)
