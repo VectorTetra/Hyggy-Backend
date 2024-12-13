@@ -126,7 +126,7 @@ namespace HyggyBackend.BLL.Services
                 .Aggregate((previousList, nextList) => previousList.Intersect(nextList).ToList());
             if (existedAddresses.Any())
             {
-                throw new ValidationException($"Адреса з такими параметрами вже існує!", "");
+                return existedAddresses.First();
             }
 
             var address = new Address
@@ -214,7 +214,7 @@ namespace HyggyBackend.BLL.Services
 
             if (existedAddresses.Any(x => x.Id != AddressDTO.Id))
             {
-                return existedAddresses.First();
+                throw new ValidationException($"Адреса з такими параметрами вже існує!", "");
             }
 
             address.HouseNumber = AddressDTO.HouseNumber;
