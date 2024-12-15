@@ -7,6 +7,7 @@ using HyggyBackend.BLL.Queries;
 using HyggyBackend.DAL.Queries;
 using HyggyBackend.BLL.Infrastructure;
 using Castle.Core.Resource;
+using HyggyBackend.DAL.UnitOfWork;
 
 namespace HyggyBackend.BLL.Services
 {
@@ -14,10 +15,19 @@ namespace HyggyBackend.BLL.Services
     {
         IUnitOfWork Database;
         IMapper _mapper;
-        public OrderService(IUnitOfWork uow, IMapper mapper)
+        ICustomerService _customerService;
+        IAddressService _addressService;
+        IOrderItemService _orderItemService;
+        public OrderService(IUnitOfWork uow, 
+            IMapper mapper, 
+            ICustomerService customerService, 
+            IAddressService addressService, IOrderItemService orderItemService)
         {
             Database = uow;
             _mapper = mapper;
+            _customerService = customerService;
+            _addressService = addressService;
+            _orderItemService = orderItemService;
         }
 
         public async Task<OrderDTO?> GetById(long id)
@@ -174,7 +184,7 @@ namespace HyggyBackend.BLL.Services
         public async Task<IEnumerable<OrderDTO>> GetByShopId(long shopId)
         {
             var orders = await Database.Orders.GetByShopId(shopId);
-
+             
             return _mapper.Map<IEnumerable<OrderDTO>>(orders);
         }
         public async Task<IEnumerable<OrderDTO>> GetByQuery(OrderQueryBLL query)
@@ -293,6 +303,79 @@ namespace HyggyBackend.BLL.Services
             // Присвоєння ID новоствореного замовлення DTO
             orderDTO.Id = orderDAL.Id;
             return orderDTO;
+        }
+
+        public async Task<OrderDTO> CreateByProcess(OrderCreationProcessDTO orderCreationProcessDTO)
+        {
+            await Database.BeginTransactionAsync();
+            try
+            {
+                // ЕТАП 1 - Перевірка користувача
+                string? customerId = orderCreationProcessDTO.RegisteredCustomerId;
+                if (customerId == null)
+                {
+                    if (orderCreationProcessDTO.GuestCustomer == null)
+                    {
+                        throw new ValidationException("Не вказано користувача!", "");
+                    }
+                    var guestCustomer = await _customerService.CreateOrFindGuestCustomerAsync(orderCreationProcessDTO.GuestCustomer);
+                    customerId = guestCustomer.Id;
+                }
+
+                // ЕТАП 2 - Перевірка адреси
+                if (orderCreationProcessDTO.Address == null)
+                {
+                    throw new ValidationException("Не вказано адресу!", "");
+                }
+                var address = await _addressService.CreateAsync(orderCreationProcessDTO.Address);
+                var deliveryAddressId = address?.Id;
+                if (deliveryAddressId == null)
+                {
+                    throw new ValidationException("Адреса не була створена!", "");
+                }
+
+                // ЕТАП 3 - Створення замовлення
+
+                var orderDTO = new OrderDTO
+                {
+                    OrderDate = DateTime.UtcNow,
+                    Phone = orderCreationProcessDTO.OrderData?.Phone,
+                    Comment = orderCreationProcessDTO.OrderData?.Comment,
+                    DeliveryTypeId = orderCreationProcessDTO.OrderData?.DeliveryTypeId, // Id Типу доставки "Кур'єрська"
+                    StatusId = orderCreationProcessDTO.OrderData?.DeliveryTypeId == 1 ? 9 : 1, // 9 - Самовивіз, 1 - Доставка
+                    ShopId = orderCreationProcessDTO.OrderData?.ShopId, // Магазин "Hyggy"
+                    CustomerId = customerId,
+                    DeliveryAddressId = deliveryAddressId
+                };
+
+                var createdOrderDTO = await Create(orderDTO);
+
+                // ЕТАП 4 - Створення позицій замовлення
+
+                foreach (var orderItemDTO in orderCreationProcessDTO.OrderItems)
+                {
+                    orderItemDTO.OrderId = createdOrderDTO.Id;
+                    await _orderItemService.Create(orderItemDTO);
+                }
+
+                var returnedOrderDTO = await GetById(createdOrderDTO.Id);
+                await Database.CommitTransactionAsync();
+                return returnedOrderDTO;
+
+            }
+            catch (Exception ex)
+            {
+                await Database.RollbackTransactionAsync();
+                throw ex;
+            }
+            finally
+            {
+                // Завжди очищає транзакцію
+                if (Database.Transaction != null)
+                {
+                    await Database.Transaction.DisposeAsync();
+                }
+            }
         }
 
 

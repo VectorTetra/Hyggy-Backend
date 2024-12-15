@@ -1,12 +1,12 @@
 ﻿using HyggyBackend.DAL.Entities.Employes;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace HyggyBackend.DAL.Interfaces
 {
     public interface IUnitOfWork
     {
-
+        IDbContextTransaction Transaction { get; set; }
         IWareRepository Wares { get; }
-
         IWareItemRepository WareItems { get; }
         ICustomerRepository Customers { get; }
         IWarePriceHistoryRepository WarePriceHistories { get; }
@@ -32,5 +32,9 @@ namespace HyggyBackend.DAL.Interfaces
         IWareTrademarkRepository WareTrademarks { get; }
         //IMainStorageRepository MainStorages { get; }
         Task Save();
+        Task BeginTransactionAsync();
+        Task CommitTransactionAsync();
+        Task RollbackTransactionAsync();
+        void Dispose();
     }
 }

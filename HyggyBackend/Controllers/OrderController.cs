@@ -439,6 +439,32 @@ namespace HyggyBackend.Controllers
             }
         }
 
+        [HttpPost("createByProcess")]
+        public async Task<ActionResult<OrderDTO>> CreateOrderByProcess([FromBody] OrderCreationProcessDTO orderCreationProcessDTO)
+        {
+            try
+            {
+                if (orderCreationProcessDTO == null)
+                {
+                    throw new ValidationException("Не вказано orderCreationProcessDTO для створення!", nameof(OrderCreationProcessDTO));
+                }
+                var createdOrder = await _serv.CreateByProcess(orderCreationProcessDTO);
+                return createdOrder;
+            }
+            catch (ValidationException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [HttpPut]
         public async Task<ActionResult<OrderDTO>> UpdateOrder([FromBody] OrderDTO order)
         {

@@ -34,6 +34,7 @@ namespace HyggyBackend.BLL.Interfaces
         Task<IEnumerable<OrderDTO>> GetByShopId(long shopId);
         Task<IEnumerable<OrderDTO>> GetByQuery(OrderQueryBLL query);
         Task<OrderDTO> Create(OrderDTO order);
+        Task<OrderDTO> CreateByProcess(OrderCreationProcessDTO orderCreationProcessDTO);
         Task<OrderDTO> Update(OrderDTO order);
         Task<OrderDTO> Delete(long id);
     }

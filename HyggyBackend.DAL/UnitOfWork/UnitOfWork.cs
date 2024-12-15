@@ -3,15 +3,16 @@ using HyggyBackend.DAL.Entities.Employes;
 using HyggyBackend.DAL.Interfaces;
 using HyggyBackend.DAL.Repositories;
 using HyggyBackend.DAL.Repositories.Employes;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace HyggyBackend.DAL.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
     {
         private readonly HyggyContext _context;
+        private IDbContextTransaction _transaction;
         private IWareRepository _wares;
         private IWareItemRepository _wareItems;
-
         private IWarePriceHistoryRepository _warePriceHistories;
         private IShopRepository _shops;
         private ICustomerRepository _customers;
@@ -40,6 +41,19 @@ namespace HyggyBackend.DAL.UnitOfWork
         {
             _context = context;
         }
+
+        public IDbContextTransaction Transaction
+        {
+            get
+            {
+                return _transaction;
+            }
+            set
+            {
+                _transaction = value;
+            }
+        }
+
 
         public IWareItemRepository WareItems
         {
@@ -274,7 +288,47 @@ namespace HyggyBackend.DAL.UnitOfWork
             var saved = await _context.SaveChangesAsync();
         }
 
+        public async Task BeginTransactionAsync()
+        {
+            if (_transaction != null)
+            {
+                throw new InvalidOperationException("A transaction is already in progress.");
+            }
+            _transaction = await _context.Database.BeginTransactionAsync();
+        }
 
+        public async Task CommitTransactionAsync()
+        {
+            if (_transaction == null)
+            {
+                throw new InvalidOperationException("Transaction has not been started. Call BeginTransactionAsync first.");
+            }
+            await _transaction.CommitAsync();
+            await _transaction.DisposeAsync();
+            _transaction = null;
+        }
+
+        public async Task RollbackTransactionAsync()
+        {
+            if (_transaction == null)
+            {
+                throw new InvalidOperationException("Transaction has not been started. Call BeginTransactionAsync first.");
+            }
+            await _transaction.RollbackAsync();
+            await _transaction.DisposeAsync();
+            _transaction = null;
+        }
+
+
+        public void Dispose()
+        {
+            if (_transaction != null)
+            {
+                _transaction.Dispose();
+                _transaction = null;
+            }
+            _context.Dispose();
+        }
 
     }
 }
