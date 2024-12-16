@@ -176,9 +176,17 @@ namespace HyggyBackend.DAL.Repositories
             }
             else
             {
-                // Використовуємо Intersect для знаходження записів, які задовольняють всі умови
-                result = collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList)).ToList();
+                var nonEmptyCollections = collections.Where(collection => collection.Any()).ToList();
 
+                // Перетин результатів з відфільтрованих колекцій
+                if (nonEmptyCollections.Any())
+                {
+                    result = nonEmptyCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList)).ToList();
+                }
+                else
+                {
+                    result = new List<Address>(); // Повертаємо порожній список, якщо всі колекції були порожні
+                }
             }
 
             if (query.Sorting != null)

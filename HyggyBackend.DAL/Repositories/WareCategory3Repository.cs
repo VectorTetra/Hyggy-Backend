@@ -169,9 +169,17 @@ namespace HyggyBackend.DAL.Repositories
             }
             else if (query.QueryAny == null && collections.Any())
             {
-                // Знаходження перетину
-                result = collections.Aggregate(new List<WareCategory3>(), (previousList, nextList) =>
-                    previousList.Intersect(nextList).ToList());
+                var nonEmptyCollections = collections.Where(collection => collection.Any()).ToList();
+
+                // Перетин результатів з відфільтрованих колекцій
+                if (nonEmptyCollections.Any())
+                {
+                    result = nonEmptyCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList)).ToList();
+                }
+                else
+                {
+                    result = new List<WareCategory3>(); // Повертаємо порожній список, якщо всі колекції були порожні
+                }
             }
 
             // Сортування
