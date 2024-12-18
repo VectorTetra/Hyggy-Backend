@@ -4,10 +4,12 @@ using HyggyBackend.BLL.DTO.AccountDtos;
 using HyggyBackend.BLL.DTO.EmployeesDTO;
 using HyggyBackend.BLL.Infrastructure;
 using HyggyBackend.BLL.Interfaces;
+using HyggyBackend.BLL.Queries;
 using HyggyBackend.BLL.Services.EmailService;
 using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Entities.Employes;
 using HyggyBackend.DAL.Interfaces;
+using HyggyBackend.DAL.Queries;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
@@ -21,18 +23,16 @@ namespace HyggyBackend.BLL.Services.Employees
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
         private readonly ITokenService _tokenService;
-        private readonly IShopService _shopService;
         private readonly IEmailSender _emailSender;
         public ShopEmployeeDTOService(IUnitOfWork database, IMapper mapper,
             UserManager<User> userManager, ITokenService tokenService,
-             IShopService shopService,
+           
              IEmailSender emailSender)
         {
             Database = database;
             _mapper = mapper;
             _userManager = userManager;
             _tokenService = tokenService;
-            _shopService = shopService;
             _emailSender = emailSender;
         }
         public async Task<IEnumerable<ShopEmployeeDTO>> GetAllAsync()
@@ -41,24 +41,27 @@ namespace HyggyBackend.BLL.Services.Employees
 
             return _mapper.Map<IEnumerable<ShopEmployee>, IEnumerable<ShopEmployeeDTO>>(employees);
         }
-        public async Task<IEnumerable<ShopEmployeeDTO>> GetPaginatedEmployeesAsync(int? page)
+        public async Task<IEnumerable<ShopEmployeeDTO>> GetPaged(int pageNumber, int PageSize)
         {
-            var paginatedEmployees = await Database.ShopEmployees.GetPaginatedEmployeesAsync(page);
+            var paginatedEmployees = await Database.ShopEmployees.GetPaged(pageNumber, PageSize);
+
+            var employeesDto = await Task.WhenAll(paginatedEmployees.Select(async employee =>
+            {
+                var dto = _mapper.Map<ShopEmployeeDTO>(employee);
+                dto.RoleName = await GetRoleName(employee.Id);
+                return dto;
+            }));
+
             return _mapper.Map<IEnumerable<ShopEmployee>, IEnumerable<ShopEmployeeDTO>>(paginatedEmployees);
         }
-        public async Task<IEnumerable<ShopEmployeeDTO>> GetEmployeesByDateOfBirthAsync(DateTime date)
+        public async Task<IEnumerable<ShopEmployeeDTO>> GetEmployeesByDateOfBirth(DateTime date)
         {
-            var employees = await Database.ShopEmployees.GetEmployeesByDateOfBirthAsync(date);
+            var employees = await Database.ShopEmployees.GetEmployeesByDateOfBirth(date);
             return _mapper.Map<IEnumerable<ShopEmployee>, IEnumerable<ShopEmployeeDTO>>(employees);
         }
-        public async Task<IEnumerable<ShopEmployeeDTO>> GetEmployeesByProfessionAsync(string professionName)
+        public async Task<ShopEmployeeDTO?> GetById(string id)
         {
-            var employees = await Database.ShopEmployees.GetEmployeesByProfessionAsync(professionName);
-            return _mapper.Map<IEnumerable<ShopEmployee>, IEnumerable<ShopEmployeeDTO>>(employees);
-        }
-        public async Task<ShopEmployeeDTO?> GetByIdAsync(string id)
-        {
-            var employee = await Database.ShopEmployees.GetByIdAsync(id);
+            var employee = await Database.ShopEmployees.GetById(id);
             return _mapper.Map<ShopEmployeeDTO>(employee);
         }
         public async Task<ShopEmployeeDTO?> GetByEmail(string email)
@@ -66,17 +69,35 @@ namespace HyggyBackend.BLL.Services.Employees
             var employee = await Database.ShopEmployees.GetByEmail(email);
             return _mapper.Map<ShopEmployeeDTO>(employee);
         }
-        public async Task<IEnumerable<ShopEmployeeDTO>?> GetBySurnameAsync(string surname)
+        public async Task<IEnumerable<ShopEmployeeDTO>?> GetBySurname(string surname)
         {
-            var employee = await Database.ShopEmployees.GetBySurnameAsync(surname);
+            var employee = await Database.ShopEmployees.GetBySurname(surname);
             return _mapper.Map<IEnumerable<ShopEmployeeDTO>>(employee);
         }
-        public async Task<ShopEmployeeDTO?> GetByPhoneAsync(string phone)
+        public async Task<IEnumerable<ShopEmployeeDTO>> GetByName(string name)
         {
-            var employee = await Database.ShopEmployees.GetByPhoneAsync(phone);
+            var employees = await Database.ShopEmployees.GetByName(name);
+            return _mapper.Map<IEnumerable<ShopEmployee>, IEnumerable<ShopEmployeeDTO>>(employees);
+        }
+        public async Task<IEnumerable<ShopEmployeeDTO>> GetByStringIds(string stringIds)
+        { 
+            var employees = await Database.ShopEmployees.GetByStringIds(stringIds);
+            return _mapper.Map<IEnumerable<ShopEmployee>, IEnumerable<ShopEmployeeDTO>>(employees);
+        }
+        public async Task<ShopEmployeeDTO?> GetByPhoneNumber(string phone)
+        {
+            var employee = await Database.ShopEmployees.GetByPhoneNumber(phone);
             return _mapper.Map<ShopEmployeeDTO>(employee);
         }
-
+        public async Task<IEnumerable<ShopEmployeeDTO>> GetByRoleName(string roleName)
+        {
+            var employee = await Database.ShopEmployees.GetByRoleName(roleName);
+            return _mapper.Map<IEnumerable<ShopEmployeeDTO>>(employee);
+        }
+        public async Task<string?> GetRoleName(string employeeId)
+        {
+            return await Database.ShopEmployees.GetRoleName(employeeId);
+        }
         public async Task<IEnumerable<ShopEmployeeDTO>> GetEmployeesByWorkPlaceId(long id)
         {
             var shop = await Database.Shops.GetById(id);
@@ -87,7 +108,19 @@ namespace HyggyBackend.BLL.Services.Employees
 
             return _mapper.Map<IEnumerable<ShopEmployeeDTO>>(employees);
         }
-        public async Task<RegistrationResponseDto> CreateAsync(EmployeeForRegistrationDto registrationDto)
+
+        public async Task<IEnumerable<ShopEmployeeDTO>> GetByQuery(EmployeeQueryBLL query)
+        {
+            var employees = await Database.ShopEmployees.GetByQuery(_mapper.Map<EmployeeQueryDAL>(query));
+            var employeesDTOs = _mapper.Map<IEnumerable<ShopEmployee>, IEnumerable<ShopEmployeeDTO>>(employees);
+            foreach (var employee in employeesDTOs)
+            {
+                employee.RoleName = await GetRoleName(employee.Id);
+            }
+            return employeesDTOs;
+        }
+
+        public async Task<RegistrationResponseDto> Create(EmployeeForRegistrationDto registrationDto)
         {
             var user = _mapper.Map<ShopEmployee>(registrationDto);
 
@@ -156,9 +189,9 @@ namespace HyggyBackend.BLL.Services.Employees
             Database.ShopEmployees.Update(employee);
             Database.Save();
         }
-        public async Task DeleteAsync(string id)
+        public async Task Delete(string id)
         {
-            await Database.ShopEmployees.DeleteAsync(id);
+            await Database.ShopEmployees.Delete(id);
             await Database.Save();
         }
         private string EmailRegistrationTemplate(string name, string callback)

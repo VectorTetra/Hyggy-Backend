@@ -10,6 +10,6 @@
         public string? AvatarPath { get; set; }
         public bool? EmailConfirmed { get; set; }
         public DateTime DateOfBirth { get; set; }
-       // public long ProfessionId { get; set; }
+        public string? RoleName { get; set; }
     }
 }

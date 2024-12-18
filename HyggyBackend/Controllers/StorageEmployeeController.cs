@@ -1,132 +1,180 @@
 ﻿using HyggyBackend.BLL.DTO.AccountDtos;
 using HyggyBackend.BLL.DTO.EmployeesDTO;
 using HyggyBackend.BLL.Interfaces;
+using HyggyBackend.BLL.Queries;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HyggyBackend.Controllers
 {
-	[ApiController]
-	[Route("api/storageemployee")]
-	public class StorageEmployeeController : Controller
-	{
-		private IEmployeeService<StorageEmployeeDTO> _service;
+    [ApiController]
+    [Route("api/storageemployee")]
+    public class StorageEmployeeController : Controller
+    {
+        private IEmployeeService<StorageEmployeeDTO> _service;
 
-		public StorageEmployeeController(IEmployeeService<StorageEmployeeDTO> service)
-		{
-			_service = service;
-		}
+        public StorageEmployeeController(IEmployeeService<StorageEmployeeDTO> service)
+        {
+            _service = service;
+        }
 
-		[HttpPost("register")]
-		public async Task<IActionResult> Register([FromBody] EmployeeForRegistrationDto registerDto)
-		{
 
-			try
-			{
-				if (registerDto is null)
-					return BadRequest();
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] EmployeeForRegistrationDto registerDto)
+        {
 
-				var response = await _service.CreateAsync(registerDto);
-				if (!response.IsSuccessfullRegistration)
-					return BadRequest(response.Errors);
+            try
+            {
+                if (registerDto is null)
+                    return BadRequest();
 
-				return Ok("Надішлить співробітнику повідомлення про підтверження аккаунту.");
-			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, ex.Message);
-			}
+                var response = await _service.Create(registerDto);
+                if (!response.IsSuccessfullRegistration)
+                    return BadRequest(response.Errors);
 
-		}
-		[HttpPost("authenticate")]
-		public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDto authentication)
-		{
-			try
-			{
-				var response = await _service.AuthenticateAsync(authentication);
-				if (!response.IsAuthSuccessfull)
-					return StatusCode(500, response.Error);
+                return Ok("Надішлить співробітнику повідомлення про підтверження аккаунту.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
 
-				return Ok(response);
-			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, ex.Message);
+        }
+        [HttpPost("authenticate")]
+        public async Task<IActionResult> Authenticate([FromBody] UserForAuthenticationDto authentication)
+        {
+            try
+            {
+                var response = await _service.AuthenticateAsync(authentication);
+                if (!response.IsAuthSuccessfull)
+                    return StatusCode(500, response.Error);
 
-			}
-		}
-		[HttpGet("emailconfirmation")]
-		public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string token)
-		{
-			var result = await _service.EmailConfirmation(email, token);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
 
-			return Ok(result);
-		}
+            }
+        }
+        [HttpGet("emailconfirmation")]
+        public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string token)
+        {
+            var result = await _service.EmailConfirmation(email, token);
 
-		//[HttpGet("storageemployee/{shopId}")]
-		//public async Task<IActionResult> GetAllByShopId(long shopId)
-		//{
-		//	var employees = await _service.GetEmployeesByWorkPlaceId(shopId);
-		//	if (employees is null)
-		//		return NotFound();
+            return Ok(result);
+        }
 
-		//	return Ok(employees);
-		//}
-		[HttpGet("storageemployees")]
-		public async Task<IActionResult> GetAll()
-		{
-			var employees = await _service.GetAllAsync();
-			if (employees is null)
-				return NotFound();
+        //[HttpGet("storageemployee/{shopId}")]
+        //public async Task<IActionResult> GetAllByShopId(long shopId)
+        //{
+        //	var employees = await _service.GetEmployeesByWorkPlaceId(shopId);
+        //	if (employees is null)
+        //		return NotFound();
 
-			return Ok(employees);
-		}
-		[HttpGet("storageemployee-email")]
-		public async Task<IActionResult> GetByEmail(string email)
-		{
-			var employee = await _service.GetByEmail(email);
-			if (employee is null)
-				return NotFound();
+        //	return Ok(employees);
+        //}
+        [HttpGet("storageemployees")]
+        public async Task<IActionResult> GetAll()
+        {
+            var employees = await _service.GetAllAsync();
+            if (employees is null)
+                return NotFound();
 
-			return Ok(employee);
-		}
-		[HttpGet("storageemployee-surname")]
-		public async Task<IActionResult> GetBySurname(string surname)
-		{
-			var employee = await _service.GetBySurnameAsync(surname);
-			if (employee is null)
-				return NotFound();
+            return Ok(employees);
+        }
+        [HttpGet("storageemployee-email")]
+        public async Task<IActionResult> GetByEmail(string email)
+        {
+            var employee = await _service.GetByEmail(email);
+            if (employee is null)
+                return NotFound();
 
-			return Ok(employee);
-		}
-		[HttpGet("storageemployee-phone")]
-		public async Task<IActionResult> GetByPhone(string phone)
-		{
-			var employee = await _service.GetByPhoneAsync(phone);
-			if (employee is null)
-				return NotFound();
+            return Ok(employee);
+        }
+        [HttpGet("storageemployee-surname")]
+        public async Task<IActionResult> GetBySurname(string surname)
+        {
+            var employee = await _service.GetBySurname(surname);
+            if (employee is null)
+                return NotFound();
 
-			return Ok(employee);
-		}
-		[HttpPut("editemployee")]
-		public async Task<IActionResult> EditEmployee([FromBody] StorageEmployeeDTO employeeDTO)
-		{
-			var employee = await _service.GetByIdAsync(employeeDTO.Id!);
-			if (employee is null)
-				return NotFound();
+            return Ok(employee);
+        }
+        [HttpGet("storageemployee-phone")]
+        public async Task<IActionResult> GetByPhone(string phone)
+        {
+            var employee = await _service.GetByPhoneNumber(phone);
+            if (employee is null)
+                return NotFound();
 
-			_service.Update(employeeDTO);
+            return Ok(employee);
+        }
+        [HttpGet("storageemployee-rolename")]
+        public async Task<IActionResult> GetByRoleName(string rolename)
+        {
+            try
+            {
+                var employee = await _service.GetByRoleName(rolename);
+                if (employee is null)
+                    return NotFound();
 
-			return Ok("Співробітника оновлено.");
-		}
-		[HttpDelete("deleteemployee")]
-		public async Task<IActionResult> DeleteEmployee(string id)
-		{
-			var employee = await _service.GetByIdAsync(id);
-			if (employee is null)
-				return NotFound();
+                return Ok(employee);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
 
-			await _service.DeleteAsync(id);
-			return Ok("Співробітника видалено.");
-		}
-	}
+        [HttpGet("storageemployee-query")]
+        public async Task<IActionResult> GetByQuery([FromQuery] EmployeeQueryPL query)
+        {
+            try
+            {
+                var EmployeeMapper = new EmployeeMapperConfig();
+                var mapperConfig = EmployeeMapper.EmployeeConfig;
+                var mapper = mapperConfig.CreateMapper();
+                var queryBLL = mapper.Map<EmployeeQueryBLL>(query);
+                var employee = await _service.GetByQuery(queryBLL);
+                if (employee is null)
+                    return NotFound();
+
+                return Ok(employee);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+
+        }
+        [HttpPut("editemployee")]
+        public async Task<IActionResult> EditEmployee([FromBody] StorageEmployeeDTO employeeDTO)
+        {
+            var employee = await _service.GetById(employeeDTO.Id!);
+            if (employee is null)
+                return NotFound();
+
+            _service.Update(employeeDTO);
+
+            return Ok("Співробітника оновлено.");
+        }
+        [HttpDelete("deleteemployee")]
+        public async Task<IActionResult> DeleteEmployee(string id)
+        {
+            var employee = await _service.GetById(id);
+            if (employee is null)
+                return NotFound();
+
+            await _service.Delete(id);
+            return Ok("Співробітника видалено.");
+        }
+    }
 }

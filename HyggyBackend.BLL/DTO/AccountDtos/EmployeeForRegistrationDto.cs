@@ -16,9 +16,7 @@ namespace HyggyBackend.BLL.DTO.AccountDtos
 		public string? Password { get; set; }
 		[Compare("Password", ErrorMessage = "Підтвердить ваш пароль.")]
 		public string? ConfirmPassword { get; set; }
-		[JsonIgnore]
 		public string? Role { get; set; } = "Admin";
-		[Required(ErrorMessage = "Необхідно вказати магазин.")]
 		public long? ShopId { get; set; } 
 		public long? StorageId { get; set; }
 		//[Required]

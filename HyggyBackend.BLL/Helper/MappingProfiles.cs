@@ -106,6 +106,7 @@ namespace HyggyBackend.BLL.Helper
             CreateMap<ShopEmployeeDTO, ShopEmployee>();
             CreateMap<StorageEmployee, StorageEmployeeDTO>();
             CreateMap<StorageEmployeeDTO, StorageEmployee>();
+            CreateMap<EmployeeQueryBLL, EmployeeQueryDAL>();
             #endregion
 
             #region OrderItem Mappings

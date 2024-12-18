@@ -1,14 +1,8 @@
-﻿using HyggyBackend.BLL.DTO;
+﻿using HyggyBackend.BLL.DTO.AccountDtos;
 using HyggyBackend.BLL.DTO.EmployeesDTO;
 using HyggyBackend.BLL.Interfaces;
-using HyggyBackend.BLL.Services.Employees;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
+using HyggyBackend.BLL.Queries;
 using Microsoft.AspNetCore.Mvc;
-using HyggyBackend.BLL.DTO.AccountDtos;
-using HyggyBackend.BLL.Services.EmailService;
-using HyggyBackend.DAL.Entities.Employes;
-using Org.BouncyCastle.Tsp;
 
 namespace HyggyBackend.Controllers
 {
@@ -32,7 +26,7 @@ namespace HyggyBackend.Controllers
                 if (registerDto is null)
                     return BadRequest();
 
-                var response = await _service.CreateAsync(registerDto);
+                var response = await _service.Create(registerDto);
                 if (!response.IsSuccessfullRegistration)
                     return BadRequest(response.Errors);
 
@@ -154,7 +148,7 @@ namespace HyggyBackend.Controllers
         {
             try
             {
-                var employee = await _service.GetBySurnameAsync(surname);
+                var employee = await _service.GetBySurname(surname);
                 if (employee is null)
                     return NotFound();
 
@@ -176,7 +170,7 @@ namespace HyggyBackend.Controllers
             try
             {
 
-                var employee = await _service.GetByPhoneAsync(phone);
+                var employee = await _service.GetByPhoneNumber(phone);
                 if (employee is null)
                     return NotFound();
 
@@ -191,13 +185,62 @@ namespace HyggyBackend.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        [HttpGet("shopemployee-query")]
+        public async Task<IActionResult> GetByQuery([FromQuery] EmployeeQueryPL query)
+        {
+            try
+            {
+                var EmployeeMapper = new EmployeeMapperConfig();
+                var mapperConfig = EmployeeMapper.EmployeeConfig;
+                var mapper = mapperConfig.CreateMapper();
+                var queryBLL = mapper.Map<EmployeeQueryBLL>(query);
+                var employee = await _service.GetByQuery(queryBLL);
+                if (employee is null)
+                    return NotFound();
+
+                return Ok(employee);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+
+        }
+
+        [HttpGet("shopemployee-rolename")]
+        public async Task<IActionResult> GetByRoleName(string rolename)
+        {
+            try
+            {
+
+                var employee = await _service.GetByRoleName(rolename);
+                if (employee is null)
+                    return NotFound();
+
+                return Ok(employee);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [HttpPut("editemployee")]
         public async Task<IActionResult> EditEmployee(ShopEmployeeDTO employeeDTO)
         {
             try
             {
 
-                var employee = await _service.GetByIdAsync(employeeDTO.Id!);
+                var employee = await _service.GetById(employeeDTO.Id!);
                 if (employee is null)
                     return NotFound();
 
@@ -220,11 +263,11 @@ namespace HyggyBackend.Controllers
             try
             {
 
-                var employee = await _service.GetByIdAsync(id);
+                var employee = await _service.GetById(id);
                 if (employee is null)
                     return NotFound();
 
-                await _service.DeleteAsync(id);
+                await _service.Delete(id);
                 return Ok("Співробітника видалено.");
             }
             catch (Exception ex)

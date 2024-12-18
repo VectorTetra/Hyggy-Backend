@@ -4,175 +4,186 @@ using HyggyBackend.BLL.DTO.AccountDtos;
 using HyggyBackend.BLL.DTO.EmployeesDTO;
 using HyggyBackend.BLL.Infrastructure;
 using HyggyBackend.BLL.Interfaces;
+using HyggyBackend.BLL.Queries;
 using HyggyBackend.BLL.Services.EmailService;
 using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Entities.Employes;
 using HyggyBackend.DAL.Interfaces;
+using HyggyBackend.DAL.Queries;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 
 namespace HyggyBackend.BLL.Services.Employees
 {
-	public class StorageEmployeeDTOService : IEmployeeService<StorageEmployeeDTO>
-	{
-		IUnitOfWork Database { get; set; }
-		private readonly IMapper _mapper;
-		private readonly UserManager<User> _userManager;
-		private readonly ITokenService _tokenService;
-		private readonly IShopService _shopService;
-		private readonly IEmailSender _emailSender;
-		public StorageEmployeeDTOService(IUnitOfWork database, IMapper mapper,
-			UserManager<User> userManager, ITokenService tokenService,
-			 IShopService shopService,
-			 IEmailSender emailSender)
-		{
-			Database = database;
-			_mapper = mapper;
-			_userManager = userManager;
-			_tokenService = tokenService;
-			_shopService = shopService;
-			_emailSender = emailSender;
-		}
-
-		public async Task<IEnumerable<StorageEmployeeDTO>> GetAllAsync()
-		{
-			var employees = await Database.StorageEmployees.GetAllAsync();
-
-			return _mapper.Map<IEnumerable<StorageEmployee>, IEnumerable<StorageEmployeeDTO>>(employees);
-		}
-
-		public async Task<IEnumerable<StorageEmployeeDTO>> GetPaginatedEmployeesAsync(int? page)
-		{
-			var paginatedEmployees = await Database.StorageEmployees.GetPaginatedEmployeesAsync(page);
-			return _mapper.Map<IEnumerable<StorageEmployee>, IEnumerable<StorageEmployeeDTO>>(paginatedEmployees);
-		}
-
-		public async Task<IEnumerable<StorageEmployeeDTO>> GetEmployeesByProfessionAsync(string professionName)
-		{
-			var employees = await Database.StorageEmployees.GetEmployeesByProfessionAsync(professionName);
-            return _mapper.Map<IEnumerable<StorageEmployee>, IEnumerable<StorageEmployeeDTO>>(employees);
+    public class StorageEmployeeDTOService : IEmployeeService<StorageEmployeeDTO>
+    {
+        IUnitOfWork Database { get; set; }
+        private readonly IMapper _mapper;
+        private readonly UserManager<User> _userManager;
+        private readonly ITokenService _tokenService;
+        private readonly IEmailSender _emailSender;
+        public StorageEmployeeDTOService(IUnitOfWork database, IMapper mapper,
+            UserManager<User> userManager, ITokenService tokenService,
+            
+             IEmailSender emailSender)
+        {
+            Database = database;
+            _mapper = mapper;
+            _userManager = userManager;
+            _tokenService = tokenService;
+            _emailSender = emailSender;
         }
 
-		public async Task<IEnumerable<StorageEmployeeDTO>> GetEmployeesByWorkPlaceId(long id)
-		{
-			var storage = await Database.Storages.GetById(id);
-			if (storage == null)
-				return null;
+        public async Task<IEnumerable<StorageEmployeeDTO>> GetAllAsync()
+        {
+            var employees = await Database.StorageEmployees.GetAllAsync();
 
-			var employees = storage.StorageEmployees.ToList();
+            return _mapper.Map<IEnumerable<StorageEmployee>, IEnumerable<StorageEmployeeDTO>>(employees);
+        }
+        public async Task<IEnumerable<StorageEmployeeDTO>> GetPaged(int pageNumber, int PageSize)
+        {
+            var paginatedEmployees = await Database.StorageEmployees.GetPaged(pageNumber, PageSize);
+            return _mapper.Map<IEnumerable<StorageEmployee>, IEnumerable<StorageEmployeeDTO>>(paginatedEmployees);
+        }
+        public async Task<IEnumerable<StorageEmployeeDTO>> GetEmployeesByWorkPlaceId(long id)
+        {
+            var storage = await Database.Storages.GetById(id);
+            if (storage == null)
+                return null;
 
-			return _mapper.Map<IEnumerable<StorageEmployeeDTO>>(employees);
+            var employees = storage.StorageEmployees.ToList();
 
-		}
+            return _mapper.Map<IEnumerable<StorageEmployeeDTO>>(employees);
 
-		public async Task<IEnumerable<StorageEmployeeDTO>> GetEmployeesByDateOfBirthAsync(DateTime date)
-		{
-			var employees = await Database.StorageEmployees.GetEmployeesByDateOfBirthAsync(date);
-			return _mapper.Map<IEnumerable<StorageEmployee>, IEnumerable<StorageEmployeeDTO>>(employees);
-		}
-		public async Task<IEnumerable<StorageEmployeeDTO>?> GetBySurnameAsync(string surname)
-		{
-			var employee = await Database.StorageEmployees.GetBySurnameAsync(surname);
-			return _mapper.Map<IEnumerable<StorageEmployeeDTO>>(employee);
-		}
+        }
+        public async Task<IEnumerable<StorageEmployeeDTO>> GetEmployeesByDateOfBirth(DateTime date)
+        {
+            var employees = await Database.StorageEmployees.GetEmployeesByDateOfBirth(date);
+            return _mapper.Map<IEnumerable<StorageEmployee>, IEnumerable<StorageEmployeeDTO>>(employees);
+        }
+        public async Task<IEnumerable<StorageEmployeeDTO>?> GetBySurname(string surname)
+        {
+            var employee = await Database.StorageEmployees.GetBySurname(surname);
+            return _mapper.Map<IEnumerable<StorageEmployeeDTO>>(employee);
+        }
+        public async Task<IEnumerable<StorageEmployeeDTO>> GetByName(string name)
+        {
+            var employees = await Database.StorageEmployees.GetByName(name);
+            return _mapper.Map<IEnumerable<StorageEmployee>, IEnumerable<StorageEmployeeDTO>>(employees);
+        }
+        public async Task<IEnumerable<StorageEmployeeDTO>> GetByStringIds(string stringIds)
+        {
+            var employees = await Database.StorageEmployees.GetByStringIds(stringIds);
+            return _mapper.Map<IEnumerable<StorageEmployee>, IEnumerable<StorageEmployeeDTO>>(employees);
+        }
+        public async Task<StorageEmployeeDTO?> GetById(string id)
+        {
+            var employee = await Database.StorageEmployees.GetById(id);
+            return _mapper.Map<StorageEmployeeDTO>(employee);
+        }
+        public async Task<StorageEmployeeDTO?> GetByEmail(string email)
+        {
+            var employee = await Database.StorageEmployees.GetByEmail(email);
+            return _mapper.Map<StorageEmployeeDTO>(employee);
+        }
+        public async Task<StorageEmployeeDTO?> GetByPhoneNumber(string phone)
+        {
+            var employee = await Database.StorageEmployees.GetByPhoneNumber(phone);
+            return _mapper.Map<StorageEmployeeDTO>(employee);
+        }
+        public async Task<IEnumerable<StorageEmployeeDTO>?> GetByRoleName(string roleName)
+        {
+            var employee = await Database.StorageEmployees.GetByRoleName(roleName);
+            return _mapper.Map<IEnumerable<StorageEmployeeDTO>>(employee);
+        }
+        public async Task<string?> GetRoleName(string employeeId)
+        {
+            return await Database.StorageEmployees.GetRoleName(employeeId);
+        }
+        public async Task<IEnumerable<StorageEmployeeDTO>> GetByQuery(EmployeeQueryBLL query)
+        {
+            var employees = await Database.StorageEmployees.GetByQuery(_mapper.Map<EmployeeQueryDAL>(query));
+            var employeesDTOs = _mapper.Map<IEnumerable<StorageEmployee>, IEnumerable<StorageEmployeeDTO>>(employees);
+            foreach (var employee in employeesDTOs)
+            {
+                employee.RoleName = await GetRoleName(employee.Id);
+            }
+            return employeesDTOs;
+        }
+        public async Task<RegistrationResponseDto> Create(EmployeeForRegistrationDto registrationDto)
+        {
+            var user = _mapper.Map<StorageEmployee>(registrationDto);
 
-		public async Task<StorageEmployeeDTO?> GetByIdAsync(string id)
-		{
-			var employee = await Database.StorageEmployees.GetByIdAsync(id);
-			return _mapper.Map<StorageEmployeeDTO>(employee);
-		}
+            var result = await _userManager.CreateAsync(user, registrationDto.Password!);
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description);
 
-		public async Task<StorageEmployeeDTO?> GetByEmail(string email)
-		{
-			var employee = await Database.StorageEmployees.GetByEmail(email);
-			return _mapper.Map<StorageEmployeeDTO>(employee);
-		}
+                return new RegistrationResponseDto { IsSuccessfullRegistration = false, Errors = errors };
+            }
 
-		public async Task<StorageEmployeeDTO?> GetByPhoneAsync(string phone)
-		{
-			var employee = await Database.StorageEmployees.GetByPhoneAsync(phone);
-			return _mapper.Map<StorageEmployeeDTO>(employee);
-		}
+            await _userManager.AddToRoleAsync(user, registrationDto.Role!);
 
-		public async Task<RegistrationResponseDto> CreateAsync(EmployeeForRegistrationDto registrationDto)
-		{
-			var user = _mapper.Map<StorageEmployee>(registrationDto);
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var param = new Dictionary<string, string?>
+            {
+                {"token", token},
+                {"email", user.Email }
+            };
 
-			var result = await _userManager.CreateAsync(user, registrationDto.Password!);
-			if (!result.Succeeded)
-			{
-				var errors = result.Errors.Select(e => e.Description);
+            registrationDto.UserUri = "http://www.hyggy.somee.com/api/storageemployee/emailconfirmation";
 
-				return new RegistrationResponseDto { IsSuccessfullRegistration = false, Errors = errors };
-			}
-
-			await _userManager.AddToRoleAsync(user, registrationDto.Role!);
-
-			var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-			var param = new Dictionary<string, string?>
-			{
-				{"token", token},
-				{"email", user.Email }
-			};
-
-			registrationDto.UserUri = "http://www.hyggy.somee.com/api/storageemployee/emailconfirmation";
-
-			var callback = QueryHelpers.AddQueryString(registrationDto.UserUri, param);
-			var emailTemplate = EmailRegistrationTemplate(user.Name, callback);
-
-
-			var message = new Message([user.Email], "Ласкаво просимо в команду Hyggy", emailTemplate);
-
-			_emailSender.SendEmail(message);
-
-			return new RegistrationResponseDto { IsSuccessfullRegistration = true };
-		}
-
-		public async Task<string> EmailConfirmation(string email, string token)
-		{
-			var user = await _userManager.FindByEmailAsync(email);
-			if (user is null)
-				throw new ValidationException("Пошту не знайдено", email);
-
-
-			var confirmResult = await _userManager.ConfirmEmailAsync(user, token);
-			if (!confirmResult.Succeeded)
-				throw new ValidationException("Пошту не знайдено", email);
-
-
-			return "Обліковий запис підтвержено!";
-		}
-		public async Task<AuthResponseDto> AuthenticateAsync(UserForAuthenticationDto authenticationDto)
-		{
-			var user = await _userManager.FindByNameAsync(authenticationDto.Email!);
-			if (user is null)
-				return new AuthResponseDto { IsAuthSuccessfull = false, Error = "Невірне ім'я" };
-
-			if (!await _userManager.IsEmailConfirmedAsync(user))
-				return new AuthResponseDto { IsAuthSuccessfull = false, Error = "Активуйте свій обліковий запис" };
-
-			if (!await _userManager.CheckPasswordAsync(user, authenticationDto.Password!))
-				return new AuthResponseDto { IsAuthSuccessfull = false, Error = "Невірний пароль" };
-
-			var token = await _tokenService.CreateToken(user);
-
-			return new AuthResponseDto { IsAuthSuccessfull = true, Token = token };
-		}
-
-		public void Update(StorageEmployeeDTO storageEmployee)
-		{
-			var employee = _mapper.Map<StorageEmployee>(storageEmployee);
-			Database.StorageEmployees.Update(employee);
-			Database.Save();
-		}
-
-		public async  Task DeleteAsync(string id)
-		{
-			await Database.StorageEmployees.DeleteAsync(id);
-			await Database.Save();
-		}
+            var callback = QueryHelpers.AddQueryString(registrationDto.UserUri, param);
+            var emailTemplate = EmailRegistrationTemplate(user.Name, callback);
 
 
+            var message = new Message([user.Email], "Ласкаво просимо в команду Hyggy", emailTemplate);
+
+            _emailSender.SendEmail(message);
+
+            return new RegistrationResponseDto { IsSuccessfullRegistration = true };
+        }
+        public async Task<string> EmailConfirmation(string email, string token)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user is null)
+                throw new ValidationException("Пошту не знайдено", email);
+
+
+            var confirmResult = await _userManager.ConfirmEmailAsync(user, token);
+            if (!confirmResult.Succeeded)
+                throw new ValidationException("Пошту не знайдено", email);
+
+
+            return "Обліковий запис підтвержено!";
+        }
+        public async Task<AuthResponseDto> AuthenticateAsync(UserForAuthenticationDto authenticationDto)
+        {
+            var user = await _userManager.FindByNameAsync(authenticationDto.Email!);
+            if (user is null)
+                return new AuthResponseDto { IsAuthSuccessfull = false, Error = "Невірне ім'я" };
+
+            if (!await _userManager.IsEmailConfirmedAsync(user))
+                return new AuthResponseDto { IsAuthSuccessfull = false, Error = "Активуйте свій обліковий запис" };
+
+            if (!await _userManager.CheckPasswordAsync(user, authenticationDto.Password!))
+                return new AuthResponseDto { IsAuthSuccessfull = false, Error = "Невірний пароль" };
+
+            var token = await _tokenService.CreateToken(user);
+
+            return new AuthResponseDto { IsAuthSuccessfull = true, Token = token };
+        }
+        public void Update(StorageEmployeeDTO storageEmployee)
+        {
+            var employee = _mapper.Map<StorageEmployee>(storageEmployee);
+            Database.StorageEmployees.Update(employee);
+            Database.Save();
+        }
+        public async Task Delete(string id)
+        {
+            await Database.StorageEmployees.Delete(id);
+            await Database.Save();
+        }
         private string EmailRegistrationTemplate(string name, string callback)
         {
             var template = $@"

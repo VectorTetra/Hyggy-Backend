@@ -1,8 +1,10 @@
 using HyggyBackend.DAL.EF;
+using HyggyBackend.DAL.Entities;
 using HyggyBackend.DAL.Entities.Employes;
 using HyggyBackend.DAL.Interfaces;
 using HyggyBackend.DAL.Repositories;
 using HyggyBackend.DAL.Repositories.Employes;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace HyggyBackend.DAL.UnitOfWork
@@ -10,6 +12,7 @@ namespace HyggyBackend.DAL.UnitOfWork
     public class UnitOfWork : IUnitOfWork
     {
         private readonly HyggyContext _context;
+        private readonly UserManager<User> _userManager;
         private IDbContextTransaction _transaction;
         private IWareRepository _wares;
         private IWareItemRepository _wareItems;
@@ -37,9 +40,10 @@ namespace HyggyBackend.DAL.UnitOfWork
         private IWareTrademarkRepository _wareTrademarks;
 
         //private IMainStorageRepository _globalStorage;
-        public UnitOfWork(HyggyContext context)
+        public UnitOfWork(HyggyContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public IDbContextTransaction Transaction
@@ -123,7 +127,7 @@ namespace HyggyBackend.DAL.UnitOfWork
             get
             {
                 if (_storageEmployees == null)
-                    _storageEmployees = new StorageEmployeeRepository(_context);
+                    _storageEmployees = new StorageEmployeeRepository(_context,_userManager);
                 return _storageEmployees;
             }
         }
@@ -132,7 +136,7 @@ namespace HyggyBackend.DAL.UnitOfWork
             get
             {
                 if (_shopEmployees == null)
-                    _shopEmployees = new ShopEmployeeRepository(_context);
+                    _shopEmployees = new ShopEmployeeRepository(_context, _userManager);
                 return _shopEmployees;
             }
         }
