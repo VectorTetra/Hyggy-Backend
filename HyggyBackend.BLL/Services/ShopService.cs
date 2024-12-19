@@ -224,40 +224,52 @@ namespace HyggyBackend.BLL.Services
             }
             if (shopDTO.OrderIds != null)
             {
-                if (!shopDTO.OrderIds.Any())
+                var existingOrders = existingShop.Orders.Select(o => o.Id).ToList();
+                var ordersToAdd = shopDTO.OrderIds.Except(existingOrders).ToList();
+                var ordersToRemove = existingOrders.Except(shopDTO.OrderIds).ToList();
+
+                // Видалення замовлень, яких більше немає у списку
+                await foreach (var order in Database.Orders.GetByIdsAsync(ordersToRemove))
                 {
-                    existingShop.Orders.Clear();  // Очищаємо колекцію, якщо масив порожній
-                }
-                else
-                {
-                    existingShop.Orders.Clear();
-                    await foreach (var order in Database.Orders.GetByIdsAsync(shopDTO.OrderIds))
+                    if (order == null)
                     {
-                        if (order == null)
-                        {
-                            throw new ValidationException("Один з Order не знайдено!", "");
-                        }
-                        existingShop.Orders.Add(order);
+                        throw new ValidationException("Один з Order не знайдено!", "");
                     }
+                    existingShop.Orders.Remove(order);
+                }
+
+                // Додавання нових замовлень
+                await foreach (var order in Database.Orders.GetByIdsAsync(ordersToAdd))
+                {
+                    if (order == null)
+                    {
+                        throw new ValidationException("Один з Order не знайдено!", "");
+                    }
+                    existingShop.Orders.Add(order);
                 }
             }
             if (shopDTO.ShopEmployeeIds != null)
             {
-                if (!shopDTO.ShopEmployeeIds.Any())
+                var existingShopEmployees = existingShop.ShopEmployees.Select(e => e.Id).ToList();
+                var shopEmployeesToAdd = shopDTO.ShopEmployeeIds.Except(existingShopEmployees).ToList();
+                var shopEmployeesToRemove = existingShopEmployees.Except(shopDTO.ShopEmployeeIds).ToList();
+                // Видалення працівників, яких більше немає у списку
+                await foreach (var shopEmployee in Database.ShopEmployees.GetByIdsAsync(shopEmployeesToRemove))
                 {
-                    existingShop.ShopEmployees.Clear();  // Очищаємо колекцію, якщо масив порожній
-                }
-                else
-                {
-                    existingShop.ShopEmployees.Clear();
-                    await foreach (var order in Database.ShopEmployees.GetByIdsAsync(shopDTO.ShopEmployeeIds))
+                    if (shopEmployee == null)
                     {
-                        if (order == null)
-                        {
-                            throw new ValidationException("Один з Order не знайдено!", "");
-                        }
-                        existingShop.ShopEmployees.Add(order);
+                        throw new ValidationException("Один з ShopEmployee не знайдено!", "");
                     }
+                    existingShop.ShopEmployees.Remove(shopEmployee);
+                }
+                // Додавання нових працівників
+                await foreach (var shopEmployee in Database.ShopEmployees.GetByIdsAsync(shopEmployeesToAdd))
+                {
+                    if (shopEmployee == null)
+                    {
+                        throw new ValidationException("Один з ShopEmployee не знайдено!", "");
+                    }
+                    existingShop.ShopEmployees.Add(shopEmployee);
                 }
             }
             existingShop.Address = existingAddress;
