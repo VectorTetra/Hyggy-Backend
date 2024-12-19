@@ -31,7 +31,7 @@ namespace HyggyBackend.Controllers
                 if (!response.IsSuccessfullRegistration)
                     return BadRequest(response.Errors);
 
-                return Ok("Надішлить співробітнику повідомлення про підтверження аккаунту.");
+                return Ok("Відправте співробітнику повідомлення про підтверження аккаунту.");
             }
             catch (Exception ex)
             {

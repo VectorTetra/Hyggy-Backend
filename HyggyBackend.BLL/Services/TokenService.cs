@@ -27,15 +27,25 @@ namespace HyggyBackend.BLL.Services
 		}
         public async Task<string> CreateToken(User user)
 		{
-			var userRoles = await _userManager.GetRolesAsync(user);
+            var shopEmployee = user as ShopEmployee;
+            var storageEmployee = user as StorageEmployee;
+            var userRoles = await _userManager.GetRolesAsync(user);
 			var claims = new List<Claim>
 			{
 				new Claim(JwtRegisteredClaimNames.NameId, user.Id),
 				new Claim(JwtRegisteredClaimNames.Email, user.Email),
 				new Claim(JwtRegisteredClaimNames.GivenName, user.UserName)
 			};
-
-			claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
+            if (shopEmployee != null)
+            {
+                claims.Add(new Claim("shopId", shopEmployee.ShopId.ToString()));
+                claims.Add(new Claim("storageId", shopEmployee.Shop.Storage.Id.ToString()));
+            }
+			if (storageEmployee != null)
+			{
+				claims.Add(new Claim("storageId", storageEmployee.StorageId.ToString()));
+			}
+            claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
 			var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha256Signature);
 
 			var tokenDescriptor = new SecurityTokenDescriptor
