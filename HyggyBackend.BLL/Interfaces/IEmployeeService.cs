@@ -25,7 +25,7 @@ namespace HyggyBackend.BLL.Interfaces
         Task<RegistrationResponseDto> Create(EmployeeForRegistrationDto registrationDto);
 		Task<AuthResponseDto> AuthenticateAsync(UserForAuthenticationDto authenticationDto);
 		Task<string> EmailConfirmation(string email, string code);
-		void Update(T item);
+		Task<T> Update(T item);
 		Task Delete(string id);
 	}
 }

@@ -260,16 +260,7 @@ namespace HyggyBackend.DAL.Repositories.Employes
         }
         public void Update(StorageEmployee employee)
         {
-            StorageEmployee? storageEmployee = _context.StorageEmployees.Where(s => s.Id == employee.Id).FirstOrDefault();
-            if (storageEmployee != null)
-            {
-                storageEmployee.Surname = employee.Surname;
-                storageEmployee.Name = employee.Name;
-                storageEmployee.Email = employee.Email;
-                storageEmployee.PhoneNumber = employee.PhoneNumber;
-                storageEmployee.DateOfBirth = employee.DateOfBirth;
-                storageEmployee.StorageId = employee.StorageId;
-            }
+            _context.Entry(employee).State = EntityState.Modified;
         }
         public async Task Delete(string id)
         {

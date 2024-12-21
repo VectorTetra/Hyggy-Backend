@@ -4,6 +4,7 @@ using HyggyBackend.DAL.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HyggyBackend.DAL.Migrations
 {
     [DbContext(typeof(HyggyContext))]
-    partial class HyggyContextModelSnapshot : ModelSnapshot
+    [Migration("20241220164143_addAssigningStorageIdToShopEmployee")]
+    partial class addAssigningStorageIdToShopEmployee
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,7 +40,7 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasIndex("FavoriteWaresId");
 
-                    b.ToTable("CustomerWare", (string)null);
+                    b.ToTable("CustomerWare");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Address", b =>
@@ -71,7 +74,7 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Addresses", (string)null);
+                    b.ToTable("Addresses");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Blog", b =>
@@ -103,7 +106,7 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasIndex("BlogCategory2Id");
 
-                    b.ToTable("Blogs", (string)null);
+                    b.ToTable("Blogs");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.BlogCategory1", b =>
@@ -120,7 +123,7 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BlogCategories1", (string)null);
+                    b.ToTable("BlogCategories1");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.BlogCategory2", b =>
@@ -146,7 +149,7 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasIndex("BlogCategory1Id");
 
-                    b.ToTable("BlogCategories2", (string)null);
+                    b.ToTable("BlogCategories2");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Order", b =>
@@ -194,7 +197,7 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasIndex("StatusId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.OrderDeliveryType", b =>
@@ -224,7 +227,7 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("OrderDeliveryTypes", (string)null);
+                    b.ToTable("OrderDeliveryTypes");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.OrderItem", b =>
@@ -255,7 +258,7 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasIndex("WareId");
 
-                    b.ToTable("OrderItems", (string)null);
+                    b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.OrderStatus", b =>
@@ -276,7 +279,7 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("OrderStatuses", (string)null);
+                    b.ToTable("OrderStatuses");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Proffession", b =>
@@ -293,7 +296,7 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Proffessions", (string)null);
+                    b.ToTable("Proffessions");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Shop", b =>
@@ -332,7 +335,7 @@ namespace HyggyBackend.DAL.Migrations
                         .IsUnique()
                         .HasFilter("[StorageId] IS NOT NULL");
 
-                    b.ToTable("Shops", (string)null);
+                    b.ToTable("Shops");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Storage", b =>
@@ -352,7 +355,7 @@ namespace HyggyBackend.DAL.Migrations
                         .IsUnique()
                         .HasFilter("[AddressId] IS NOT NULL");
 
-                    b.ToTable("Storages", (string)null);
+                    b.ToTable("Storages");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.User", b =>
@@ -484,7 +487,7 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasIndex("WareTrademarkId");
 
-                    b.ToTable("Wares", (string)null);
+                    b.ToTable("Wares");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.WareCategory1", b =>
@@ -501,7 +504,7 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("WareCategories1", (string)null);
+                    b.ToTable("WareCategories1");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.WareCategory2", b =>
@@ -523,7 +526,7 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasIndex("WareCategory1Id");
 
-                    b.ToTable("WareCategories2", (string)null);
+                    b.ToTable("WareCategories2");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.WareCategory3", b =>
@@ -545,7 +548,7 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasIndex("WareCategory2Id");
 
-                    b.ToTable("WareCategories3", (string)null);
+                    b.ToTable("WareCategories3");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.WareImage", b =>
@@ -567,7 +570,7 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasIndex("WareId");
 
-                    b.ToTable("WareImages", (string)null);
+                    b.ToTable("WareImages");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.WareItem", b =>
@@ -594,7 +597,7 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasIndex("WareId", "StorageId")
                         .IsUnique();
 
-                    b.ToTable("WareItems", (string)null);
+                    b.ToTable("WareItems");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.WarePriceHistory", b =>
@@ -619,7 +622,7 @@ namespace HyggyBackend.DAL.Migrations
                     b.HasIndex("WareId", "Price", "EffectiveDate")
                         .IsUnique();
 
-                    b.ToTable("WarePriceHistories", (string)null);
+                    b.ToTable("WarePriceHistories");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.WareReview", b =>
@@ -662,7 +665,7 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasIndex("WareId");
 
-                    b.ToTable("WareReviews", (string)null);
+                    b.ToTable("WareReviews");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.WareStatus", b =>
@@ -683,7 +686,7 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("WareStatuses", (string)null);
+                    b.ToTable("WareStatuses");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.WareTrademark", b =>
@@ -700,7 +703,7 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("WareTrademarks", (string)null);
+                    b.ToTable("WareTrademarks");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -728,6 +731,50 @@ namespace HyggyBackend.DAL.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "e918261f-afbd-4c82-a4e8-856d152254fe",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "d35a717c-aafb-4fa1-b264-42c3327e2937",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        },
+                        new
+                        {
+                            Id = "debeebd0-2170-4598-937b-91ea4f9cddcf",
+                            Name = "Storekeeper",
+                            NormalizedName = "STOREKEEPER"
+                        },
+                        new
+                        {
+                            Id = "cd924199-8480-4215-a76e-c6916a756e02",
+                            Name = "Saler",
+                            NormalizedName = "SALER"
+                        },
+                        new
+                        {
+                            Id = "cb6d64cc-563d-42cf-8c51-f3bf8f166033",
+                            Name = "Accountant",
+                            NormalizedName = "ACCOUNTANT"
+                        },
+                        new
+                        {
+                            Id = "79cbddaa-81a2-49af-86cd-a4b693b405b1",
+                            Name = "General Accountant",
+                            NormalizedName = "GENERAL ACCOUNTANT"
+                        },
+                        new
+                        {
+                            Id = "4577977b-9aef-4eb4-b46e-2d9018e96b2f",
+                            Name = "Owner",
+                            NormalizedName = "OWNER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -848,7 +895,7 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasIndex("WaresId");
 
-                    b.ToTable("WareWareStatus", (string)null);
+                    b.ToTable("WareWareStatus");
                 });
 
             modelBuilder.Entity("HyggyBackend.DAL.Entities.Customer", b =>
@@ -874,7 +921,7 @@ namespace HyggyBackend.DAL.Migrations
 
                     b.HasIndex("ShopId");
 
-                    b.ToTable("AspNetUsers", null, t =>
+                    b.ToTable("AspNetUsers", t =>
                         {
                             t.Property("StorageId")
                                 .HasColumnName("ShopEmployee_StorageId");

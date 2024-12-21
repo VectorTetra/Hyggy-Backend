@@ -114,47 +114,6 @@ namespace HyggyBackend.DAL.EF
             //    .HasOne(m => m.Shop)
             //    .WithOne(s => s.Storage)
             //    .OnDelete(DeleteBehavior.SetNull);
-
-            List<IdentityRole> roles = new List<IdentityRole>
-            {
-                new IdentityRole
-                {
-                    Name = "Admin",
-                    NormalizedName = "ADMIN"
-                },
-                new IdentityRole
-                {
-                    Name = "User",
-                    NormalizedName = "USER"
-                },
-                new IdentityRole
-                {
-                    Name = "Storekeeper",
-                    NormalizedName = "STOREKEEPER"
-                },
-                new IdentityRole
-                {
-                    Name = "Saler",
-                    NormalizedName = "SALER"
-                },
-                new IdentityRole
-                {
-                    Name = "Accountant",
-                    NormalizedName = "ACCOUNTANT"
-                },
-                new IdentityRole
-                {
-                    Name = "General Accountant",
-                    NormalizedName = "GENERAL ACCOUNTANT"
-                },
-                new IdentityRole
-                {
-                    Name = "Owner",
-                    NormalizedName = "OWNER"
-                }
-
-            };
-            builder.Entity<IdentityRole>().HasData(roles);
         }
         public class SampleContextFactory : IDesignTimeDbContextFactory<HyggyContext>
         {

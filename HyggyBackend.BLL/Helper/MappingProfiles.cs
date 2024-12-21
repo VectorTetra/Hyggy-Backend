@@ -99,14 +99,22 @@ namespace HyggyBackend.BLL.Helper
 
             #region Employee Mappings
             CreateMap<EmployeeForRegistrationDto, ShopEmployee>()
-                .ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email));
+                .ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email))
+                .ForMember(u => u.ShopId, opt => opt.MapFrom(x => x.ShopId));
             CreateMap<EmployeeForRegistrationDto, StorageEmployee>()
                 .ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email));
-            CreateMap<ShopEmployee, ShopEmployeeDTO>().ForMember(u =>u.StorageId, opt=> opt.MapFrom(emp=>emp.Shop.StorageId));
+            CreateMap<ShopEmployee, ShopEmployeeDTO>().ForMember(u => u.StorageId, opt => opt.MapFrom(emp => emp.Shop.StorageId));
             CreateMap<ShopEmployeeDTO, ShopEmployee>();
             CreateMap<StorageEmployee, StorageEmployeeDTO>();
             CreateMap<StorageEmployeeDTO, StorageEmployee>();
             CreateMap<EmployeeQueryBLL, EmployeeQueryDAL>();
+            CreateMap<EmployeeForRegistrationDto, ShopEmployeeDTO>()
+                .ForMember(u => u.ShopId, opt => opt.MapFrom(x => x.ShopId))
+                .ForMember(u => u.RoleName, opt => opt.MapFrom(x => x.Role))
+                .ForMember(u => u.StorageId, opt => opt.MapFrom(x => x.StorageId));
+            CreateMap<EmployeeForRegistrationDto, StorageEmployeeDTO>()
+                .ForMember(u => u.RoleName, opt => opt.MapFrom(x => x.Role))
+                .ForMember(u => u.StorageId, opt => opt.MapFrom(x => x.StorageId));
             #endregion
 
             #region OrderItem Mappings
@@ -198,14 +206,14 @@ namespace HyggyBackend.BLL.Helper
              .ForPath(dto => dto.TotalPrice, opt => opt.MapFrom(src => src.OrderItems.Sum(oi => oi.Count * (oi.Ware.Price - (oi.Ware.Price * oi.Ware.Discount / 100))) + src.DeliveryType.Price))
              .ForPath(dto => dto.DeliveryTypeId, opt => opt.MapFrom(src => src.DeliveryType.Id))
              .ForPath(dto => dto.DeliveryType, opt => opt.MapFrom(src => new OrderDeliveryTypeDTO
-            {
-                Id = src.DeliveryType.Id,
-                Name = src.DeliveryType.Name,
-                Description = src.DeliveryType.Description,
-                Price = src.DeliveryType.Price,
-                MinDeliveryTimeInDays = src.DeliveryType.MinDeliveryTimeInDays,
-                MaxDeliveryTimeInDays = src.DeliveryType.MaxDeliveryTimeInDays
-            }))
+             {
+                 Id = src.DeliveryType.Id,
+                 Name = src.DeliveryType.Name,
+                 Description = src.DeliveryType.Description,
+                 Price = src.DeliveryType.Price,
+                 MinDeliveryTimeInDays = src.DeliveryType.MinDeliveryTimeInDays,
+                 MaxDeliveryTimeInDays = src.DeliveryType.MaxDeliveryTimeInDays
+             }))
              .ForPath(dto => dto.Customer, opt => opt.MapFrom(src => new CustomerDTO
              {
                  Id = src.Customer.Id,
