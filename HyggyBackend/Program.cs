@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using Microsoft.Extensions.DependencyInjection; // Додано для правильного підключення AddNewtonsoftJson
-using Newtonsoft.Json;
-using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
-using Newtonsoft.Json.Serialization; // Додано для підтримки NewtonsoftJson
+//using Microsoft.Extensions.DependencyInjection; // Додано для правильного підключення AddNewtonsoftJson
+//using Newtonsoft.Json;
+//using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
+//using Newtonsoft.Json.Serialization; // Додано для підтримки NewtonsoftJson
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,15 +30,7 @@ builder.Services.AddUnitOfWorkService();
 //    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
 //});
 
-builder.Services.AddControllers().AddNewtonsoftJson(options =>
-{
-    options.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
-    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-    options.SerializerSettings.ContractResolver = new DefaultContractResolver
-    {
-        IgnoreSerializableAttribute = true
-    };
-});
+builder.Services.AddControllers();
 
 builder.Services.AddDistributedMemoryCache();
 
