@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using HyggyBackend.BLL.DTO;
 using HyggyBackend.BLL.DTO.AccountDtos;
 using HyggyBackend.BLL.Infrastructure;
 using HyggyBackend.BLL.Interfaces;
@@ -7,9 +6,6 @@ using HyggyBackend.BLL.Services.EmailService;
 using HyggyBackend.DAL.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
-using RazorEngine;
-using RazorEngine.Templating;
-using System.Text;
 
 namespace HyggyBackend.BLL.Services
 {
@@ -19,16 +15,14 @@ namespace HyggyBackend.BLL.Services
 		private readonly ITokenService _tokenService;
 		private readonly IEmailSender _emailSender;
 		private readonly UserManager<User> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
 
         public AccountService(IMapper mapper,ITokenService tokenService, 
-			IEmailSender emailSender, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+			IEmailSender emailSender, UserManager<User> userManager)
 		{
 			_mapper = mapper;
 			_userManager = userManager;
 			_tokenService = tokenService;
 			_emailSender = emailSender;
-            _roleManager = roleManager;
         }
 
 		public async Task<AuthResponseDto> AuthenticateAsync(UserForAuthenticationDto authenticationDto)

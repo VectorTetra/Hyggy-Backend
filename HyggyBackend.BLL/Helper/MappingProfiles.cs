@@ -99,8 +99,7 @@ namespace HyggyBackend.BLL.Helper
 
             #region Employee Mappings
             CreateMap<EmployeeForRegistrationDto, ShopEmployee>()
-                .ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email))
-                .ForMember(u => u.ShopId, opt => opt.MapFrom(x => x.ShopId));
+                .ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email));
             CreateMap<EmployeeForRegistrationDto, StorageEmployee>()
                 .ForMember(u => u.UserName, opt => opt.MapFrom(x => x.Email));
             CreateMap<ShopEmployee, ShopEmployeeDTO>().ForMember(u => u.StorageId, opt => opt.MapFrom(emp => emp.Shop.StorageId));
@@ -108,13 +107,6 @@ namespace HyggyBackend.BLL.Helper
             CreateMap<StorageEmployee, StorageEmployeeDTO>();
             CreateMap<StorageEmployeeDTO, StorageEmployee>();
             CreateMap<EmployeeQueryBLL, EmployeeQueryDAL>();
-            CreateMap<EmployeeForRegistrationDto, ShopEmployeeDTO>()
-                .ForMember(u => u.ShopId, opt => opt.MapFrom(x => x.ShopId))
-                .ForMember(u => u.RoleName, opt => opt.MapFrom(x => x.Role))
-                .ForMember(u => u.StorageId, opt => opt.MapFrom(x => x.StorageId));
-            CreateMap<EmployeeForRegistrationDto, StorageEmployeeDTO>()
-                .ForMember(u => u.RoleName, opt => opt.MapFrom(x => x.Role))
-                .ForMember(u => u.StorageId, opt => opt.MapFrom(x => x.StorageId));
             #endregion
 
             #region OrderItem Mappings

@@ -158,13 +158,20 @@ namespace HyggyBackend.Controllers
         [HttpPut("editemployee")]
         public async Task<IActionResult> EditEmployee([FromBody] StorageEmployeeDTO employeeDTO)
         {
-            var employee = await _service.GetById(employeeDTO.Id!);
-            if (employee is null)
-                return NotFound();
+            try
+            {
+                var returnDTO = await _service.Update(employeeDTO);
 
-            _service.Update(employeeDTO);
-
-            return Ok("Співробітника оновлено.");
+                return Ok(returnDTO);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
         }
         [HttpDelete("deleteemployee")]
         public async Task<IActionResult> DeleteEmployee(string id)

@@ -17,7 +17,7 @@ namespace HyggyBackend.DAL.Repositories
         }
         public async Task<Shop?> GetById(long id)
         {
-            return await _context.Shops.Where(s => s.Id == id).FirstOrDefaultAsync();
+            return await _context.Shops.FindAsync(id);
         }
         public async Task<Shop?> GetByAddressId(long addressId)
         {

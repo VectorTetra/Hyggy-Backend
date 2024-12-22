@@ -11,5 +11,7 @@
         public bool? EmailConfirmed { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string? RoleName { get; set; }
+        public string? OldPassword { get; set; }
+        public string? NewPassword { get; set; }
     }
 }

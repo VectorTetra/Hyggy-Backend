@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HyggyBackend.BLL.DTO;
 using HyggyBackend.BLL.DTO.AccountDtos;
 using HyggyBackend.BLL.DTO.EmployeesDTO;
 using HyggyBackend.BLL.Infrastructure;
@@ -11,6 +12,7 @@ using HyggyBackend.DAL.Interfaces;
 using HyggyBackend.DAL.Queries;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using System.Text.Json;
 
 namespace HyggyBackend.BLL.Services.Employees
 {
@@ -128,8 +130,8 @@ namespace HyggyBackend.BLL.Services.Employees
 
                 return new RegistrationResponseDto { IsSuccessfullRegistration = false, Errors = errors };
             }
-           
-            await _userManager.AddToRoleAsync(user, registrationDto.Role!);
+
+            await _userManager.AddToRoleAsync(user, registrationDto.RoleName!);
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var param = new Dictionary<string, string?>
             {
@@ -182,35 +184,59 @@ namespace HyggyBackend.BLL.Services.Employees
         }
         public async Task<ShopEmployeeDTO> Update(ShopEmployeeDTO shopEmployeeDTO)
         {
-            ShopEmployee? shopEmployee = await Database.ShopEmployees.GetById(shopEmployeeDTO.Id);
-            if (shopEmployee == null) throw new ValidationException("Співробітника з таким Id не знайдено", shopEmployeeDTO.Id.ToString());
-
-            var shop = await Database.Shops.GetById(shopEmployeeDTO.ShopId);
-            var existedShop = shop ?? throw new ValidationException($"Магазин з таким Id не знайдено! (Id: {shopEmployeeDTO.ShopId})", shopEmployeeDTO.ShopId.ToString());
-            shopEmployee.ShopId = existedShop.Id;
-
-            shopEmployee.Surname = shopEmployeeDTO.Surname ?? throw new ValidationException($"Необхідно вказати прізвище співробітника! (Прізвище: {shopEmployeeDTO.Surname})", shopEmployeeDTO.Surname.ToString()); ;
-
-            shopEmployee.Name = shopEmployeeDTO.Name ?? throw new ValidationException($"Необхідно вказати ім'я співробітника! (Ім'я: {shopEmployeeDTO.Name})", shopEmployeeDTO.Name.ToString()); ;
-
-            shopEmployee.Email = shopEmployeeDTO.Email ?? throw new ValidationException($"Необхідно вказати пошту співробітника! (Пошта: {shopEmployeeDTO.Email})", shopEmployeeDTO.Email.ToString()); ;
-
-            shopEmployee.PhoneNumber = shopEmployeeDTO.PhoneNumber;
-
-            // Видаляємо всі ролі співробітника
-            var currentRoles = await _userManager.GetRolesAsync(shopEmployee);
-            if (currentRoles.Any())
+            try
             {
-                await _userManager.RemoveFromRolesAsync(shopEmployee, currentRoles);
+                ShopEmployee? shopEmployee = await Database.ShopEmployees.GetById(shopEmployeeDTO.Id);
+                if (shopEmployee == null) throw new ValidationException("Співробітника з таким Id не знайдено", shopEmployeeDTO.Id.ToString());
+
+                Shop? shop = await Database.Shops.GetById(shopEmployeeDTO.ShopId);
+                if (shop == null) throw new ValidationException($"Магазин з таким Id не знайдено! (Id: {shopEmployeeDTO.ShopId})", shopEmployeeDTO.ShopId.ToString());
+                shopEmployee.ShopId = shop.Id;
+
+                shopEmployee.Surname = shopEmployeeDTO.Surname ?? throw new ValidationException($"Необхідно вказати прізвище співробітника! (Прізвище: {shopEmployeeDTO.Surname})", shopEmployeeDTO.Surname.ToString()); ;
+
+                shopEmployee.Name = shopEmployeeDTO.Name ?? throw new ValidationException($"Необхідно вказати ім'я співробітника! (Ім'я: {shopEmployeeDTO.Name})", shopEmployeeDTO.Name.ToString()); ;
+
+                shopEmployee.Email = shopEmployeeDTO.Email ?? throw new ValidationException($"Необхідно вказати пошту співробітника! (Пошта: {shopEmployeeDTO.Email})", shopEmployeeDTO.Email.ToString()); ;
+
+                shopEmployee.PhoneNumber = shopEmployeeDTO.PhoneNumber;
+
+                if (!string.IsNullOrEmpty(shopEmployeeDTO.OldPassword) && !string.IsNullOrEmpty(shopEmployeeDTO.NewPassword))
+                {
+                    var userEntity = await _userManager.FindByEmailAsync(shopEmployeeDTO.Email);
+
+                    if (userEntity == null)
+                        throw new ValidationException("Користувача з такою поштою не знайдено", shopEmployeeDTO.Email);
+
+                    if (userEntity.Id != shopEmployeeDTO.Id)
+                        throw new ValidationException("Користувач з такою поштою вже існує", shopEmployeeDTO.Email);
+
+                    if (userEntity.Email != shopEmployeeDTO.Email)
+                        throw new ValidationException("Пошта не може бути змінена", shopEmployeeDTO.Email);
+                    var changePasswordResult = await _userManager.ChangePasswordAsync(userEntity, shopEmployeeDTO.OldPassword, shopEmployeeDTO.NewPassword);
+                    if (!changePasswordResult.Succeeded)
+                    {
+                        var errors = changePasswordResult.Errors.Select(e => e.Description);
+                        throw new ValidationException("Помилка при зміні паролю", string.Join(", ", errors));
+                    }
+                }
+                // Видаляємо всі ролі співробітника
+                var currentRoles = await _userManager.GetRolesAsync(shopEmployee);
+                if (currentRoles.Any(x => x != shopEmployeeDTO.RoleName))
+                {
+                    await _userManager.RemoveFromRolesAsync(shopEmployee, currentRoles);
+                    await _userManager.AddToRoleAsync(shopEmployee, shopEmployeeDTO.RoleName);
+                }
+
+                Database.ShopEmployees.Update(shopEmployee);
+                await Database.Save();
+
+                return _mapper.Map<ShopEmployeeDTO>(shopEmployee);
             }
-
-            // Додаємо нову роль
-            await _userManager.AddToRoleAsync(shopEmployee, shopEmployeeDTO.RoleName);
-
-            Database.ShopEmployees.Update(shopEmployee);
-            await Database.Save();
-
-            return _mapper.Map<ShopEmployeeDTO>(shopEmployee);
+            catch (Exception ex)
+            {
+                throw new ValidationException(ex.Message, ex.InnerException?.Message);
+            }
         }
         public async Task Delete(string id)
         {

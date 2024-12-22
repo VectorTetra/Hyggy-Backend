@@ -74,9 +74,7 @@ namespace HyggyBackend.DAL.Repositories.Employes
         }
         public async Task<ShopEmployee?> GetById(string id)
         {
-            var employees = await GetAllAsync();
-            return employees.Where(se => se.Id == id)
-                .FirstOrDefault();
+            return await _context.ShopEmployees.FindAsync(id);
         }
         public async Task<ShopEmployee?> GetByPhoneNumber(string phone)
         {

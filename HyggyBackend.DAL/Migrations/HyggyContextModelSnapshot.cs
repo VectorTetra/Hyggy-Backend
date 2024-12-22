@@ -728,6 +728,50 @@ namespace HyggyBackend.DAL.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "3a50995f-0ea1-476e-a74e-d2bf665fb62f",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "21ac7c52-f852-46be-9f41-b1853d35914d",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        },
+                        new
+                        {
+                            Id = "f01ed6ce-e11c-479b-97ae-e6800892e6ba",
+                            Name = "Storekeeper",
+                            NormalizedName = "STOREKEEPER"
+                        },
+                        new
+                        {
+                            Id = "62824d64-3890-41a7-878a-f88cef62a9a6",
+                            Name = "Saler",
+                            NormalizedName = "SALER"
+                        },
+                        new
+                        {
+                            Id = "fe1e6ed8-74f6-4386-a618-a9592a7c860a",
+                            Name = "Accountant",
+                            NormalizedName = "ACCOUNTANT"
+                        },
+                        new
+                        {
+                            Id = "57f3af11-1a33-47c2-9d2b-6fa9dcb1f4e8",
+                            Name = "General Accountant",
+                            NormalizedName = "GENERAL ACCOUNTANT"
+                        },
+                        new
+                        {
+                            Id = "29637ccb-f615-438a-b26e-bedacdbefe85",
+                            Name = "Owner",
+                            NormalizedName = "OWNER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -869,16 +913,7 @@ namespace HyggyBackend.DAL.Migrations
                     b.Property<long>("ShopId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("StorageId")
-                        .HasColumnType("bigint");
-
                     b.HasIndex("ShopId");
-
-                    b.ToTable("AspNetUsers", null, t =>
-                        {
-                            t.Property("StorageId")
-                                .HasColumnName("ShopEmployee_StorageId");
-                        });
 
                     b.HasDiscriminator().HasValue("ShopEmployee");
                 });

@@ -235,18 +235,13 @@ namespace HyggyBackend.Controllers
         }
 
         [HttpPut("editemployee")]
-        public async Task<IActionResult> EditEmployee(ShopEmployeeDTO employeeDTO)
+        public async Task<IActionResult> EditEmployee([FromBody] ShopEmployeeDTO employeeDTO)
         {
             try
             {
+                var returnDTO = await _service.Update(employeeDTO);
 
-                var employee = await _service.GetById(employeeDTO.Id!);
-                if (employee is null)
-                    return NotFound();
-
-                _service.Update(employeeDTO);
-
-                return Ok("Співробітника оновлено.");
+                return Ok(returnDTO);
             }
             catch (Exception ex)
             {

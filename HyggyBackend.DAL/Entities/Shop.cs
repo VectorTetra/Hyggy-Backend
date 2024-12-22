@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using HyggyBackend.DAL.Entities.Employes;
 
 namespace HyggyBackend.DAL.Entities
@@ -15,8 +16,8 @@ namespace HyggyBackend.DAL.Entities
 		public long? StorageId { get; set; } = 1;
 		[ForeignKey("StorageId")]
 		public virtual Storage Storage { get; set; }
-		public virtual ICollection<ShopEmployee> ShopEmployees { get; set; } = new List<ShopEmployee>();	
-		public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+		public virtual ICollection<ShopEmployee> ShopEmployees { get; set; } = new List<ShopEmployee>();
+        public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
        
 
 

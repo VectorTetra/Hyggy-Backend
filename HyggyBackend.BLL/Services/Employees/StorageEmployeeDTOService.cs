@@ -24,7 +24,7 @@ namespace HyggyBackend.BLL.Services.Employees
         private readonly IEmailSender _emailSender;
         public StorageEmployeeDTOService(IUnitOfWork database, IMapper mapper,
             UserManager<User> userManager, ITokenService tokenService,
-            
+
              IEmailSender emailSender)
         {
             Database = database;
@@ -122,7 +122,7 @@ namespace HyggyBackend.BLL.Services.Employees
                 return new RegistrationResponseDto { IsSuccessfullRegistration = false, Errors = errors };
             }
 
-            await _userManager.AddToRoleAsync(user, registrationDto.Role!);
+            await _userManager.AddToRoleAsync(user, registrationDto.RoleName!);
 
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var param = new Dictionary<string, string?>
@@ -175,35 +175,59 @@ namespace HyggyBackend.BLL.Services.Employees
         }
         public async Task<StorageEmployeeDTO> Update(StorageEmployeeDTO storageEmployeeDTO)
         {
-            StorageEmployee? storageEmployee = await Database.StorageEmployees.GetById(storageEmployeeDTO.Id);
-            if (storageEmployee == null) throw new ValidationException("Співробітника з таким Id не знайдено", storageEmployeeDTO.Id.ToString());
-
-            var storage = await Database.Storages.GetById(storageEmployeeDTO.StorageId);
-            var existedStorage = storage ?? throw new ValidationException($"Склад з таким Id не знайдено! (Id: {storageEmployeeDTO.StorageId})", storageEmployeeDTO.StorageId.ToString());
-            storageEmployee.StorageId = existedStorage.Id;
-
-            storageEmployee.Surname = storageEmployeeDTO.Surname ?? throw new ValidationException($"Необхідно вказати прізвище співробітника! (Прізвище: {storageEmployeeDTO.Surname})", storageEmployeeDTO.Surname.ToString()); ;
-
-            storageEmployee.Name = storageEmployeeDTO.Name ?? throw new ValidationException($"Необхідно вказати ім'я співробітника! (Ім'я: {storageEmployeeDTO.Name})", storageEmployeeDTO.Name.ToString()); ;
-
-            storageEmployee.Email = storageEmployeeDTO.Email ?? throw new ValidationException($"Необхідно вказати пошту співробітника! (Пошта: {storageEmployeeDTO.Email})", storageEmployeeDTO.Email.ToString()); ;
-
-            storageEmployee.PhoneNumber = storageEmployeeDTO.PhoneNumber;
-
-            // Видаляємо всі ролі співробітника
-            var currentRoles = await _userManager.GetRolesAsync(storageEmployee);
-            if (currentRoles.Any())
+            try
             {
-                await _userManager.RemoveFromRolesAsync(storageEmployee, currentRoles);
+                StorageEmployee? storageEmployee = await Database.StorageEmployees.GetById(storageEmployeeDTO.Id);
+                if (storageEmployee == null) throw new ValidationException("Співробітника з таким Id не знайдено", storageEmployeeDTO.Id.ToString());
+
+                var storage = await Database.Storages.GetById(storageEmployeeDTO.StorageId);
+                var existedStorage = storage ?? throw new ValidationException($"Склад з таким Id не знайдено! (Id: {storageEmployeeDTO.StorageId})", storageEmployeeDTO.StorageId.ToString());
+                storageEmployee.StorageId = existedStorage.Id;
+
+                storageEmployee.Surname = storageEmployeeDTO.Surname ?? throw new ValidationException($"Необхідно вказати прізвище співробітника! (Прізвище: {storageEmployeeDTO.Surname})", storageEmployeeDTO.Surname.ToString()); ;
+
+                storageEmployee.Name = storageEmployeeDTO.Name ?? throw new ValidationException($"Необхідно вказати ім'я співробітника! (Ім'я: {storageEmployeeDTO.Name})", storageEmployeeDTO.Name.ToString()); ;
+
+                storageEmployee.Email = storageEmployeeDTO.Email ?? throw new ValidationException($"Необхідно вказати пошту співробітника! (Пошта: {storageEmployeeDTO.Email})", storageEmployeeDTO.Email.ToString()); ;
+
+                storageEmployee.PhoneNumber = storageEmployeeDTO.PhoneNumber;
+                if (!string.IsNullOrEmpty(storageEmployeeDTO.OldPassword) && !string.IsNullOrEmpty(storageEmployeeDTO.NewPassword))
+                {
+                    var userEntity = await _userManager.FindByEmailAsync(storageEmployeeDTO.Email);
+
+                    if (userEntity == null)
+                        throw new ValidationException("Користувача з такою поштою не знайдено", storageEmployeeDTO.Email);
+
+                    if (userEntity.Id != storageEmployeeDTO.Id)
+                        throw new ValidationException("Користувач з такою поштою вже існує", storageEmployeeDTO.Email);
+
+                    if (userEntity.Email != storageEmployeeDTO.Email)
+                        throw new ValidationException("Пошта не може бути змінена", storageEmployeeDTO.Email);
+                    var changePasswordResult = await _userManager.ChangePasswordAsync(userEntity, storageEmployeeDTO.OldPassword, storageEmployeeDTO.NewPassword);
+                    if (!changePasswordResult.Succeeded)
+                    {
+                        var errors = changePasswordResult.Errors.Select(e => e.Description);
+                        throw new ValidationException("Помилка при зміні паролю", string.Join(", ", errors));
+                    }
+                }
+                // Видаляємо всі ролі співробітника
+                var currentRoles = await _userManager.GetRolesAsync(storageEmployee);
+                if (currentRoles.Any(x => x != storageEmployeeDTO.RoleName))
+                {
+                    await _userManager.RemoveFromRolesAsync(storageEmployee, currentRoles);
+                    await _userManager.AddToRoleAsync(storageEmployee, storageEmployeeDTO.RoleName);
+                }
+
+                Database.StorageEmployees.Update(storageEmployee);
+                await Database.Save();
+
+                return _mapper.Map<StorageEmployeeDTO>(storageEmployee);
+
             }
-
-            // Додаємо нову роль
-            await _userManager.AddToRoleAsync(storageEmployee, storageEmployeeDTO.RoleName);
-
-            Database.StorageEmployees.Update(storageEmployee);
-            await Database.Save();
-
-            return _mapper.Map<StorageEmployeeDTO>(storageEmployee);
+            catch (Exception ex)
+            {
+                throw new ValidationException(ex.Message, ex.InnerException?.Message);
+            }
         }
         public async Task Delete(string id)
         {
