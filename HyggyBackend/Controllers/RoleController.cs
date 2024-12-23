@@ -44,6 +44,21 @@ namespace HyggyBackend.Controllers
                 return NotFound();
             return role;
         }
+        [HttpGet("byRoleName")]
+        public async Task<ActionResult<IdentityRole>> GetRoleByName([FromQuery] string roleName)
+        {
+            var role = await _roleManager.Roles.Where(r=>r.Name.Contains(roleName)).FirstOrDefaultAsync();
+            if (role == null)
+                return NotFound();
+            return role;
+        }
+        [HttpGet("byRoleNames")]
+        public async Task<ActionResult<IEnumerable<IdentityRole>>> GetRoleByNames([FromQuery] string roleNames)
+        {
+            string[] names = roleNames.Split('|');
+            var roles = await _roleManager.Roles.Where(r => names.Contains(r.Name)).ToListAsync();
+            return roles;
+        }
 
     }
 }
