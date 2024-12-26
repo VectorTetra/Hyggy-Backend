@@ -557,7 +557,7 @@ namespace HyggyBackend.Controllers
         public long? OrderItemId { get; set; }
         public long? WareId { get; set; }
         public long? WarePriceHistoryId { get; set; }
-        public long? CustomerId { get; set; }
+        public string? CustomerId { get; set; }
         public long? ShopId { get; set; }
         public string? Sorting { get; set; }
         public string? StringIds { get; set; }
