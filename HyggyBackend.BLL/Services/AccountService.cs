@@ -6,6 +6,7 @@ using HyggyBackend.BLL.Services.EmailService;
 using HyggyBackend.DAL.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Configuration;
 
 namespace HyggyBackend.BLL.Services
 {
@@ -15,14 +16,16 @@ namespace HyggyBackend.BLL.Services
 		private readonly ITokenService _tokenService;
 		private readonly IEmailSender _emailSender;
 		private readonly UserManager<User> _userManager;
+        private readonly IConfiguration _configuration;
 
         public AccountService(IMapper mapper,ITokenService tokenService, 
-			IEmailSender emailSender, UserManager<User> userManager)
+			IEmailSender emailSender, UserManager<User> userManager, IConfiguration configuration)
 		{
 			_mapper = mapper;
 			_userManager = userManager;
 			_tokenService = tokenService;
 			_emailSender = emailSender;
+            _configuration = configuration;
         }
 
 		public async Task<AuthResponseDto> AuthenticateAsync(UserForAuthenticationDto authenticationDto)
@@ -56,7 +59,8 @@ namespace HyggyBackend.BLL.Services
 		}
 		public async Task<string> ForgotPassword(ForgotPasswordDto passwordDto)
 		{
-			var user = await _userManager.FindByEmailAsync(passwordDto.Email!);
+			var frontendBaseUrl = _configuration["BaseUrls:Frontend"];
+            var user = await _userManager.FindByEmailAsync(passwordDto.Email!);
 			if (user is null)
 				throw new ValidationException("Пошту не знайдено", passwordDto.Email!);
 
@@ -67,7 +71,7 @@ namespace HyggyBackend.BLL.Services
 				{ "token", token },
 				{"email", user.Email }
 			};
-			passwordDto.ClientUri = $"http://localhost:3000/PagePasswordReset?reset={user.Id}";
+			passwordDto.ClientUri = $"{frontendBaseUrl}/PagePasswordReset?reset={user.Id}";
 			var callback = QueryHelpers.AddQueryString(passwordDto.ClientUri, param);
 			var emailTemplate = EmailResetPasswordTemplate(user.Name, callback);
 
@@ -128,7 +132,9 @@ namespace HyggyBackend.BLL.Services
 		
 		private string EmailResetPasswordTemplate(string name, string callback)
 		{
-			var template = $@"
+            var frontendBaseUrl = _configuration["BaseUrls:Frontend"];
+            var hyggyIconUrl = _configuration["BaseUrls:HyggyIcon"];
+            var template = $@"
 				<!DOCTYPE html>
 <html lang=""en"">
 <head>
@@ -144,7 +150,7 @@ namespace HyggyBackend.BLL.Services
                <table style=""width: 100%; padding: 0; border-spacing: 0;"">
     <tr>
         <td style=""width: 50%;"">
-            <img src=""https://s3-alpha-sig.figma.com/img/c71e/882e/8f5e30e3f0c3f65fa59a05f0a2b31601?Expires=1733097600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=RC32EDo92P-pKnqdiA8XS0bgZVBmS2pcxK6xNkZD0eHbSZgC-clQm5JLRcIsPl7g2lVS59-NI4D2MAus68gHvWOCheMtkvf4eYQUGLUi0MI~03n7q3GhTiEusD6v-gtHr88iohFvE7OXgXbXqBo791X7MmLgawVkmrhZeGiHR16mf7MUmt~mzPTVtEtlxXvMlPsHGPm35Sx9Uly-U0~lHgBJfNqnEsCauWI~YDeRS36wghjpgzPSl7VLYt4bUVqRR9B6-EawazE-whMTcpvBndlHOWj-HyBmpqkM833KVJB24LeQ6LvKI0LVU25VsrrTJ9UtJN3oXOc6WH-JTTA8aw__"" style=""height: 70px; width: 120px;""/>
+            <img src=""{hyggyIconUrl}"" style=""height: 70px; width: 120px;""/>
         </td>
         <td style=""width: 50%; text-align: right; vertical-align: bottom;"">
             <h3 style=""color: gray; font-weight: 100; margin: 0;"">Відділ по роботі з клієнтами</h3>
@@ -158,7 +164,7 @@ namespace HyggyBackend.BLL.Services
                 <table style=""width: 100%; border-spacing: 0;"">
                     <tr>
                         <td style=""text-align: center; border: 1px solid gray; height: 50px; padding: 0;"">
-                            <a href=""http://localhost:3000/"" style=""color: #00AAAD; font-size: large; text-decoration: none; display: inline-block;"">Перейти на сайт Hyggy.ua</a>
+                            <a href=""{frontendBaseUrl}"" style=""color: #00AAAD; font-size: large; text-decoration: none; display: inline-block;"">Перейти на сайт Hyggy.ua</a>
                         </td>
                     </tr>
                     <tr >

@@ -10,6 +10,7 @@ using HyggyBackend.DAL.Interfaces;
 using HyggyBackend.DAL.Queries;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Configuration;
 using System.Runtime.CompilerServices;
 
 namespace HyggyBackend.BLL.Services
@@ -21,15 +22,17 @@ namespace HyggyBackend.BLL.Services
         ITokenService _tokenService;
         private readonly IEmailSender _emailSender;
         private readonly UserManager<User> _userManager;
+        private readonly IConfiguration _configuration;
 
         public CustomerService(IUnitOfWork uow, IMapper mapper, ITokenService tokenService,
-            IEmailSender emailSender, UserManager<User> userManager)
+            IEmailSender emailSender, UserManager<User> userManager, IConfiguration configuration)
         {
             Database = uow;
             _mapper = mapper;
             _tokenService = tokenService;
             _emailSender = emailSender;
             _userManager = userManager;
+            _configuration = configuration;
         }
 
         public async Task<IEnumerable<CustomerDTO>> GetPagedCustomers(int pageNumber, int pageSize)
@@ -298,7 +301,8 @@ namespace HyggyBackend.BLL.Services
 
         private string EmailRegistrationTemplate(string name, string callback)
         {
-
+            var frontendBaseUrl = _configuration["BaseUrls:Frontend"];
+            var hyggyIconUrl = _configuration["BaseUrls:HyggyIcon"];
             var template = $@"
                 <!DOCTYPE html>
 <html lang=""en"">
@@ -315,7 +319,7 @@ namespace HyggyBackend.BLL.Services
                <table style=""width: 100%; padding: 0; border-spacing: 0;"">
     <tr>
         <td style=""width: 50%;"">
-            <img src=""https://s3-alpha-sig.figma.com/img/c71e/882e/8f5e30e3f0c3f65fa59a05f0a2b31601?Expires=1733097600&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=RC32EDo92P-pKnqdiA8XS0bgZVBmS2pcxK6xNkZD0eHbSZgC-clQm5JLRcIsPl7g2lVS59-NI4D2MAus68gHvWOCheMtkvf4eYQUGLUi0MI~03n7q3GhTiEusD6v-gtHr88iohFvE7OXgXbXqBo791X7MmLgawVkmrhZeGiHR16mf7MUmt~mzPTVtEtlxXvMlPsHGPm35Sx9Uly-U0~lHgBJfNqnEsCauWI~YDeRS36wghjpgzPSl7VLYt4bUVqRR9B6-EawazE-whMTcpvBndlHOWj-HyBmpqkM833KVJB24LeQ6LvKI0LVU25VsrrTJ9UtJN3oXOc6WH-JTTA8aw__"" style=""height: 70px; width: 120px;""/>
+            <img src=""{hyggyIconUrl}"" style=""height: 70px; width: 120px;""/>
         </td>
         <td style=""width: 50%; text-align: right; vertical-align: bottom;"">
             <h3 style=""color: gray; font-weight: 100; margin: 0;"">Відділ по роботі з клієнтами</h3>
@@ -329,7 +333,7 @@ namespace HyggyBackend.BLL.Services
                 <table style=""width: 100%; border-spacing: 0;"">
                     <tr>
                         <td style=""text-align: center; border: 1px solid gray; height: 50px; padding: 0;"">
-                            <a href=""http://localhost:3000/"" style=""color: #00AAAD; font-size: large; text-decoration: none; display: inline-block;"">Перейти на сайт Hyggy.ua</a>
+                            <a href=""{frontendBaseUrl}"" style=""color: #00AAAD; font-size: large; text-decoration: none; display: inline-block;"">Перейти на сайт Hyggy.ua</a>
                         </td>
                     </tr>
                     <tr >
