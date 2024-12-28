@@ -455,8 +455,13 @@ namespace HyggyBackend.DAL.Repositories
                         result = result.OrderByDescending(ware => ware.Name).ToList();
                         break;
                     case "Rating":
-                        result = result.OrderByDescending(ware => ware.Reviews.Average(review => (float)review.Rating)).ToList(); // Сортування за рейтингом
+                        result = result.OrderByDescending(ware =>
+                            ware.Reviews.Any()
+                                ? ware.Reviews.Average(review => (float)review.Rating)
+                                : 0 // Встановлення рейтингу для товарів без відгуків
+                        ).ToList();
                         break;
+
                     case "DiscountAsc":
                         result = result.OrderBy(ware => ware.Discount).ToList();
                         break;
