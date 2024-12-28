@@ -332,17 +332,18 @@ namespace HyggyBackend.DAL.Repositories
             }
             else
             {
-                var nonEmptyCollections = collections.Where(collection => collection.Any()).ToList();
+                //var nonEmptyCollections = collections.Where(collection => collection.Any()).ToList();
 
-                // Перетин результатів з відфільтрованих колекцій
-                if (nonEmptyCollections.Any())
-                {
-                    result = nonEmptyCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList)).ToList();
-                }
-                else
-                {
-                    result = new List<Order>(); // Повертаємо порожній список, якщо всі колекції були порожні
-                }
+                //// Перетин результатів з відфільтрованих колекцій
+                //if (nonEmptyCollections.Any())
+                //{
+                //    result = nonEmptyCollections.Aggregate((previousList, nextList) => previousList.Intersect(nextList)).ToList();
+                //}
+                //else
+                //{
+                //    result = new List<Order>(); // Повертаємо порожній список, якщо всі колекції були порожні
+                //}
+                result = collections.Aggregate((previousList, nextList) => previousList.Intersect(nextList)).ToList();
             }
 
             // Сортування
