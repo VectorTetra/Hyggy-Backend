@@ -25,7 +25,7 @@ namespace HyggyBackend.BLL.DTO.AccountDtos
         public string? ConfirmPassword { get; set; }
         public string Role { get; set; }
         [JsonIgnore]
-        public string? UserUri { get; set; } = "http://www.hyggy.somee.com/api/account/emailconfirmation";
+        public string? UserUri { get; set; } = "https://www.hyggy.somee.com/api/account/emailconfirmation";
 
     }
 }

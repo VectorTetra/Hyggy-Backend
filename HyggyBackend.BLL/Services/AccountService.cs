@@ -44,19 +44,19 @@ namespace HyggyBackend.BLL.Services
 
 			return new AuthResponseDto { IsAuthSuccessfull = true, Token = token };
 		}
-		public async Task<string> EmailConfirmation(string email, string token)
+		public async Task<bool> EmailConfirmation(string email, string token)
 		{
-			var user = await _userManager.FindByEmailAsync(email);
-			if(user is null)
-				throw new ValidationException("Пошту не знайдено", email);
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user is null)
+                throw new ValidationException("Пошту не знайдено", email);
 
-			var confirmResult = await _userManager.ConfirmEmailAsync(user, token);
-			if (!confirmResult.Succeeded)
-				throw new ValidationException("Пошту не підтвержено", email);
+            var confirmResult = await _userManager.ConfirmEmailAsync(user, token);
+            if (!confirmResult.Succeeded)
+                throw new ValidationException("Пошту не підтвержено", email);
 
 
-			return "Обліковий запис підтвержено!";
-		}
+            return true;
+        }
 		public async Task<string> ForgotPassword(ForgotPasswordDto passwordDto)
 		{
 			var frontendBaseUrl = _configuration["BaseUrls:Frontend"];

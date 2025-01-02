@@ -24,7 +24,7 @@ namespace HyggyBackend.BLL.Interfaces
         Task<IEnumerable<T>> GetByQuery(EmployeeQueryBLL query);
         Task<RegistrationResponseDto> Create(EmployeeForRegistrationDto registrationDto);
 		Task<AuthResponseDto> AuthenticateAsync(UserForAuthenticationDto authenticationDto);
-		Task<string> EmailConfirmation(string email, string code);
+		Task<bool> EmailConfirmation(string email, string code);
 		Task<T> Update(T item);
 		Task Delete(string id);
 	}

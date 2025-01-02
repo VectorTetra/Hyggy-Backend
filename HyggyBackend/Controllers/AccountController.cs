@@ -1,6 +1,7 @@
 ﻿
 using HyggyBackend.BLL.DTO.AccountDtos;
 using HyggyBackend.BLL.Interfaces;
+using HyggyBackend.DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
@@ -11,10 +12,11 @@ namespace HyggyBackend.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _service;
-
-        public AccountController(IAccountService service)
+        private readonly IConfiguration _configuration;
+        public AccountController(IAccountService service, IConfiguration configuration)
         {
             _service = service;
+            _configuration = configuration;
         }
         //[HttpPost("register")]
         //public async Task<IActionResult> Register([FromBody] UserForRegistrationDto registrationDto)
@@ -64,9 +66,22 @@ namespace HyggyBackend.Controllers
         {
             try
             {
+                var pageRedirectUrlOk = _configuration["BaseUrls:CustomerEmailConfirmedUrlOk"];
+                var pageRedirectUrlError = _configuration["BaseUrls:CustomerEmailConfirmedUrlError"];
                 var result = await _service.EmailConfirmation(email, token);
-
-                return Ok(result);
+                if (result)
+                {
+                    if (string.IsNullOrEmpty(pageRedirectUrlOk))
+                    {
+                        return StatusCode(500, "Redirect URL is not configured.");
+                    }
+                    return Redirect(pageRedirectUrlOk);
+                }
+                if (string.IsNullOrEmpty(pageRedirectUrlError))
+                {
+                    return StatusCode(500, "Redirect URL is not configured.");
+                }
+                return Redirect(pageRedirectUrlError);
             }
             catch (ValidationException ex)
             {

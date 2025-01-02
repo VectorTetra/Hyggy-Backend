@@ -1,7 +1,9 @@
 ﻿using HyggyBackend.BLL.DTO.AccountDtos;
 using HyggyBackend.BLL.DTO.EmployeesDTO;
+using HyggyBackend.BLL.Infrastructure;
 using HyggyBackend.BLL.Interfaces;
 using HyggyBackend.BLL.Queries;
+using HyggyBackend.DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HyggyBackend.Controllers
@@ -11,10 +13,11 @@ namespace HyggyBackend.Controllers
     public class ShopEmployeeController : Controller
     {
         private IEmployeeService<ShopEmployeeDTO> _service;
-
-        public ShopEmployeeController(IEmployeeService<ShopEmployeeDTO> service)
+        private readonly IConfiguration _configuration;
+        public ShopEmployeeController(IEmployeeService<ShopEmployeeDTO> service, IConfiguration configuration)
         {
             _service = service;
+            _configuration = configuration;
         }
 
         [HttpPost("register")]
@@ -67,9 +70,26 @@ namespace HyggyBackend.Controllers
         {
             try
             {
+                var pageRedirectUrlOk = _configuration["BaseUrls:EmployeeEmailConfirmedUrlOk"];
+                var pageRedirectUrlError = _configuration["BaseUrls:EmployeeEmailConfirmedUrlError"];
                 var result = await _service.EmailConfirmation(email, token);
-
-                return Ok(result);
+                if (result)
+                {
+                    if (string.IsNullOrEmpty(pageRedirectUrlOk))
+                    {
+                        return StatusCode(500, "Redirect URL is not configured.");
+                    }
+                    return Redirect(pageRedirectUrlOk);
+                }
+                if (string.IsNullOrEmpty(pageRedirectUrlError))
+                {
+                    return StatusCode(500, "Redirect URL is not configured.");
+                }
+                return Redirect(pageRedirectUrlError);
+            }
+            catch (ValidationException ex)
+            {
+                return StatusCode(500, ex.Message);
             }
             catch (Exception ex)
             {

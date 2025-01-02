@@ -200,7 +200,7 @@ namespace HyggyBackend.BLL.Services
 
             return new AuthResponseDto { IsAuthSuccessfull = true, Token = token };
         }
-        public async Task<string> EmailConfirmation(string email, string token)
+        public async Task<bool> EmailConfirmation(string email, string token)
         {
             var user = await _userManager.FindByEmailAsync(email);
             if (user is null)
@@ -211,7 +211,7 @@ namespace HyggyBackend.BLL.Services
                 throw new ValidationException("Пошту не підтвержено", email);
 
 
-            return "Обліковий запис підтвержено!";
+            return true;
         }
         public async Task<CustomerDTO> Update(CustomerDTO item)
         {

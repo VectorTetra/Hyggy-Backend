@@ -8,7 +8,7 @@ namespace HyggyBackend.BLL.Interfaces
     {
         Task<RegistrationResponseDto> RegisterAsync(UserForRegistrationDto registrationDto);
         Task<AuthResponseDto> AuthenticateAsync(UserForAuthenticationDto authenticationDto);
-        Task<string> EmailConfirmation(string email, string code);
+        Task<bool> EmailConfirmation(string email, string code);
         Task<IEnumerable<CustomerDTO>> GetPagedCustomers(int pageNumber, int pageSize);
         Task<CustomerDTO> CreateOrFindGuestCustomerAsync(CustomerDTO item);
         Task<IEnumerable<CustomerDTO>> GetByStringIds(string StringIds);

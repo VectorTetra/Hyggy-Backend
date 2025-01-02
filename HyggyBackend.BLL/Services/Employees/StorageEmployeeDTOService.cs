@@ -132,7 +132,7 @@ namespace HyggyBackend.BLL.Services.Employees
                 {"email", user.Email }
             };
 
-            registrationDto.UserUri = "http://www.hyggy.somee.com/api/storageemployee/emailconfirmation";
+            registrationDto.UserUri = "https://www.hyggy.somee.com/api/storageemployee/emailconfirmation";
 
             var callback = QueryHelpers.AddQueryString(registrationDto.UserUri, param);
             var emailTemplate = EmailRegistrationTemplate(user.Name, callback);
@@ -144,7 +144,7 @@ namespace HyggyBackend.BLL.Services.Employees
 
             return new RegistrationResponseDto { IsSuccessfullRegistration = true };
         }
-        public async Task<string> EmailConfirmation(string email, string token)
+        public async Task<bool> EmailConfirmation(string email, string token)
         {
             var user = await _userManager.FindByEmailAsync(email);
             if (user is null)
@@ -156,7 +156,7 @@ namespace HyggyBackend.BLL.Services.Employees
                 throw new ValidationException("Пошту не знайдено", email);
 
 
-            return "Обліковий запис підтвержено!";
+            return true;
         }
         public async Task<AuthResponseDto> AuthenticateAsync(UserForAuthenticationDto authenticationDto)
         {

@@ -563,7 +563,7 @@ namespace HyggyBackend.Controllers
                 }
 
                 // Формуємо шлях до файлу для повернення
-                string path = "http://www.hyggy.somee.com/WarePageJsonStructures/" + newFileName;
+                string path = "https://www.hyggy.somee.com/WarePageJsonStructures/" + newFileName;
                 return new ObjectResult(path);
             }
             catch (Exception ex)

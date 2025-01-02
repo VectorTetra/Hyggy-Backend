@@ -1,5 +1,6 @@
 ﻿using HyggyBackend.BLL.DTO.AccountDtos;
 using HyggyBackend.BLL.DTO.EmployeesDTO;
+using HyggyBackend.BLL.Infrastructure;
 using HyggyBackend.BLL.Interfaces;
 using HyggyBackend.BLL.Queries;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +12,11 @@ namespace HyggyBackend.Controllers
     public class StorageEmployeeController : Controller
     {
         private IEmployeeService<StorageEmployeeDTO> _service;
-
-        public StorageEmployeeController(IEmployeeService<StorageEmployeeDTO> service)
+        private readonly IConfiguration _configuration;
+        public StorageEmployeeController(IEmployeeService<StorageEmployeeDTO> service, IConfiguration configuration)
         {
             _service = service;
+            _configuration = configuration;
         }
 
 
@@ -59,9 +61,37 @@ namespace HyggyBackend.Controllers
         [HttpGet("emailconfirmation")]
         public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string token)
         {
-            var result = await _service.EmailConfirmation(email, token);
-
-            return Ok(result);
+            try
+            {
+                var pageRedirectUrlOk = _configuration["BaseUrls:EmployeeEmailConfirmedUrlOk"];
+                var pageRedirectUrlError = _configuration["BaseUrls:EmployeeEmailConfirmedUrlError"];
+                var result = await _service.EmailConfirmation(email, token);
+                if (result)
+                {
+                    if (string.IsNullOrEmpty(pageRedirectUrlOk))
+                    {
+                        return StatusCode(500, "Redirect URL is not configured.");
+                    }
+                    return Redirect(pageRedirectUrlOk);
+                }
+                if (string.IsNullOrEmpty(pageRedirectUrlError))
+                {
+                    return StatusCode(500, "Redirect URL is not configured.");
+                }
+                return Redirect(pageRedirectUrlError);
+            }
+            catch (ValidationException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    return StatusCode(500, ex.InnerException.Message);
+                }
+                return StatusCode(500, ex.Message);
+            }
         }
 
         //[HttpGet("storageemployee/{shopId}")]

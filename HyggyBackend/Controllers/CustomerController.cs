@@ -16,11 +16,13 @@ namespace HyggyBackend.Controllers
     {
         private readonly ICustomerService _serv;
         IWebHostEnvironment _appEnvironment;
+        private readonly IConfiguration _configuration;
 
-        public CustomerController(ICustomerService serv, IWebHostEnvironment appEnvironment)
+        public CustomerController(ICustomerService serv, IWebHostEnvironment appEnvironment, IConfiguration configuration)
         {
             _serv = serv;
             _appEnvironment = appEnvironment;
+            _configuration = configuration;
         }
 
         MapperConfiguration config = new MapperConfiguration(mc =>
@@ -262,18 +264,31 @@ namespace HyggyBackend.Controllers
             }
         }
 		[HttpGet("emailconfirmation")]
-		public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string token)
-		{
-			try
-			{
-				var result = await _serv.EmailConfirmation(email, token);
-
-				return Ok(result);
-			}
-			catch (ValidationException ex)
-			{
-				return StatusCode(500, ex.Message);
-			}
+        public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string token)
+        {
+            try
+            {
+                var pageRedirectUrlOk = _configuration["BaseUrls:CustomerEmailConfirmedUrlOk"];
+                var pageRedirectUrlError = _configuration["BaseUrls:CustomerEmailConfirmedUrlError"];
+                var result = await _serv.EmailConfirmation(email, token);
+                if (result)
+                {
+                    if (string.IsNullOrEmpty(pageRedirectUrlOk))
+                    {
+                        return StatusCode(500, "Redirect URL is not configured.");
+                    }
+                    return Redirect(pageRedirectUrlOk);
+                }
+                if (string.IsNullOrEmpty(pageRedirectUrlError))
+                {
+                    return StatusCode(500, "Redirect URL is not configured.");
+                }
+                return Redirect(pageRedirectUrlError);
+            }
+            catch (ValidationException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
             catch (Exception ex)
             {
                 if (ex.InnerException != null)
